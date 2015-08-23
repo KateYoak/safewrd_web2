@@ -1,0 +1,14 @@
+{
+    "uploadId":"90DAD64A-1BD3-11E2-A653-3D806EEE6BD2",
+    "message":"Check this out",
+    "contactsMap":[
+        { "contactId": "1A9F1F2B-A297-1014-8D7F-A3F7C84F2656" },
+        { "contactId": "352A4113-7F93-1014-8DEB-1E09194F16F4" }
+    ],
+    "kliqsMap":[
+        { "kliqId": "31269EE0-A297-1014-BB8E-A3F7C84F2656" }
+    ],
+    "allowReshare":false,
+    "allowLocationShare":true,
+    "geoLocation":"29.2321333,-81.0101748"
+}

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=[% settings.charset %]" />
+<title>tasklist</title>
+<link rel="stylesheet" href="[% request.base %]/css/style.css" />
+
+</head>
+<body>
+[% content %]
+<div id="footer">
+(c) 2012 <a href="http://kliqmobile.com/">KLIQ Mobile, LLC</a>
+</div>
+</body>
+</html>

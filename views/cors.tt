@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Cross Origin Resource Sharing Test</title>
+
+<script type="text/javascript">
+var request;
+
+if (XMLHttpRequest) {
+  request = new XMLHttpRequest();
+
+  request.onload = function (e) {
+    out("Load complete.")
+  };
+    
+  request.onerror = function (e) {
+    out("Load error: " + e)
+    printStatus();
+  };
+
+  request.onabort = function (e) {
+    out("Load abort.")
+  };
+}
+
+request.onreadystatechange = function (state) {
+  out("Response state: " + request.readyState);
+  if (request.readyState == 4) {
+    out("HTTP response received:<BR>");
+    out(request.responseText);
+    printStatus();
+  }
+}
+
+function printStatus () {
+  out("HTTP status code: " + request.status + ", HTTP status text: " + request.statusText);
+}
+
+
+function sendRequest () {
+  clear();
+  out("Attempting to send HTTP request via JavaScript...");
+  request.open("POST", "http://api.kliqmobile.com/v1/cors");
+  request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  request.send("message=" + document.jsform.namefield.value);
+}
+
+function out (msg) {
+  document.getElementById("output").innerHTML += msg + "<br>";
+}
+      
+function clear () {
+  document.getElementById("output").innerHTML = "";
+}
+      
+</script>
+</head>
+<body>
+	  
+<h1>Cross Origin Resource Sharing (CORS) Test</h1>
+
+<p>
+<strong>The Test:</strong>
+<br>
+Enter a message below, then click "Send". 
+</p>
+
+<FORM name="jsform" onSubmit="sendRequest(); return false;" method="post">
+<P>Your message:
+  <INPUT type="text" name="message" id="namefield">
+  <INPUT type="submit" value="Send">
+</P>
+</FORM>
+
+<p>
+When you click "Send", JavaScript will send your data to the api.kliqmobile.com
+domain via an XMLHttpRequest object (view the source of this page to see the code).
+The request should succeed because the response includes the following HTTP header:
+</p>
+
+<p>
+Access-Control-Allow-Origin: *
+</p>
+
+
+<p><strong>Test Output:</strong></p>
+
+<hr>
+
+<div id="output"></div>
+
+</body>
+</html>
+

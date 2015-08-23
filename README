@@ -1,0 +1,138 @@
+NAME
+    Kliq - KLIQ Mobile REST API
+
+VERSION
+    0.001
+
+WARNING
+    Developer Preview, does not do much yet.
+
+SYNOPSIS
+        use Dancer;
+        use Kliq;
+        dance;
+
+DESCRIPTION
+    Kliq is the kliqmobile.com REST API implementation built on top of Redis
+    and the Dancer framework.
+
+    All submissions are welcome.
+
+  Routes
+    GET /
+        Redirects to <http://developers.kliqmobile.com>.
+
+    -- ( work in progress ) --
+
+INSTALLATION
+    You must first install the dependencies:
+
+        $ perl Makefile.PL
+        $ make
+        $ make test
+
+    Kliq uses a MySQL database called "kliq2". Create this database first:
+
+        CREATE DATABASE kliq2;
+        USE kliq2;
+        GRANT ALL ON kliq2.* TO 'kliq_SSM'@'localhost' IDENTIFIED BY 'self-expression';
+        FLUSH PRIVILEGES;
+
+    Then create the tables using:
+
+        $ perl bin/kliq_spawndb.pl -deploy
+
+    You can also easily create the database schema with kliq_spawndb.pl, run
+    it without options to see the documentation. Also, make sure you have
+    Redis running. Then, run the Plack server on localhost, port 5000:
+
+    You can also run the Dancer development server at port 3004, but the
+    routes will be different:
+
+        $ perl bin/kliq.pl
+
+CONFIGURATION
+    Configuration can be achieved via the config.yml file or via the "set"
+    keyword. To use the config.yml approach, you will need to install YAML.
+    See the Dancer documentation for more information.
+
+    You can alternatively configure the server via the "set" keyword in the
+    source code. This approach does not require a config file.
+
+        use Dancer;
+        use Kliq;
+
+        # Dancer specific config settings
+        set logger      => 'file';
+        set log         => 'debug';
+        set show_errors => 1;
+
+        dance;
+
+DEPLOYMENT
+    Deployment is very flexible. It can be run on a web server via CGI or
+    FastCGI. It can also be run on any Plack web server. See
+    Dancer::Deployment for more details.
+
+  FastCGI
+    Kliq can be run via FastCGI. This requires that you have the FCGI and
+    Plack modules installed. Here is an example FastCGI script. It assumes
+    your KLIQ server is in the file kliq.pl.
+
+        #!/usr/bin/env perl
+        use Dancer ':syntax';
+        use Plack::Handler::FCGI;
+
+        my $app = do "/path/to/kliq.pl";
+        my $server = Plack::Handler::FCGI->new(nproc => 5, detach => 1);
+        $server->run($app);
+
+    Here is an example lighttpd config. It assumes you named the above file
+    kliq.fcgi.
+
+        fastcgi.server += (
+            "/" => ((
+                "socket" => "/tmp/fcgi.sock",
+                "check-local" => "disable",
+                "bin-path" => "/path/to/kliq.fcgi",
+            )),
+        )
+
+    Now Kliq will be running via FastCGI under /.
+
+  Plack
+    Kliq can be run with any Plack web server. Just run:
+
+        $ plackup bin/kliq.pl
+
+    You can change the Plack web server via the -s option to plackup.
+
+CONTRIBUTING
+    This module is developed in a KLIQ repo at Assembla:
+
+    <https://www.assembla.com/code/kliq-m/git-7/repo/instructions?empty=true
+    >
+
+    Feel free to fork the repo and submit pull requests!
+
+      git clone git@git.assembla.com:kliq-m.kliq-api.git
+
+SUPPORT
+  Perldoc
+    You can find documentation for this module with the perldoc command.
+
+      perldoc lib/Kliq
+
+  Website
+    <http://kliqmobile.com>
+
+  Email
+    You can email the author of this module at "techie at sitetechie.com"
+    asking for help with any problems you have.
+
+AUTHOR
+    Peter de Vos <techie@sitetechie.com>
+
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2012 by KLIQ Mobile, LLC.
+

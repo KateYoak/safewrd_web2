@@ -1,0 +1,40 @@
+upstream shortenerbackend {
+    server 127.0.0.1:3002;
+}
+
+server {
+    # Port 80 is implied but with a caching server in front, you need a
+    # different port.
+    listen        80;
+    server_name   cl.gs;
+
+    access_log /var/log/nginx/cl.gs/access.log;    
+    error_log  /var/log/nginx/cl.gs/error.log;
+
+    # Serve static files using Nginx thus allowing Dancer to handle more
+    # dynamic content requests.
+    # Huge performance boost! First you must move all your
+    # static ('/public') folder to the same server as Nginx or accessible
+    # from by Nginx over the network.
+    location ^~ (/images/|/css/|/javascripts/) {
+        root /home/ubuntu/cl.gs/public;
+        expires 30d;
+    }
+
+    # This is where all magic happens. Everything in this block goes
+    # directly to Dancer. What's going on?
+    # We set specific headers that L<Plack::Middleware::ReverseProxy>
+    # expects. Using this information,
+    # it overwrites certain environmental variables with the values we want.
+    # When Dancer receives it,
+    # it's as if Dancer is facing the intertubes.
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass       http://shortenerbackend;
+    }
+    # Note: If you add a frontend caching server, the above section will
+    # have to change completely
+}

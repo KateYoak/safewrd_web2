@@ -1,0 +1,3 @@
+This is the target directory for production log files
+
+    perl bin/kliq.pl --environment production

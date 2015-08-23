@@ -1,0 +1,21 @@
+server {
+    listen        80;
+    server_name   developers.kliqmobile.com;
+
+    access_log /var/log/nginx/kliqmobile.com/developers-access.log;    
+    error_log  /var/log/nginx/kliqmobile.com/developers-error.log;
+
+	root /home/ubuntu/kliq-apidoc;
+	index index.html index.htm;
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to index.html
+		try_files $uri $uri/ /index.html;
+		# Uncomment to enable naxsi on this location
+		# include /etc/nginx/naxsi.rules
+	}
+	location /vid {
+    	root /home/ubuntu/kliq-api/tmp;
+    	try_files $uri $uri/ /index.html;
+	}
+}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript">
+    var message = {
+        service: "[% service %]",
+        access_token: "[% access_token %]",
+        autoClosePopup: true,
+    };
+	window.opener.window.postMessage(message, "[% session.referer_domain %]");
+	self.close();
+</script>
+</head>
+<body>
+</body>
+</html>
+

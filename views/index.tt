@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div { margin:4px; padding:6px; }
+pre { background-color:#EFEFEF; }
+.highlight { background:yellow; }
+</style>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+window.addEventListener('message', function (event) {
+    console.log('received response:  ', event.data);
+    $('a[data-auth='+event.data.service+']').addClass("highlight");
+    $('.protected').show();
+    },false
+);
+
+function openWin(svc) {
+    window.open("http://api.kliqmobile.com/v1/auth/" + svc); //,"_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, width=400, height=400");
+}
+
+$(document).ready(function(){
+    $('a[data-auth]').click(function(e){
+       e.preventDefault();
+       openWin($(this).data('auth'));
+    });
+});
+
+</script>
+</head>
+<body>
+<h1>KLIQ REST API</h1>
+
+Read the docs at <a href="http://developers.kliqmobile.com">developers.kliqmobile.com</a>,
+also see the <a href="https://www.assembla.com/spaces/kliq-m/documents/bFrF_06Zmr4zxWacwqjQXA/download/bFrF_06Zmr4zxWacwqjQXA">mappings to screens</a>.
+
+<h2>Browse Resources</h2>
+<h3>Federated Authentication:</h3>
+<a data-auth="twitter" href="/v1/auth/twitter">Twitter</a>,
+<a data-auth="google" href="/v1/auth/google">Google</a>,
+<a data-auth="facebook" href="/v1/auth/facebook">Facebook</a>,
+<a data-auth="yahoo" href="/v1/auth/yahoo">Yahoo</a>,
+<a data-auth="linkedin" href="/v1/auth/linkedin">LinkedIn</a><br>
+
+<p>Use something like <a href="http://chrispederick.com/work/web-developer/">Web Developer extension</a> to clear cookies, and refresh the page to start over.</p>
+
+<div class="protected" [% UNLESS vars.user %]style="display:none"[% END %]>
+<h3>User Entities:</h3>
+<ul>
+<li><a href="/v1/tokens">Tokens</a></li>
+<li><a href="/v1/personas">Profiles</a></li>
+<li><a href="/v1/contacts">Contacts</a></li>
+<li><a href="/v1/kliqs">Kliqs</a></li>
+<li><a href="/v1/uploads">Uploads</a></li> 
+<li><a href="/v1/shares">Shares</a></li>
+<li><a href="/v1/timeline">Timeline</a></li>
+<li><a href="/v1/comments">Comments</a></li> 
+</ul>
+
+
+<h3>Common Entities:</h3>
+<ul>
+<li><a href="/v1/users">Users</a></li>
+<li><a href="/v1/media">Media</a></li>
+<li><a href="/v1/assets">Assets</a></li>
+</ul>
+.. or <a href="/v1/upload">upload a photo or video</a>.
+</div>
+<hr>
+<small>
+uid: [% vars.user.id %]<br>
+siu: [% session.user_id %]<br>
+sid: [% session.id %]<br>
+</small>
+</body>
+</html>

@@ -1,0 +1,5 @@
+Before `make install' is performed the scripts should be runnable with
+`make test'. After `make install' it should work as `perl t/xxx.t'
+
+001-load.t
+All modules should load nicely.

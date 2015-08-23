@@ -1,0 +1,5 @@
+<h3>Error</h3>
+Resource: [% resource %]<br>
+Field: [% field %]<br>
+Code: [% code %]<br>
+Message: [% message %]<br>

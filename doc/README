@@ -1,0 +1,5 @@
+This directory contains the POD documentation available in Kliq.
+
+Generate this html documentation by running:
+
+  perl -MPod::Simple::HTMLBatch -e Pod::Simple::HTMLBatch::go ./lib ./doc

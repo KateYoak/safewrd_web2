@@ -1,0 +1,10 @@
+This is the target directory for the Kliq database schemas.
+
+Generate the schema SQL by running:
+
+  perl bin/kliq_spawndb.pl -ddl
+
+Or you can create the tables in MySQL directly:
+
+  perl bin/kliq_spawndb.pl -drop -deploy
+
