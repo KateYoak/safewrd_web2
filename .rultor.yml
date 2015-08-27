@@ -6,3 +6,6 @@ readers:
 - urn:github:5982702
 merge:
   commanders: []
+deploy:
+  commanders:
+  - yegor256
