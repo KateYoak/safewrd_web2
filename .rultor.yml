@@ -1,3 +1,6 @@
 architect:
 - yegor256
 - karato
+readers:
+- urn:github:526301
+- urn:github:5982702
