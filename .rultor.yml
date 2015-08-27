@@ -4,3 +4,5 @@ architect:
 readers:
 - urn:github:526301
 - urn:github:5982702
+merge:
+  commanders: []
