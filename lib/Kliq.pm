@@ -129,6 +129,12 @@ get '/error/unauthorized' => sub {
     return status_unauthorized("Not authorized");
 };
 
+get '/t/logme/*' => sub {
+    # Debugging test by Darren Duncan
+    error("in /t/logme, request uri is [[".request->request_uri()."]]");
+    error("in /t/logme, request body is [[".request->body()."]]");
+};
+
 get '/t/die' => sub {
     die("Die Test");
 };
@@ -538,6 +544,11 @@ sub thumb_sprite {
 }
 
 post '/zencoded' => sub {
+
+    # Debugging test by Darren Duncan
+    error("in /zencoded, request uri is [[".request->request_uri()."]]");
+    error("in /zencoded, request body is [[".request->body()."]]");
+
     eval {
         my $json = from_json(request->body());
         my $zco = Kliq::Model::ZencoderOutput->new({
