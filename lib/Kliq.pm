@@ -563,6 +563,16 @@ post '/zencoded' => sub {
     return status_ok({ message => 'Thank you' });
 };
 
+#---- New API for streaming by Darren Duncan ------------------------------
+
+get '/ddtemp1' => sub {
+    return status_ok({ message => "get to url [[".request->request_uri()."]] was with body [[".request->body()."]]"});
+};
+
+post '/ddtemp1' => sub {
+    return status_ok({ message => "post to url [[".request->request_uri()."]] was with body [[".request->body()."]]"});
+};
+
 1;
 __END__
 
