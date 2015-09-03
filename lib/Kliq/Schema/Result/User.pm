@@ -119,6 +119,10 @@ __PACKAGE__->has_many(
     );
 
 __PACKAGE__->has_many(
+    events => 'Kliq::Schema::Result::Event', 'user_id'
+    );
+
+__PACKAGE__->has_many(
     comments => 'Kliq::Schema::Result::Comment', 'user_id'
     );
 

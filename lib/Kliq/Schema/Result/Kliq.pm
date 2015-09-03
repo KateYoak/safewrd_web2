@@ -47,6 +47,10 @@ __PACKAGE__->belongs_to( user => 'Kliq::Schema::Result::User', 'user_id' );
 __PACKAGE__->has_many(contacts_map => 'Kliq::Schema::Result::KliqContact','kliq_id');
 __PACKAGE__->many_to_many(contacts => 'contacts_map', 'contact' );
 
+__PACKAGE__->has_many(
+    events => 'Kliq::Schema::Result::Event', 'kliq_id'
+    );
+
 sub _serializable_rels {
     return qw/contacts/;
 }

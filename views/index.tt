@@ -54,6 +54,7 @@ also see the <a href="https://www.assembla.com/spaces/kliq-m/documents/bFrF_06Zm
 <li><a href="/v1/kliqs">Kliqs</a></li>
 <li><a href="/v1/uploads">Uploads</a></li> 
 <li><a href="/v1/shares">Shares</a></li>
+<li><a href="/v1/events">Events</a></li>
 <li><a href="/v1/timeline">Timeline</a></li>
 <li><a href="/v1/comments">Comments</a></li> 
 </ul>

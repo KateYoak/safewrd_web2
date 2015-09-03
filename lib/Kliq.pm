@@ -330,7 +330,7 @@ sub model {
 #------ /api/* -----------------------------------------------------------------
 
 foreach my $resource(qw/
-    users tokens personas contacts kliqs uploads shares 
+    users tokens personas contacts kliqs uploads shares events
     timeline comments media assets
     /) {
     my $entity = $resource;
