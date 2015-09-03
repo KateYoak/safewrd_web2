@@ -160,6 +160,28 @@ CREATE TABLE `contacts` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `events`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `events` (
+  `id` char(36) NOT NULL,
+  `user_id` char(36) NOT NULL,
+  `kliq_id` char(36) NOT NULL,
+  `title` varchar(64) DEFAULT NULL,
+  `when_occurs` datetime NOT NULL,
+  `location` varchar(64) DEFAULT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `events_idx_user_id` (`user_id`),
+  KEY `events_idx_kliq_id` (`kliq_id`),
+  CONSTRAINT `events_fk_kliq_id` FOREIGN KEY (`kliq_id`) REFERENCES `kliqs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `events_fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `kliq_contact_map`
 --
 
