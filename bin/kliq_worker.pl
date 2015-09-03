@@ -43,6 +43,7 @@ my %WORKERMAP = (
         return ($IMPORTMAP{$data->{service}}, $config->{sites}->{$data->{service}});
         },
     notifyEmail    => sub { ('MailNotifier',     $config->{plugins}->{Email})  },
+    notifyEventEmail => sub { ('MailEventNotifier', $config->{plugins}->{Email})  },
     notifyTwitter  => sub { ('TwitterNotifier',  $config->{sites}->{twitter}) },
     notifyFacebook => sub { ('FacebookNotifier', $config->{sites}->{facebook}) },
     notifyLinkedIn => sub { ('LinkedInNotifier', $config->{sites}->{linkedin}) },
@@ -50,6 +51,7 @@ my %WORKERMAP = (
     uploadS3       => sub { ('S3Uploader', $config->{sites}->{'amazon-s3'}) },
     zencode        => sub { ('Zencoder', { zencoder => $config->{sites}->{'zencoder'}, rackspace => $config->{sites}->{'rackspace'} }) },
     notifyShare    => sub { 'ShareNotifier' },
+    notifyEvent    => sub { 'EventNotifier' },
     amdbPush       => sub { ('AMDBPusher', { asset_basepath => $config->{asset_basepath}, %{$config->{sites}->{'rackspace'}} }) },
     amdbBuild      => sub { ('AMDBBuilder', $config->{sites}->{'rackspace'}) },
     cloudPush      => sub { ('CloudFilesPusher', $config->{sites}->{'rackspace'}) },    

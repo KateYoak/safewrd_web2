@@ -40,6 +40,10 @@ sub create {
         return $error || $self->error(undef, 'events');
     }
 
+    $self->redis->rpush(notifyEvent => to_json({
+        event => $event->id
+    }));
+
     return $self->get($event->id);
 }
 
