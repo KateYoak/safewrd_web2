@@ -9,6 +9,8 @@ use Net::Twitter;
 
 our $VERSION = 0.02;
 
+# Back-port of Dancer::Logger::core fix from version 0.04 by Darren Duncan.
+
 # Net::Twitter singleton, accessible via 'twitter'
 my $_twitter;
 sub twitter { $_twitter }
@@ -101,7 +103,7 @@ get '/auth/twitter/callback' => sub {
     };
 
     if ($@ || !$twitter_user_hash) {
-        core("no twitter_user_hash or error: ".$@);
+        Dancer::Logger::core("no twitter_user_hash or error: ".$@);
         return redirect $callback_fail;
     }
 
