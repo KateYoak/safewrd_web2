@@ -13,7 +13,7 @@ sub shorten {
         agent   => 'KLIQ-UA/0.1',
         timeout => 10,
     );
-    my $base = 'https://play.google.com/store/apps/details?id=com.clqmobile&referrer=contactId%3D';
+    my $base = 'https://play.google.com/store/apps/details?id=com.tranzmt.app&referrer=contactId%3D';
     my $url = $base . $cid;
     my $res = $furl->post('http://cl.gs/',
         ['X-Requested-With' => 'XMLHttpRequest'],

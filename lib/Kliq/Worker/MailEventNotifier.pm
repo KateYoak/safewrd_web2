@@ -18,7 +18,7 @@ sub work {
 
     try { 
         my $store_url = q{https://play.google.com/store/apps/details}
-            . q{?id=com.tranzmtit.app&referrer=}
+            . q{?id=com.tranzmt.app&referrer=}
             . q{contactId%3D}.$data->{contact_id}.q{%26eventId%3D}.$data->{event_id};
 
         my $plaintext_body =
