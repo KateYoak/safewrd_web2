@@ -343,6 +343,9 @@ foreach my $resource(qw/
     get '/' . $resource => sub {
         #content_type('application/json');
 
+        # Debugging by Darren Duncan
+        error("HTTP [[".request->method()."]] from ip [[".request->address()."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+
         my $filters  = query_filters($resource);
         my $criteria = search_params($resource);
         my $result   = model($resource)->search($criteria, $filters);
@@ -383,12 +386,18 @@ foreach my $resource(qw/
 
     resource $resource =>
         get => sub {
+            # Debugging by Darren Duncan
+            error("HTTP [[".request->method()."]] from ip [[".request->address()."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+
             my $rec = model($resource)->get(params->{'id'});
             return status_not_found("$entity doesn't exist") unless $rec;
             return status_ok($rec);
         },
 
         create => sub {
+            # Debugging by Darren Duncan
+            error("HTTP [[".request->method()."]] from ip [[".request->address()."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+
             my ($row, $uid, $error);
             eval {
                 my $args = dejsonify(body_params());
@@ -414,6 +423,9 @@ foreach my $resource(qw/
         },
 
         update => sub {
+            # Debugging by Darren Duncan
+            error("HTTP [[".request->method()."]] from ip [[".request->address()."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+
             my $row;
             eval {
                 my $args = dejsonify(body_params());
@@ -436,6 +448,9 @@ foreach my $resource(qw/
         },
 
         delete => sub {
+            # Debugging by Darren Duncan
+            error("HTTP [[".request->method()."]] from ip [[".request->address()."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+
             my $id = params->{'id'};
             #my @ids = split(/,/, $id);
             if(model($resource)->delete($id)) {
