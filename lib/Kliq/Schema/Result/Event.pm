@@ -43,6 +43,12 @@ __PACKAGE__->add_columns(
         size => 64,
         is_nullable => 1
     },
+    event_status => {
+        data_type => "varchar", # enum of {new,confirmed,deleted,published}
+        size => 20,
+        is_nullable => 0,
+        default_value => "new",
+    },
     created => {
         data_type => "timestamp",
         datetime_undef_if_invalid => 1,

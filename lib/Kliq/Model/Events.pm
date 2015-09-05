@@ -1,3 +1,5 @@
+use 5.010;
+
 package Kliq::Model::Events;
 
 use namespace::autoclean;
@@ -12,40 +14,45 @@ sub table { 'Event' }
 #sub path { 'events' }
 sub method { 'events' }
 
-around 'search' => sub {
-    my $orig = shift;
-    my $self = shift;
-
-    #-- all my events
-    my $res = $self->$orig(@_);
-
-    #-- all eventd with me
-
-    return $res;
+around 'create' => sub {
+    my ($orig, $self, $params) = @_;
+    my $event_status = $params->{event_status} // 'new';
+    unless ($event_status eq 'new')
+    {
+        return {error => {
+            field => 'event_status',
+            code => 'invalid_field_value',
+            resource => 'Event',
+        }};
+    }
+    return $self->$orig($params);
 };
 
-sub create {
-    my ($self, $params) = @_;
-
-    #-- save the event
-
-    my ($event, $error);
-    my $method = $self->method;
-    try {
-        $event = $self->user->add_to_events($params);
-    } catch {
-        $error = $self->error($_, 'events');
-    };
-    if($error || !$event) {
-        return $error || $self->error(undef, 'events');
+around 'update' => sub {
+    my ($orig, $self, $id, $params) = @_;
+    my $event_status = $params->{event_status} // '';
+    unless ($event_status eq 'new' or $event_status eq 'confirmed'
+        or $event_status eq 'deleted' or $event_status eq 'published')
+    {
+        return {error => {
+            field => 'event_status',
+            code => 'invalid_field_value',
+            resource => 'Event',
+        }};
     }
+    # TODO: Consider validating whether other fields may be changed too or not.
+    my $result = $self->$orig($id, {event_status => $event_status});
+    if ($event_status eq 'confirmed' or $event_status eq 'published')
+    {
+        $self->redis->rpush(notifyEvent => to_json({event => $id}));
+    }
+    return $result;
+};
 
-    $self->redis->rpush(notifyEvent => to_json({
-        event => $event->id
-    }));
-
-    return $self->get($event->id);
-}
+around 'delete' => sub {
+    my ($orig, $self, $id) = @_;
+    return $self->update($id, {event_status => "deleted"});
+};
 
 __PACKAGE__->meta->make_immutable;
 

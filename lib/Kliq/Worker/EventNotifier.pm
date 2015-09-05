@@ -47,6 +47,7 @@ sub work {
                 when_occurs => ''.$event->when_occurs,
                 location  => $event->location,
                 event_id  => $event->id,
+                event_status => $event->event_status,
                 contact_id => $contact->id,
             }));
         }

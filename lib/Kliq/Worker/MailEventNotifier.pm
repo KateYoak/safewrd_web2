@@ -16,6 +16,14 @@ sub work {
     my ($self, $data) = @_;
     my $config = $self->config;
 
+    my $evst = $data->{event_status};
+    unless ($evst eq 'confirmed' or $evst eq 'published')
+    {
+        $self->logger->error(q{can't send message for event id }.$data->{event_id}
+            .q{ with invalid event_status }.$evst);
+        return;
+    }
+
     try { 
         my $store_url = q{https://play.google.com/store/apps/details}
             . q{?id=com.tranzmt.app&referrer=}
@@ -23,22 +31,30 @@ sub work {
 
         my $stream_url = q{rtmp://api.kliqmobile.com:1935/live/} . $data->{event_id};
 
-        my $plaintext_body =
-            $data->{sender} . qq{ wants to stream a live event to you.\n\n}
+        my $body_intro = $evst eq 'confirmed'
+            ? $data->{sender} . qq{ on Tranzmt has scheduled a live event and you’re invited.\n\n}
+            : $data->{sender} . qq{'s live event has just started streaming on Tranzmt.it now.\n\n}
+            ;
+
+        my $common_body_top =
+            $body_intro
             . q{Event Title: } . $data->{title} . qq{\n}
             . q{Event Date: } . $data->{when_occurs} . qq{\n}
             . q{Event Location: } . $data->{location} . qq{\n\n}
-            . q{Live Stream at } . $stream_url . qq{\n\n}
+            ;
+
+        my $plaintext_body =
+            q{}
+            . $common_body_top
+            . ($evst eq 'published' ? q{Live Stream at } . $stream_url . qq{\n\n} : '')
             . q{Get the Kliq App at }.$store_url.qq{\n\n}
             ;
 
         my $htmltext_body =
             qq{<html><body>\n}
             . qq{<pre>\n}
-            . q{Event Title: } . $data->{title} . qq{\n}
-            . q{Event Date: } . $data->{when_occurs} . qq{\n}
-            . q{Event Location: } . $data->{location} . qq{\n\n}
-            . q{Live Stream at <a href="}.$stream_url.q{">}.$stream_url.qq{</a>\n\n}
+            . $common_body_top
+            . ($evst eq 'published' ? q{Live Stream at <a href="}.$stream_url.q{">}.$stream_url.qq{</a>\n\n} : '')
             . q{Get the Kliq App at <a href="}.$store_url.q{">}.$store_url.qq{</a>\n\n}
             . qq{</pre>\n}
             . qq{</body></html>\n}
@@ -59,7 +75,7 @@ sub work {
                },
                #live_on_error => 1,
             },
-            from => ['kliq@kliqmobile.com', 'KLIQ Mobile'], 
+            from => ['live@tranzmt.it', 'TRANZMT.IT'],
             to => $data->{email},
             # reply => 'info@kliqmobile.com',
             subject => $data->{sender} . ' shared a live event stream with you',
