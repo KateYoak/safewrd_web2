@@ -344,7 +344,7 @@ foreach my $resource(qw/
         #content_type('application/json');
 
         # Debugging by Darren Duncan
-        error("HTTP [[".request->method()."]] from ip [[".request->address()."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+        error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
 
         my $filters  = query_filters($resource);
         my $criteria = search_params($resource);
@@ -387,7 +387,7 @@ foreach my $resource(qw/
     resource $resource =>
         get => sub {
             # Debugging by Darren Duncan
-            error("HTTP [[".request->method()."]] from ip [[".request->address()."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+            error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
 
             my $rec = model($resource)->get(params->{'id'});
             return status_not_found("$entity doesn't exist") unless $rec;
@@ -396,7 +396,7 @@ foreach my $resource(qw/
 
         create => sub {
             # Debugging by Darren Duncan
-            error("HTTP [[".request->method()."]] from ip [[".request->address()."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+            error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
 
             my ($row, $uid, $error);
             eval {
@@ -424,7 +424,7 @@ foreach my $resource(qw/
 
         update => sub {
             # Debugging by Darren Duncan
-            error("HTTP [[".request->method()."]] from ip [[".request->address()."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+            error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
 
             my $row;
             eval {
@@ -449,7 +449,7 @@ foreach my $resource(qw/
 
         delete => sub {
             # Debugging by Darren Duncan
-            error("HTTP [[".request->method()."]] from ip [[".request->address()."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+            error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
 
             my $id = params->{'id'};
             #my @ids = split(/,/, $id);
