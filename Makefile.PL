@@ -83,6 +83,8 @@ requires 'Plack::Session::Store::Redis'   => '0.03';
 requires 'Plack::Session::Store::Redis'   => '0.03';
 requires 'Starman'                        => '0.3';
 
+requires 'WWW::Mixpanel' => '0.07';
+
 #-- worker dependencies
 requires 'AnyEvent::Redis'                => '0.23';
 requires 'Log::Dispatch'                  => '2.32';
