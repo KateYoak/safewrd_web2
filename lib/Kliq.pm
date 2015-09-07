@@ -327,6 +327,11 @@ sub model {
     return $class->new($opts);
 }
 
+sub track_client_request {
+    # Debugging by Darren Duncan
+    error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+}
+
 #------ /api/* -----------------------------------------------------------------
 
 foreach my $resource(qw/
@@ -343,8 +348,7 @@ foreach my $resource(qw/
     get '/' . $resource => sub {
         #content_type('application/json');
 
-        # Debugging by Darren Duncan
-        error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
+        track_client_request();
 
         my $filters  = query_filters($resource);
         my $criteria = search_params($resource);
@@ -386,18 +390,14 @@ foreach my $resource(qw/
 
     resource $resource =>
         get => sub {
-            # Debugging by Darren Duncan
-            error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
-
+            track_client_request();
             my $rec = model($resource)->get(params->{'id'});
             return status_not_found("$entity doesn't exist") unless $rec;
             return status_ok($rec);
         },
 
         create => sub {
-            # Debugging by Darren Duncan
-            error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
-
+            track_client_request();
             my ($row, $uid, $error);
             eval {
                 my $args = dejsonify(body_params());
@@ -423,9 +423,7 @@ foreach my $resource(qw/
         },
 
         update => sub {
-            # Debugging by Darren Duncan
-            error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
-
+            track_client_request();
             my $row;
             eval {
                 my $args = dejsonify(body_params());
@@ -448,9 +446,7 @@ foreach my $resource(qw/
         },
 
         delete => sub {
-            # Debugging by Darren Duncan
-            error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
-
+            track_client_request();
             my $id = params->{'id'};
             #my @ids = split(/,/, $id);
             if(model($resource)->delete($id)) {
@@ -559,11 +555,7 @@ sub thumb_sprite {
 }
 
 post '/zencoded' => sub {
-
-    # Debugging test by Darren Duncan
-    error("in /zencoded, request uri is [[".request->request_uri()."]]");
-    error("in /zencoded, request body is [[".request->body()."]]");
-
+    track_client_request();
     eval {
         my $json = from_json(request->body());
         my $zco = Kliq::Model::ZencoderOutput->new({
