@@ -334,13 +334,15 @@ sub track_client_request {
     error("HTTP [[".request->method()."]] from ip [[".request->env()->{HTTP_X_REAL_IP}."]] to url [[".request->request_uri()."]] was with body [[".request->body()."]]");
 
     try {
-        my $project_token = 'c068cca2163c8db05558cda7ff7bd733';
+        my $project_token = 'c068cca2163c8db05558cda7ff7bd733';  # TODO: put this in config file; multiple copies exist.
         my $mp = WWW::Mixpanel->new( $project_token, 1 );
         $mp->track('any_kliq_api_call',
             session_id => session('id'),
-            http_request_method => request->method(),
             client_ip_addr => request->env()->{HTTP_X_REAL_IP},
-            http_request_path => request->path(),
+        );
+        $mp->track(request->path().'_'.request->method(),
+            session_id => session('id'),
+            client_ip_addr => request->env()->{HTTP_X_REAL_IP},
         );
     } catch {
         error("Mixpanel failure: ".$@);

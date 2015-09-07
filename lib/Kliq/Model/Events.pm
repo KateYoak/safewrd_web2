@@ -8,6 +8,7 @@ use MooseX::StrictConstructor;
 use Try::Tiny;
 use Data::Dumper;
 use JSON;
+use WWW::Mixpanel;
 extends 'Kliq::Model::Base';
 
 sub table { 'Event' }
@@ -25,7 +26,9 @@ around 'create' => sub {
             resource => 'Event',
         }};
     }
-    return $self->$orig($params);
+    my $result = $self->$orig($params);
+    track_event_request('New_Event_Created');
+    return $result;
 };
 
 around 'update' => sub {
@@ -46,6 +49,7 @@ around 'update' => sub {
     {
         $self->redis->rpush(notifyEvent => to_json({event => $id}));
     }
+    track_event_request('Event_'.ucfirst($event_status));
     return $result;
 };
 
@@ -53,6 +57,17 @@ around 'delete' => sub {
     my ($orig, $self, $id) = @_;
     return $self->update($id, {event_status => "deleted"});
 };
+
+sub track_event_request {
+    my ($action_for_mixpanel) = @_;
+    try {
+        my $project_token = 'c068cca2163c8db05558cda7ff7bd733';  # TODO: put this in config file; multiple copies exist.
+        my $mp = WWW::Mixpanel->new( $project_token, 1 );
+        $mp->track($action_for_mixpanel);
+    } catch {
+        # error("Mixpanel failure: ".$@);
+    }
+}
 
 __PACKAGE__->meta->make_immutable;
 
