@@ -39,9 +39,14 @@ __PACKAGE__->add_columns(
         is_nullable => 0
     },
     location => {
-        data_type => "varchar", 
+        data_type => "varchar",
         size => 64,
         is_nullable => 1
+    },
+    price => {
+        data_type => "decimal",
+        size => [ 10, 2 ],
+        is_nullable => 0,
     },
     event_status => {
         data_type => "varchar", # enum of {new,confirmed,deleted,published}

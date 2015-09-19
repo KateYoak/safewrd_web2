@@ -38,9 +38,11 @@ sub work {
 
         my $common_body_top =
             $body_intro
-            . q{Event Title: } . $data->{title} . qq{\n}
-            . q{Event Date: } . $data->{when_occurs} . qq{\n}
-            . q{Event Location: } . $data->{location} . qq{\n\n}
+            . q{Event Title:    } . $data->{title} . qq{\n}
+            . q{Event Date:     } . $data->{when_occurs} . qq{\n}
+            . q{Event Location: } . $data->{location} . qq{\n}
+            . q{Event Price:    $} . $data->{price} . qq{\n}
+            . qq{\n}
             ;
 
         my $plaintext_body =

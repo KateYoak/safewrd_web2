@@ -172,6 +172,7 @@ CREATE TABLE `events` (
   `title` varchar(64) DEFAULT NULL,
   `when_occurs` datetime NOT NULL,
   `location` varchar(64) DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL,
   `event_status` varchar(20) NOT NULL DEFAULT 'new',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

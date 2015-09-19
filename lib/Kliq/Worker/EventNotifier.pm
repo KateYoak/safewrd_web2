@@ -46,6 +46,7 @@ sub work {
                 title     => $event->title,
                 when_occurs => ''.$event->when_occurs,
                 location  => $event->location,
+                price     => $event->price,
                 event_id  => $event->id,
                 event_status => $event->event_status,
                 contact_id => $contact->id,
