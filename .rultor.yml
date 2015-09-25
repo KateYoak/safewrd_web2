@@ -2,6 +2,7 @@ architect:
 - yegor256
 - karato
 readers:
+- urn:github:3083819
 - urn:github:3252127
 - urn:github:526301
 merge:
