@@ -14,4 +14,4 @@ PO | @yegor256
 ITR | 
 QA | 
 SA | 
-HLP | @brusd, @maaydin, @yegor256
+HLP | @k-ballo, @dalbenze, @brusd, @maaydin, @yegor256
