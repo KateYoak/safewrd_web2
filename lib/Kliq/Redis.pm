@@ -50,7 +50,7 @@ sub add_visit {
     #- publish json to queue
 
     $redis->publish('cl.gs:visits', $log_str);
-    }
+}
 
 
 __PACKAGE__->meta->make_immutable;
