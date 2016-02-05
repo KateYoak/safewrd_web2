@@ -105,7 +105,10 @@ sites:
         secret_key: 'cTD9SjSOVeWRquifEj3dGf248qmB/miiwkDccrg6'
     zencoder:
         apikey: 'cb2c6adc86bb5398949a9ab2e03647ea'
-    
+    carnival:
+        bundle_id: 'com.test-android-app'
+        apikey: '0c03105a9191b567e0e2440bdeac07d33f9d407e'    
+        base_uri: 'https://api.carnivalmobile.com/v3'
 
 plugins:
     Email:

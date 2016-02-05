@@ -15,7 +15,7 @@ sub shorten {
     );
     my $base = 'https://play.google.com/store/apps/details?id=com.tranzmt.app&referrer=contactId%3D';
     my $url = $base . $cid;
-    my $res = $furl->post('http://cl.gs/',
+    my $res = $furl->post('http://trzmt.it/',
         ['X-Requested-With' => 'XMLHttpRequest'],
         { url => $url }, 
     );
@@ -39,6 +39,6 @@ __END__
 ?id=com.kliq.test&referrer=contactId%3D[% contact_id %][% END %]
 #https://play.google.com/store/apps/details?id=com.kliq.test&referrer=contactId%3D[% contact_id %]
 
-{"url":"http://sitecorporation.com","stats_url":"http://cl.gs/tafy+",
- "short_url":"http://cl.gs/tafy","code":"tafy"}
+{"url":"http://sitecorporation.com","stats_url":"http://trzmt.it/tafy+",
+ "short_url":"http://trzmt.it/tafy","code":"tafy"}
 
