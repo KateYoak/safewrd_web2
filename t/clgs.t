@@ -21,7 +21,7 @@ use Furl;
     );
 
     my $res = $furl->post(
-        'http://cl.gs/', # URL
+        'http://trzmt.it/', # URL
         ['X-Requested-With' => 'XMLHttpRequest'],              # headers
         { url => 'http://sitecorporation.com' }, 
     );
