@@ -145,7 +145,7 @@ plugins:
     "Auth::Twitter":
         consumer_key:     "N3BxKDn3KpsOrf5asDvXug"
         consumer_secret:  "mAJUZoyBmQ1VCspcJwkhAMcmtfbQtTWbcBW1KiEc"
-        callback_url:     "http://api.kliqmobile.com/v1/auth/twitter/callback"
+        callback_url:     "http://api.tranzmt.it/v1/auth/twitter/callback"
         callback_success: "/auth/twitter/success"
         callback_fail:    "/auth/twitter/fail"
 
