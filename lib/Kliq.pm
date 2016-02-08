@@ -372,7 +372,7 @@ foreach my $resource(qw/
         my $result   = model($resource)->search($criteria, $filters);
 
         #-- add link headers
-        my $base = "https://api.kliqmobile.com/v1/$resource";
+        my $base = "https://api.tranzmt.it/v1/$resource";
         my @links  = ();
         my @plinks = ();
         if($result->{meta}->{currentPage} && $result->{meta}->{currentPage} != 1) {
@@ -480,7 +480,7 @@ post '/kliqs/:id' => sub {
     my $args = dejsonify(body_params());
     my $id = $args->{id};
     my $suffix = $args->{suffix} || '.png';
-    my $url = "http://api.kliqmobile.com/kliqs/$id$suffix";
+    my $url = "http://api.tranzmt.it/kliqs/$id$suffix";
 
     my $row = model('kliqs')->update($kliq_id, { image => $url }) 
         or die("Invalid kliq update");
@@ -635,7 +635,7 @@ All submissions are welcome.
 
 =item GET /
 
-Redirects to L<http://developers.kliqmobile.com|http://developers.kliqmobile.com>.
+Redirects to L<http://developers.tranzmt.it|http://developers.tranzmt.it>.
 
 =back
 

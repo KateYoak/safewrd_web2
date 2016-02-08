@@ -53,7 +53,7 @@ my $u = $schema->resultset('User')->find('94A4988D-93F8-1014-A991-F7EDC84F2656')
                 name => "$type thumbnail $size",
                 is_preview => 1,
                 server_id => 1,
-                url => 'http://developers.kliqmobile.com/media/thumbs/' . $size . '/' . $vid->{id} . '.png',
+                url => 'http://developers.tranzmt.it/media/thumbs/' . $size . '/' . $vid->{id} . '.png',
             });
             push(@t, $thumb);
         }

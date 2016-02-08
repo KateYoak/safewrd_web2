@@ -46,7 +46,7 @@ sub work {
 
     #-- post job to Zencoder
 
-    my $endpoint = #$^O =~ /Win32/ ? 'http://api.kliqmobile.com/v1/t/zcjobs' : 
+    my $endpoint = #$^O =~ /Win32/ ? 'http://api.tranzmt.it/v1/t/zcjobs' : 
         'https://app.zencoder.com/api/v2/jobs';
     my $req = HTTP::Request->new('POST' => $endpoint);
     $req->header('Zencoder-Api-Key' => $apikey);    
@@ -102,7 +102,7 @@ sub zencoder_json {
     
     while (my $format = $rs->next) {
         my $out = $format->zencoder_params();
-        $out->{notifications} = [ $DEBUG ? 'http://zencoderfetcher/' : 'http://api.kliqmobile.com/v1/zencoded' ];
+        $out->{notifications} = [ $DEBUG ? 'http://zencoderfetcher/' : 'http://api.tranzmt.it/v1/zencoded' ];
         $out->{url} = "$dest/$id" . $format->file_extension;
         
         #-- DEPR: we do our own clipping before sending it to Zencoder
@@ -132,7 +132,7 @@ sub zencoder_json {
     return $self->encode_json({
         test          => $DEBUG ? \1 : \0,
         input         => $src,
-        #notifications => [ 'http://api.kliqmobile.com/v1/zencoded' ],
+        #notifications => [ 'http://api.tranzmt.it/v1/zencoded' ],
         #notifications => [ 'sitetechie@gmail.com' ],
         output        => \@outputs
     });
@@ -156,16 +156,16 @@ sub zencoder_io {
         my $id = $data->{id};
         my $suffix = $data->{suffix} or die("No suffix");
         $src_file = $DEBUG ? 
-            'http://api.kliqmobile.com/uservids/AB8F6D16-1679-11E2-827A-A73178395DFD.mp4'
-          : "http://api.kliqmobile.com/uservids/$id$suffix";
+            'http://api.tranzmt.it/uservids/AB8F6D16-1679-11E2-827A-A73178395DFD.mp4'
+          : "http://api.tranzmt.it/uservids/$id$suffix";
         $container = 'clqs-uploads';
     }
     elsif($data->{type} eq 'clip') {
         my $id = $data->{id};
         my $suffix = $data->{suffix} or die("No suffix");
         $src_file = $DEBUG ?
-            'http://api.kliqmobile.com/uservids/AB8F6D16-1679-11E2-827A-A73178395DFD.mp4'
-          : "http://api.kliqmobile.com/shares/$id$suffix";
+            'http://api.tranzmt.it/uservids/AB8F6D16-1679-11E2-827A-A73178395DFD.mp4'
+          : "http://api.tranzmt.it/shares/$id$suffix";
         $container = 'clqs-clips';
     }
     else {

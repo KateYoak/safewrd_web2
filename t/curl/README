@@ -1,17 +1,17 @@
 # store cookies for reuse
-curl -c cookies.txt http://api.kliqmobile.com/v1?debug=1
+curl -c cookies.txt http://api.tranzmt.it/v1?debug=1
 
 # upload user video
-curl -b cookies.txt --form upload=@spacetestSMALL_512kb.mp4 http://api.kliqmobile.com/v1/uploads
+curl -b cookies.txt --form upload=@spacetestSMALL_512kb.mp4 http://api.tranzmt.it/v1/uploads
 
 # notify published media
-curl --data-binary @media.json -X POST http://api.kliqmobile.com/v1/media
+curl --data-binary @media.json -X POST http://api.tranzmt.it/v1/media
 
-#curl --data-binary @zc-media-output1.json -X POST http://api.kliqmobile.com/v1/zencoded
+#curl --data-binary @zc-media-output1.json -X POST http://api.tranzmt.it/v1/zencoded
 
 # share upload
-curl -b cookies.txt --data-binary @share.json -X POST http://api.kliqmobile.com/v1/shares
+curl -b cookies.txt --data-binary @share.json -X POST http://api.tranzmt.it/v1/shares
 
 # share clip
-curl -b cookies.txt --data-binary @share2.json -X POST http://api.kliqmobile.com/v1/shares
+curl -b cookies.txt --data-binary @share2.json -X POST http://api.tranzmt.it/v1/shares
 

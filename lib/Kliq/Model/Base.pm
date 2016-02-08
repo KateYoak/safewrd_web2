@@ -50,7 +50,7 @@ has 'redis' => (
 
 has 'api_base' => (
     is => 'rw',
-    default => 'http://api.kliqmobile.com/v1'
+    default => 'http://api.tranzmt.it/v1'
     );
 
 sub method {} #die("Abstract method"); 

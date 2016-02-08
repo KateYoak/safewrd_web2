@@ -29,7 +29,7 @@ sub work {
             . q{?id=com.tranzmt.app&referrer=}
             . q{contactId%3D}.$data->{contact_id}.q{%26eventId%3D}.$data->{event_id};
 
-        my $stream_url = q{rtmp://api.kliqmobile.com:1935/live/} . $data->{event_id};
+        my $stream_url = q{rtmp://api.tranzmt.it:1935/live/} . $data->{event_id};
 
         my $body_intro = $evst eq 'confirmed'
             ? $data->{sender} . qq{ on Tranzmt has scheduled a live event and you’re invited.\n\n}

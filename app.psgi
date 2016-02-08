@@ -31,7 +31,7 @@ my $home = sub {
 
 builder {
     enable 'Session', store => 'Redis', state => Plack::Session::State::Cookie->new(session_key => 'access_token', httponly => 0, domain => '.kliqmobile.com');
-    enable 'CrossOrigin', origins => ['http://localhost:4242','http://m.kliqmobile.com','http://api.kliqmobile.com'], headers => '*', credentials => 1, expose_headers => '*', methods => '*';
+    enable 'CrossOrigin', origins => ['http://localhost:4242','http://m.kliqmobile.com','http://api.tranzmt.it'], headers => '*', credentials => 1, expose_headers => '*', methods => '*';
     enable "Deflater";
     enable "JSONP", callback_key => 'callback';
     #enable "ConditionalGET";

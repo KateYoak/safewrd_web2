@@ -41,7 +41,7 @@ function printStatus () {
 function sendRequest () {
   clear();
   out("Attempting to send HTTP request via JavaScript...");
-  request.open("POST", "http://api.kliqmobile.com/v1/cors");
+  request.open("POST", "http://api.tranzmt.it/v1/cors");
   request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
   request.send("message=" + document.jsform.namefield.value);
 }
@@ -74,7 +74,7 @@ Enter a message below, then click "Send".
 </FORM>
 
 <p>
-When you click "Send", JavaScript will send your data to the api.kliqmobile.com
+When you click "Send", JavaScript will send your data to the api.tranzmt.it
 domain via an XMLHttpRequest object (view the source of this page to see the code).
 The request should succeed because the response includes the following HTTP header:
 </p>

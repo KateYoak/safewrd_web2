@@ -27,7 +27,7 @@ my $u2 = $schema->resultset('User')->create({
 }
 
 # add a contact for which u1 has a persona
-#http://api.kliqmobile.com/v1/timeline/012E68C4-0B96-11E2-BECB-043578395DFD
+#http://api.tranzmt.it/v1/timeline/012E68C4-0B96-11E2-BECB-043578395DFD
 
 my $uid = 'FD90B51E-0B95-11E2-A772-003A78395DFD'; # JR
 $uid = '94A4988D-93F8-1014-A991-F7EDC84F2656';

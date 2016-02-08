@@ -17,7 +17,7 @@ window.addEventListener('message', function (event) {
 );
 
 function openWin(svc) {
-    window.open("http://api.kliqmobile.com/v1/auth/" + svc); //,"_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, width=400, height=400");
+    window.open("http://api.tranzmt.it/v1/auth/" + svc); //,"_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, width=400, height=400");
 }
 
 $(document).ready(function(){
@@ -32,7 +32,7 @@ $(document).ready(function(){
 <body>
 <h1>KLIQ REST API</h1>
 
-Read the docs at <a href="http://developers.kliqmobile.com">developers.kliqmobile.com</a>,
+Read the docs at <a href="http://developers.tranzmt.it">developers.tranzmt.it</a>,
 also see the <a href="https://www.assembla.com/spaces/kliq-m/documents/bFrF_06Zmr4zxWacwqjQXA/download/bFrF_06Zmr4zxWacwqjQXA">mappings to screens</a>.
 
 <h2>Browse Resources</h2>

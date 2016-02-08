@@ -51,7 +51,7 @@ sub _yahoo_ui {
         consumer_secret => $config->{client_secret},
         signature_method => "HMAC-SHA1",
         nonce => $config->{nonce},
-        callback => 'http://api.kliqmobile.com/oauth/yahoo/callback',
+        callback => 'http://api.tranzmt.it/oauth/yahoo/callback',
     });
 
     #$oauth->{ token } = $ref;

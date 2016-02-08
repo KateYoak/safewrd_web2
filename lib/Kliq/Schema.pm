@@ -244,7 +244,7 @@ sub seed {
                     join(' - ', $vid->{name}, $vid->{title}, $size eq '160x90' ? 'Small Thumbnail' : 'Large Thumbnail')
                   : join(' - ', $vid->{name}, $size eq '160x90' ? 'Small Thumbnail' : 'Large Thumbnail'),
                 is_preview => 1,
-                #url => 'http://developers.kliqmobile.com/media/thumbs/' . $size . '/' . $vid->{id} . '.png',
+                #url => 'http://developers.tranzmt.it/media/thumbs/' . $size . '/' . $vid->{id} . '.png',
                 url => $media_base . $m->id . ($size eq '160x90' ? '-thumb.png' : '-lg-thumb.png')
             });
         }
