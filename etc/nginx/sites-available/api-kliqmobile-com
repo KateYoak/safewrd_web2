@@ -9,7 +9,7 @@ server {
     # Port 80 is implied but with a caching server in front, you need a
     # different port.
     listen        80;
-    server_name   api.kliqmobile.com;
+    server_name   api.tranzmt.it;
 
     client_max_body_size 500M;
     client_header_timeout 15m;

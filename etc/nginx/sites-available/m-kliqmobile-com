@@ -1,6 +1,6 @@
 server {
     listen        80;
-    server_name   m.kliqmobile.com;
+    server_name   m.tranzmt.it;
 
     access_log /var/log/nginx/kliqmobile.com/m-access.log;    
     error_log  /var/log/nginx/kliqmobile.com/m-error.log;
