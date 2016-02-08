@@ -44,9 +44,9 @@ EOF
                },
                #live_on_error => 1,
             },
-            from => ['kliq@kliqmobile.com', 'KLIQ Mobile'], 
+            from => ['kliq@tranzmt.it', 'KLIQ Mobile'], 
             to => $data->{email},
-            # reply => 'info@kliqmobile.com',
+            # reply => 'info@tranzmt.it',
             subject => $data->{sender} . ' shared a video with you',
             htmltext => $self->message(
                 $data->{sender}, $data->{message}, $data->{upload_id}, 
@@ -107,22 +107,22 @@ div, p, a, li, td { -webkit-text-size-adjust:none; }
                                 <td height="28" width="447">&nbsp;</td>
                             </tr>
                             <tr>
-                            	<td width="447" height="20"><img title="" border="0" alt="" width="447" height="20" style="display: block" src="http://kliqmobile.com/images/email/email-top-top.gif" /></td>
+                            	<td width="447" height="20"><img title="" border="0" alt="" width="447" height="20" style="display: block" src="http://tranzmt.it/images/email/email-top-top.gif" /></td>
                             </tr>
                             <tr>
                                 <td valign="top" width="447" height="26" style="font-family:Helvetica, Arial; color: rgb(64,66,67); font-size: 18px">
                                    <table cellspacing="0" cellpadding="0" width="447">
                                         <tbody>
                                             <tr>
-                                                <td width="28" height="26"><img title="" border="0" alt="" src="http://kliqmobile.com/images/email/email-top-left.gif" width="28" height="26"></td>
+                                                <td width="28" height="26"><img title="" border="0" alt="" src="http://tranzmt.it/images/email/email-top-left.gif" width="28" height="26"></td>
                                                 <td width="328" height="26" style="background-color:#4b4b4b;font-family:Helvetica, Arial; color: rgb(255,255,255); font-size: 18px;">Hello[% recipient OR ',' %]</td>
-                                                <td width="91" height="26"><img title="Kliqmobile.com" border="0" alt="Kliqmobile.com" src="http://kliqmobile.com/images/email/kliq-mobile-logo.gif" width="91" height="26"></td>
+                                                <td width="91" height="26"><img title="tranzmt.it" border="0" alt="tranzmt.it" src="http://tranzmt.it/images/email/kliq-mobile-logo.gif" width="91" height="26"></td>
                                             </tr>
                                         </tbody>
                                     </table></td>
                             </tr>
                             <tr>
-                            	<td width="447" height="23"><img title="" border="0" alt="" width="447" height="23" style="display: block" src="http://kliqmobile.com/images/email/email-top-bottom.gif" /></td>
+                            	<td width="447" height="23"><img title="" border="0" alt="" width="447" height="23" style="display: block" src="http://tranzmt.it/images/email/email-top-bottom.gif" /></td>
                             </tr>
                             <tr>
                             	<td valign="top" width="445" style="font-family:Helvetica, Arial; color: rgb(64,66,67); border-left:1px solid #000000;border-right:1px solid #000000;;font-size: 18px">
@@ -142,7 +142,7 @@ div, p, a, li, td { -webkit-text-size-adjust:none; }
     <a href="[% shortlink %]"><img style="margin:0 auto;max-width:150px;text-align:center;" align="center" src="/" alt="[% msg %]" /></a>
 </p>
 <p>
-    <a href="[% shortlink %]" class="sharebutton"><img title="Accept Invitation" border="0" alt="Accept Invitation" id="sharebutton" src="http://kliqmobile.com/images/email/accept-invitation-button.gif" width="412" height="46" style="display: block"></a>
+    <a href="[% shortlink %]" class="sharebutton"><img title="Accept Invitation" border="0" alt="Accept Invitation" id="sharebutton" src="http://tranzmt.it/images/email/accept-invitation-button.gif" width="412" height="46" style="display: block"></a>
 </p>
 
                                                 </td>
@@ -152,7 +152,7 @@ div, p, a, li, td { -webkit-text-size-adjust:none; }
                                     </table></td>
                             </tr>
                             <tr>
-                                <td height="29" width="447"><img title="" border="0" alt="" width="447" height="29" style="display: block" src="http://kliqmobile.com/images/email/email-bottom-bottom.gif" /></td>
+                                <td height="29" width="447"><img title="" border="0" alt="" width="447" height="29" style="display: block" src="http://tranzmt.it/images/email/email-bottom-bottom.gif" /></td>
                             </tr>
                         </tbody>
                     </table>

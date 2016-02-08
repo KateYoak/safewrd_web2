@@ -68,7 +68,7 @@ hook 'before' => sub {
             => 'http://' . ($ref->port == 80 ? $ref->host : $ref->host_port);
     }
     else {
-        session referer_domain => 'http://m.kliqmobile.com';
+        session referer_domain => 'http://m.tranzmt.it';
     }
 
     ## development & testing
@@ -624,7 +624,7 @@ Developer Preview, does not do much yet.
 
 =head1 DESCRIPTION
 
-Kliq is the kliqmobile.com REST API implementation built on top of Redis and 
+Kliq is the tranzmt.it REST API implementation built on top of Redis and 
 the L<Dancer> framework.
 
 All submissions are welcome.
@@ -748,7 +748,7 @@ You can find documentation for this module with the perldoc command.
 
 =head2 Website
 
-L<http://kliqmobile.com>
+L<http://tranzmt.it>
 
 =head2 Email
 

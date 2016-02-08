@@ -79,7 +79,7 @@ sub work {
             },
             from => ['live@tranzmt.it', 'TRANZMT.IT'],
             to => $data->{email},
-            # reply => 'info@kliqmobile.com',
+            # reply => 'info@tranzmt.it',
             subject => $data->{sender} . ' shared a live event stream with you',
             plaintext => $plaintext_body,
             htmltext => $htmltext_body,

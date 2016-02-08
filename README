@@ -13,7 +13,7 @@ SYNOPSIS
         dance;
 
 DESCRIPTION
-    Kliq is the kliqmobile.com REST API implementation built on top of Redis
+    Kliq is the tranzmt.it REST API implementation built on top of Redis
     and the Dancer framework.
 
     All submissions are welcome.
@@ -124,7 +124,7 @@ SUPPORT
       perldoc lib/Kliq
 
   Website
-    <http://kliqmobile.com>
+    <http://tranzmt.it>
 
   Email
     You can email the author of this module at "techie at sitetechie.com"

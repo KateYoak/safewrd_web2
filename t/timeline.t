@@ -21,7 +21,7 @@ my $u2 = $schema->resultset('User')->create({
         id => '0FD39ACF-F769-456D-94ED-CE0FFDDD9C37',
         user_name => 'Anonymous.' . rand(1000), # unique
         password => 's3cr3t',
-        email => 'test2@kliqmobile.com',
+        email => 'test2@tranzmt.it',
         #contacts => [$dc] #OK
     });
 }

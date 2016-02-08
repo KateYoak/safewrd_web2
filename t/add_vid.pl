@@ -77,7 +77,7 @@ my $u = $schema->resultset('User')->find('94A4988D-93F8-1014-A991-F7EDC84F2656')
             asset_format_id => $vid->{format},
             server_id => 1,
             name => $vid->{epstitle} || $vid->{title}, # substr($vid->{file}, 0, 30),
-            url => 'http://media.kliqmobile.com/' . $u->id . '/' . $vid->{id} . ($vid->{format} == 4 ? '.mp4' : '.webm'),
+            url => 'http://media.tranzmt.it/' . $u->id . '/' . $vid->{id} . ($vid->{format} == 4 ? '.mp4' : '.webm'),
         });
 
     }

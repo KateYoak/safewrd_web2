@@ -9,7 +9,7 @@
 <body>
 [% content %]
 <div id="footer">
-(c) 2012 <a href="http://kliqmobile.com/">KLIQ Mobile, LLC</a>
+(c) 2012 <a href="http://tranzmt.it/">KLIQ Mobile, LLC</a>
 </div>
 </body>
 </html>

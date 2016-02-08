@@ -123,7 +123,7 @@ sub seed {
         id => '94A4988D-93F8-1014-A991-F7EDC84F2656',
         username => 'Anonymous.' . rand(1000), # unique
         password => 's3cr3t',
-        email => 'test@kliqmobile.com',
+        email => 'test@tranzmt.it',
         #contacts => [$dc] #OK
     });
 
@@ -269,7 +269,7 @@ sub seed {
         #    name => $vid->{type} eq 'episode' ?
         #        join(' - ', $vid->{name}, $vid->{title}, 'iPhone MP4') :
         #        join(' - ', $vid->{name}, 'iPhone MP4'),
-        #    #url => 'http://media.kliqmobile.com/' . $u->id . '/' . $vid->{id} . ($vid->{format} == 4 ? '.mp4' : '.webm'),
+        #    #url => 'http://media.tranzmt.it/' . $u->id . '/' . $vid->{id} . ($vid->{format} == 4 ? '.mp4' : '.webm'),
         #    url => $media_base . $m->id . '-iphone.mp4'
         #});
 

@@ -6,7 +6,7 @@ use inc::Module::Install;
 name            'Kliq';
 license         'commercial';
 all_from        'lib/Kliq.pm';
-homepage        'http://kliqmobile.com/';
+homepage        'http://tranzmt.it/';
 readme_from;
 
 author_requires 'Module::Install::AuthorRequires';

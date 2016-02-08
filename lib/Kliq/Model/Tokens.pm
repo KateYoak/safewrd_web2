@@ -160,7 +160,7 @@ sub create_user {
     my $user = $self->schema->resultset('User')->create({
         username => "Anonymous.$rand",
         password  => "s3cr3t",
-        email     => "anonymous.$rand\@kliqmobile.com"
+        email     => "anonymous.$rand\@tranzmt.it"
         }) or die("Unable to create user");
 
     return $user;
