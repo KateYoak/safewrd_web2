@@ -5,6 +5,9 @@ server {
     access_log /var/log/nginx/kliqmobile.com/developers-access.log;    
     error_log  /var/log/nginx/kliqmobile.com/developers-error.log;
 
+    auth_basic "closed website";
+    auth_basic_user_file /etc/nginx/htpasswd_developers;
+
 	root /home/ubuntu/kliq-apidoc;
 	index index.html index.htm;
 	location / {
