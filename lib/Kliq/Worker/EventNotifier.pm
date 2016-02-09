@@ -51,6 +51,18 @@ sub work {
                 event_status => $event->event_status,
                 contact_id => $contact->id,
             }));
+
+            # send push notifications
+            $self->redis->rpush(notifyPush => to_json({
+                action    => 'emergency_flare',
+                sender    => $personas{$contact->service},
+                when_occurs => ''.$event->when_occurs,
+                location  => $event->location,
+                event_id  => $event->id,
+                event_status => $event->event_status,
+                contact_id => $contact->id,
+                uid        => $contact->user_id
+            }));
         }
         else {
             # TODO: Add the other service types that Share supports.

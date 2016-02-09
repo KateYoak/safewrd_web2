@@ -29,10 +29,6 @@ sub work {
 
     my $config = $self->config or die("Missing config");
     
-    # Check for mandatory params (to, payload)
-    die "Missing 'to' param in request" if (!$data->{request}->{to});
-    die "Missing 'payload' param in request" if (!$data->{request}->{payload});
-
     $self->logger->info("Starting PushNotifier: " . Dumper($data));
 
     try {
@@ -42,7 +38,16 @@ sub work {
 
         my $ua  = LWP::UserAgent->new;
         my $uri = URI->new($carnival_base_uri . '/notifications');
+
+        # Prepare push data
         my $request_hash = $data->{request};
+        if (!$request_hash) {
+            $request_hash = $self->prepare_request_data($data);
+        }
+
+        # Check for mandatory params (to, payload)
+        die "Missing 'to' param in request" if (!$request_hash->{to});
+        die "Missing 'payload' param in request" if (!$request_hash->{payload});
 
         my $request_json = encode_json({ notification => $request_hash });
         my $request = POST($uri, "Content-type" => "application/json", Accept => "application/json", Content => $request_json);
@@ -62,6 +67,37 @@ sub work {
         my $err = $self->format_error($_);
         $self->logger->error("$err");
     };
+}
+
+sub prepare_request_data {
+    my ($self, $data) = @_;
+
+    my $request_hash;
+
+    # Emergency flare notification
+    if ($data->{action} && $data->{action} eq 'emergency_flare' && $data->{uid}) {
+        my $evst = $data->{event_status};
+        unless ($evst eq 'confirmed' or $evst eq 'published') {
+            $self->logger->error(q{can't send message for event id }.$data->{event_id}
+                .q{ with invalid event_status }.$evst);
+            return;
+        }
+
+        my $stream_url = q{rtmp://api.tranzmt.it:1935/live/} . $data->{event_id};
+
+        #$request_hash->{to} = '*'; # Leaving it here for initial testing
+        $request_hash->{to} = [{ name => 'user_id', criteria => [$data->{uid}] }];
+        $request_hash->{payload} = {
+            alert => "Emergency Flare - incoming live video stream",
+            badge => 1,
+            sound => "Default.caf",
+            action   => 'emergency_flare',
+            location => $data->{location},
+            live_stream_url => $stream_url,
+        };
+    }
+    
+    return $request_hash;
 }
 
 __PACKAGE__->meta->make_immutable;
