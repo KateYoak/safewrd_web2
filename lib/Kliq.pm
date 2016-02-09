@@ -587,7 +587,7 @@ post '/zencoded' => sub {
     return status_ok({ message => 'Thank you' });
 };
 
-#---- New API for streaming by Darren Duncan ------------------------------
+#---- Extra paths developers can use to test calling the API; it echos back what they submitted. ------------------------------
 
 get '/ddtemp1' => sub {
     return status_ok({ message => "get to url [[".request->request_uri()."]] was with body [[".request->body()."]]"});
