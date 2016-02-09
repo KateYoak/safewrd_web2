@@ -17,6 +17,7 @@ use File::Basename qw/fileparse/;
 use MIME::Types;
 use Data::Dumper;
 use File::Copy;
+use JSON;
 use URI;
 use Try::Tiny;
 use WWW::Mixpanel;
@@ -108,6 +109,25 @@ get '/' => sub {
     #return status_found();
  
     template "index", { }, { layout => undef };
+};
+
+get '/user' => sub {
+    my $user = undef;
+    if (session('user_id')) {
+        $user = schema->resultset('User')->find(session('user_id'));
+        unless($user) {
+            var error => "Invalid user " . session('user_id') . " (stale cookie?)";
+            request->path_info('/error');
+            return;
+        }
+        var user => $user;
+    }
+
+    if(!$user) {
+        request->path_info('/error/unauthorized');
+    }
+
+    return to_json({ uid => session('user_id') });
 };
 
 get '/upload' => sub {
