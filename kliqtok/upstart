@@ -1,0 +1,7 @@
+# upstart script for kliqtok
+
+description "kliqtok"
+start on runlevel [2345]
+stop on runlevel [06]
+
+exec /home/ubuntu/kliqtok/env/bin/uwsgi --uid www-data --gid www-data --master --die-on-term --socket /home/ubuntu/kliqtok/uwsgi.sock --chdir /home/ubuntu/kliqtok/kt -p 4 -H /home/ubuntu/kliqtok/env/ --env KLIQTOK_SETTINGS=kliqprod.ini --file wsgi.py --logto /home/ubuntu/kliqtok/logs/uwsgi.log
