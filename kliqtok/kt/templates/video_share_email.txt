@@ -1,0 +1,5 @@
+Hello {{ recipient_name }}!
+
+{{ sender_name }} added you to his "KLIQ", and wants to video-chat with you!
+
+Please visit this url to participate: {{ url }}
