@@ -127,6 +127,7 @@ get '/user' => sub {
         request->path_info('/error/unauthorized');
     }
 
+    content_type 'application/json';
     return to_json({ uid => session('user_id') });
 };
 
