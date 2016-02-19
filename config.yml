@@ -106,9 +106,14 @@ sites:
     zencoder:
         apikey: 'cb2c6adc86bb5398949a9ab2e03647ea'
     carnival:
-        bundle_id: 'com.test-android-app'
-        apikey: '0c03105a9191b567e0e2440bdeac07d33f9d407e'    
-        base_uri: 'https://api.carnivalmobile.com/v3'
+        ios:
+            bundle_id: 'com.tranzmt.tranzmtalpha'
+            apikey: '58bdcb9cfb8957353fb4ea08d07a09765eab2292'    
+            base_uri: 'https://api.carnivalmobile.com/v3'
+        android:
+            bundle_id: 'com.test-android-app'
+            apikey: '0c03105a9191b567e0e2440bdeac07d33f9d407e'    
+            base_uri: 'https://api.carnivalmobile.com/v3'
 
 plugins:
     Email:
