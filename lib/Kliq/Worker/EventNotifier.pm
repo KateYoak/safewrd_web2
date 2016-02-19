@@ -30,8 +30,9 @@ sub work {
     my $mailPushed = 0;
 
     foreach my $contact($kliq->contacts) {
-        #print STDERR "CONTACT " . Dumper $contact->TO_JSON(1);
-        if($contact->service =~ /^(google|yahoo)$/) {
+         #print STDERR "CONTACT " . Dumper $contact->TO_JSON(1);
+         $self->logger->debug("Trying to send event notification for: " . Dumper($contact->{_column_data}));
+         if($contact->service =~ /^(google|yahoo)$/) {
             $mailPushed++;
             #-- register and cache name of sender on social network
             if(!$personas{$contact->service}) {
@@ -51,8 +52,16 @@ sub work {
                 event_status => $event->event_status,
                 contact_id => $contact->id,
             }));
+        }
+        else {
+            # TODO: Add the other service types that Share supports.
+            #die("Unsupported service " . $contact->service);
+            $self->logger->error("Unsupported service " . $contact->service);
+        }
 
-            # send push notifications
+        # Send push notifications if the contact is a user
+        if ($contact->user_id) {
+            $self->logger->info("Events created to send push notifications to: " . $contact->user_id);
             $self->redis->rpush(notifyPush => to_json({
                 action    => 'emergency_flare',
                 sender    => $personas{$contact->service},
@@ -63,12 +72,7 @@ sub work {
                 contact_id => $contact->id,
                 uid        => $contact->user_id
             }));
-        }
-        else {
-            # TODO: Add the other service types that Share supports.
-            #die("Unsupported service " . $contact->service);
-            $self->logger->error("Unsupported service " . $contact->service);
-        }
+        } 
     }
     $self->logger->info("Events pushed to email") if($mailPushed);
 }
