@@ -211,6 +211,7 @@ CREATE TABLE `kliqs` (
   `user_id` char(36) NOT NULL,
   `name` varchar(100) NOT NULL,
   `image` varchar(150) DEFAULT NULL,
+  `is_emergency` tinyint(1) NOT NULL DEFAULT 0,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `kliqs_idx_user_id` (`user_id`),
