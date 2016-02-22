@@ -36,7 +36,6 @@ __PACKAGE__->add_columns(
         size => 1,
         default_value => 0,
         is_nullable => 0,
-        is_serializable => 0
     },
     created => {
         data_type => "timestamp",
