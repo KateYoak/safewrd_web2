@@ -17,7 +17,6 @@ use File::Basename qw/fileparse/;
 use MIME::Types;
 use Data::Dumper;
 use File::Copy;
-use JSON;
 use URI;
 use Try::Tiny;
 use WWW::Mixpanel;
@@ -76,6 +75,10 @@ hook 'before' => sub {
     if(request->path =~ '^/(v1/upload|v1/zencoded|v1/cors|v1)?$') {
         return;
     }
+    elsif(request->path =~ '^/v1/download$') {
+        # Download the app
+        return;
+    }
     elsif(!$user && request->path eq '/v1/tokens' && request->method eq 'GET') {        
         request->path_info('/error/unauthorized');
     }
@@ -96,11 +99,9 @@ hook 'before' => sub {
     elsif(!$user) {
         request->path_info('/error/unauthorized');
     }
-
 };
 
 #------ /api -------------------------------------------------------------------
-
 get '/' => sub {
     #header('X-RateLimit-Limit' => 5000);
     #header('X-RateLimit-Remaining' => 4999);
@@ -141,6 +142,24 @@ get '/cors' => sub {
 
 post '/cors' => sub {
     return status_ok({ message => params->{message} });
+};
+
+get '/download' => sub {
+    my $ua = request->user_agent;
+    my $url;
+    if ($ua) {
+        if ($ua =~ /android/i) {
+            $url = "http://play.google.com";
+            redirect $url;
+        }
+        elsif ($ua =~ /ipad|ipod|iphone/i) {
+            $url = "http://itunes.apple.com";
+            redirect $url;
+        }
+    }
+
+    # Web request. Render download page
+    template "download", { }, { layout => undef };
 };
 
 get '/error' => sub {
