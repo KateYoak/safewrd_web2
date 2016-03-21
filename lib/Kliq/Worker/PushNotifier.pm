@@ -94,7 +94,7 @@ sub prepare_request_data {
         $request_hash->{payload} = {
             alert => "Emergency Flare - incoming live video stream",
             badge => 1,
-            sound => "Default.caf",
+            sound => "flare.wav",
             action   => 'emergency_flare',
             location => $data->{location},
             live_stream_url => $stream_url,
