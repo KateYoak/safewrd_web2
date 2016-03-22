@@ -78,8 +78,8 @@ sub prepare_request_data {
 
     my $request_hash;
 
-    # Emergency flare notification
-    if ($data->{action} && $data->{action} eq 'emergency_flare' && $data->{uid}) {
+    # Flare push notification
+    if ($data->{action} && $data->{uid}) {
         my $evst = $data->{event_status};
         unless ($evst eq 'confirmed' or $evst eq 'published') {
             $self->logger->error(q{can't send message for event id }.$data->{event_id}
@@ -92,13 +92,18 @@ sub prepare_request_data {
         #$request_hash->{to} = '*'; # Leaving it here for initial testing
         $request_hash->{to} = [{ name => 'user_id', criteria => [$data->{uid}] }];
         $request_hash->{payload} = {
-            alert => "Emergency Flare - incoming live video stream",
-            badge => 1,
-            sound => "flare.wav",
-            action   => 'emergency_flare',
+            alert    => "Live Event - " . $data->{title},
+            badge    => 1,
+            sound    => "flare.wav",
+            action   => $data->{action},
             location => $data->{location},
             live_stream_url => $stream_url,
         };
+
+        # Emergency flare notification
+        if ($data->{action} eq 'emergency_flare') {
+            $request_hash->{payload}->{alert} = "Emergency Flare - incoming live video stream";
+        }
     }
     
     return $request_hash;

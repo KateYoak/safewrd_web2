@@ -62,10 +62,16 @@ sub work {
         # Send push notifications if the contact is a user
         if ($contact->user_id) {
             $self->logger->info("Events created to send push notifications to: " . $contact->user_id);
+            my $action = 'normal_flare';
+            if ($kliq->is_emergency) {
+                $action = 'emergency_flare';
+            }
+
             $self->redis->rpush(notifyPush => to_json({
-                action    => 'emergency_flare',
+                action    => $action,
                 sender    => $personas{$contact->service},
                 when_occurs => ''.$event->when_occurs,
+                title     => $event->title,
                 location  => $event->location,
                 event_id  => $event->id,
                 event_status => $event->event_status,
