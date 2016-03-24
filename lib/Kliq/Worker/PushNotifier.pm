@@ -94,7 +94,7 @@ sub prepare_request_data {
         $request_hash->{payload} = {
             alert    => "Live Event - " . $data->{title},
             badge    => 1,
-            sound    => "flare.wav",
+            sound    => "event.wav",
             action   => $data->{action},
             location => $data->{location},
             live_stream_url => $stream_url,
@@ -102,7 +102,8 @@ sub prepare_request_data {
 
         # Emergency flare notification
         if ($data->{action} eq 'emergency_flare') {
-            $request_hash->{payload}->{alert} = "Emergency Flare - incoming live video stream";
+            $request_hash->{payload}->{alert}  = "Emergency Flare - incoming live video stream";
+            $request_hash->{payload}->{action} = "flare.wav";
         }
     }
     
