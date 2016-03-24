@@ -81,7 +81,7 @@ sub prepare_request_data {
     # Flare push notification
     if ($data->{action} && $data->{uid}) {
         my $evst = $data->{event_status};
-        unless ($evst eq 'confirmed' or $evst eq 'published') {
+        unless ($evst eq 'published') {
             $self->logger->error(q{can't send message for event id }.$data->{event_id}
                 .q{ with invalid event_status }.$evst);
             return;
