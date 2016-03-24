@@ -62,7 +62,7 @@ sub work {
         # Send push notifications if the contact is a user
         if ($contact->user_id) {
             $self->logger->info("Events created to send push notifications to: " . $contact->user_id);
-            my $action = 'normal_flare';
+            my $action = 'live_event';
             if ($kliq->is_emergency) {
                 $action = 'emergency_flare';
             }
