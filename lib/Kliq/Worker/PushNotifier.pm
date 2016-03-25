@@ -103,7 +103,7 @@ sub prepare_request_data {
         # Emergency flare notification
         if ($data->{action} eq 'emergency_flare') {
             $request_hash->{payload}->{alert}  = "Emergency Flare - incoming live video stream";
-            $request_hash->{payload}->{action} = "flare.wav";
+            $request_hash->{payload}->{sound} = "flare.wav";
         }
     }
     
