@@ -70,7 +70,8 @@ sub list {
     if ($data->{parent_device_id} or $data->{child_device_id}) {
         my $list = $self->schema->resultset('Pair')->search($data);
         while (my $pair = $list->next) {
-            push(@list, $pair->get_columns);
+            my %data = $pair->get_columns;
+            push(@list, \%data);
         }
 
         return \@list;
