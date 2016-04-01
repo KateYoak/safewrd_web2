@@ -56,7 +56,8 @@ hook 'before' => sub {
     }
     elsif($DEBUG || params->{debug}) {
         my $uid = params->{user} || '94A4988D-93F8-1014-A991-F7EDC84F2656';
-        var user => schema->resultset('User')->find($uid);
+        $user = schema->resultset('User')->find($uid);
+        var user => $user;
         session user_id => vars->{user}->id;
     }
 
@@ -389,11 +390,26 @@ sub track_client_request {
     }
 }
 
+post '/pairs/code' => sub {
+    my $args = dejsonify(body_params());
+
+    my $code = model('pair')->code($args) 
+        or die("Invalid code generated");
+ 
+    if ($code) {
+        content_type 'application/json';
+        return to_json({ code => $code });
+    }
+    else {
+        status_bad_request($code);
+    }
+};
+
 #------ /api/* -----------------------------------------------------------------
 
 foreach my $resource(qw/
     users tokens personas contacts kliqs uploads shares events
-    timeline comments media assets
+    timeline comments media assets pair
     /) {
     my $entity = $resource;
     $entity =~ s/s$//g;
