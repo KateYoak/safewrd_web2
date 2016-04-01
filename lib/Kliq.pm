@@ -405,6 +405,21 @@ post '/pairs/code' => sub {
     }
 };
 
+post '/pairs/pair' => sub {
+    my $args = dejsonify(body_params());
+
+    my $pair_id = model('pair')->pair($args) 
+        or die("Invalid code generated");
+ 
+    if ($pair_id) {
+        content_type 'application/json';
+        return to_json({ pair_id => $pair_id });
+    }
+    else {
+        status_bad_request($pair_id);
+    }
+};
+
 #------ /api/* -----------------------------------------------------------------
 
 foreach my $resource(qw/
