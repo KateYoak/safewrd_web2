@@ -50,13 +50,13 @@ sub pair {
             });
         if($is_code_present) {
             # We have the code, now lets update the pair
-            $self->schema->resultset('Pair')->update({
-                    code => $data->{code},
-                    parent_device_id => $data->{parent_device_id},
-                    parent_user_id   => $data->{parent_user_id}
-                });
+            $is_code_present->title($data->{title});
+            $is_code_present->parent_device_id($data->{parent_device_id});
+            $is_code_present->parent_user_id($data->{parent_user_id});
 
-            return 1;
+            $is_code_present->update();
+
+            return $is_code_present->id;
         }
     }
 
