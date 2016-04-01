@@ -83,19 +83,18 @@ sub list {
 sub flare {
     my ($self, $data) = @_;
 
-    if ($data->{code} and $data->{parent_device_id} and $data->{parent_user_id}) {
-        my $is_code_present = $self->schema->resultset('Pair')->find({
-                code => $data->{code}
+    if ($data->{pair_id}) {
+        my $pair = $self->schema->resultset('Pair')->find({
+                id => $data->{pair_id}
             });
-        if($is_code_present) {
-            # We have the code, now lets update the pair
-            $is_code_present->title($data->{title});
-            $is_code_present->parent_device_id($data->{parent_device_id});
-            $is_code_present->parent_user_id($data->{parent_user_id});
+        if ($pair) {
+            $self->redis->rpush(notifyPush => to_json({
+                action      => 'parent_pair_flare',
+                kliq_id     => $pair->kliq_id,
+                uid         => $pair->child_user_id
+            }));
 
-            $is_code_present->update();
-
-            return $is_code_present->id;
+            return 1;
         }
     }
 
