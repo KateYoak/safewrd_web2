@@ -405,11 +405,27 @@ post '/pairs/code' => sub {
     }
 };
 
+post '/pairs/list' => sub {
+    my $args = dejsonify(body_params());
+
+    my $list = model('pair')->list($args) 
+        or die("Error generating pair list");
+ 
+    if ($list) {
+        content_type 'application/json';
+        return to_json($list);
+    }
+    else {
+        status_bad_request($list);
+    }
+};
+
+
 post '/pairs/pair' => sub {
     my $args = dejsonify(body_params());
 
     my $pair_id = model('pair')->pair($args) 
-        or die("Invalid code generated");
+        or die("Error generating pair_id");
  
     if ($pair_id) {
         content_type 'application/json';
@@ -419,6 +435,22 @@ post '/pairs/pair' => sub {
         status_bad_request($pair_id);
     }
 };
+
+post '/pairs/flare' => sub {
+    my $args = dejsonify(body_params());
+
+    my $response = model('pair')->flare($args) 
+        or die("Error trying to send push notification for parent_pair_flare");
+ 
+    if ($response) {
+        content_type 'application/json';
+        return status_ok($response);
+    }
+    else {
+        status_bad_request($response);
+    }
+};
+
 
 #------ /api/* -----------------------------------------------------------------
 
