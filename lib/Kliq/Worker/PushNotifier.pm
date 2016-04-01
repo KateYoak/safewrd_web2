@@ -23,7 +23,6 @@ with qw/
     Kliq::Worker::Role::DoesShortener
     /;
 
-# token secret recipients message media_id upload_id
 sub work {
     my ($self, $data) = @_;
 
@@ -81,7 +80,7 @@ sub prepare_request_data {
     # Flare push notification
     if ($data->{action} && $data->{uid}) {
         my $evst = $data->{event_status};
-        unless ($evst eq 'published') {
+        if (($data->{action} eq 'emergency_flare' or $data->{action} eq 'live_stream') and ($evst ne 'published')) {
             $self->logger->error(q{can't send message for event id }.$data->{event_id}
                 .q{ with invalid event_status }.$evst);
             return;
@@ -102,7 +101,7 @@ sub prepare_request_data {
 
         # Emergency flare notification
         if ($data->{action} eq 'emergency_flare') {
-            $request_hash->{payload}->{alert}  = "Emergency Flare - incoming live video stream";
+            $request_hash->{payload}->{alert} = "Emergency Flare - incoming live video stream";
             $request_hash->{payload}->{sound} = "flare.wav";
         }
     }
