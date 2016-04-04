@@ -133,6 +133,26 @@ get '/user' => sub {
     return to_json({ uid => session('user_id') });
 };
 
+get '/contact_id' => sub {
+    my $contact = undef;
+    if (session('user_id')) {
+        $contact = schema->resultset('Contact')->find({ user_id => session('user_id') });
+        unless($contact) {
+            var error => "Invalid user " . session('user_id') . " (stale cookie?)";
+            request->path_info('/error');
+            return;
+        }
+    }
+
+    if(!session('user_id')) {
+        request->path_info('/error/unauthorized');
+    }
+
+    content_type 'application/json';
+    return to_json({ contact_id => $contact->id });
+};
+
+
 get '/upload' => sub {
     template "upload", { }, { layout => undef };
 };
