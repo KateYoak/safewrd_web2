@@ -105,10 +105,11 @@ sub prepare_request_data {
             $request_hash->{payload}->{sound} = "flare.wav";
         }
 
-	# Parent pair flare notification
-	if ($data->{action} eq 'parent_pair_flare') {
+        # Parent pair flare notification
+        if ($data->{action} eq 'parent_pair_flare') {
+            $request_hash->{payload}->{alert}   = "Parent Pair Flare";
             $request_hash->{payload}->{kliq_id} = $data->{kliq_id};
-	}
+        }
     }
     
     return $request_hash;
