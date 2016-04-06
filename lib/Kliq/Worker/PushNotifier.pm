@@ -38,6 +38,7 @@ sub work {
         }
 
         # Check for mandatory params (to, payload)
+        die "Skipping push notification. Failed data check" if (!$request_hash);
         die "Missing 'to' param in request" if (!$request_hash->{to});
         die "Missing 'payload' param in request" if (!$request_hash->{payload});
 
@@ -80,7 +81,8 @@ sub prepare_request_data {
     # Flare push notification
     if ($data->{action} && $data->{uid}) {
         my $evst = $data->{event_status};
-        if (($data->{action} eq 'emergency_flare' or $data->{action} eq 'live_stream') and ($evst ne 'published')) {
+ 
+        if (($data->{action} eq 'emergency_flare' || $data->{action} eq 'live_event') && !($evst eq 'published')) {
             $self->logger->error(q{can't send message for event id }.$data->{event_id}
                 .q{ with invalid event_status }.$evst);
             return;
