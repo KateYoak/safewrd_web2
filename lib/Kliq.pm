@@ -152,6 +152,36 @@ get '/contact_id' => sub {
     return to_json({ contact_id => $contact->id });
 };
 
+get '/archives' => sub {
+    my $archives = undef;
+    my $base_path = "/tmp/video_recordings";
+    my $archive_url_base = "rtmp://api.tranzmt.it:1935/archives";
+    if (session('user_id')) {
+        my $user = schema->resultset('User')->find({ id => session('user_id') });
+        unless($user) {
+            var error => "Invalid user " . session('user_id') . " (stale cookie?)";
+            request->path_info('/error');
+            return;
+        }
+
+        # Get events
+        my $events = schema->resultset('Event')->search({ user_id => $user->id });
+        while (my $event = $events->next) {
+            my $filename = $base_path . "/" . $event->id . ".flv";
+            if (-e $filename) {
+                my $archive_url = $archive_url_base . "/" . $event->id;
+                push(@{$archives}, $archive_url);
+            }    
+        }  
+    }
+
+    if(!session('user_id')) {
+        request->path_info('/error/unauthorized');
+    }
+
+    content_type 'application/json';
+    return to_json({ archives => $archives });
+};
 
 get '/upload' => sub {
     template "upload", { }, { layout => undef };
@@ -231,6 +261,7 @@ my %qorder = (
     shares => 'created DESC',
     tokens => 'created DESC',
     uploads => 'created DESC',
+    events  => 'created DESC',
     #timeline => 'created DESC',
 );
 
@@ -410,7 +441,7 @@ sub track_client_request {
     }
 }
 
-post '/pairs/code' => sub {
+post '/family_pair/code' => sub {
     my $args = dejsonify(body_params());
 
     my $code = model('pair')->code($args) 
@@ -425,7 +456,7 @@ post '/pairs/code' => sub {
     }
 };
 
-post '/pairs/list' => sub {
+post '/family_pair/list' => sub {
     my $args = dejsonify(body_params());
 
     my $list = model('pair')->list($args) 
@@ -441,7 +472,7 @@ post '/pairs/list' => sub {
 };
 
 
-post '/pairs/pair' => sub {
+post '/family_pair/pair' => sub {
     my $args = dejsonify(body_params());
 
     my $pair_id = model('pair')->pair($args) 
@@ -456,7 +487,7 @@ post '/pairs/pair' => sub {
     }
 };
 
-post '/pairs/flare' => sub {
+post '/family_pair/flare' => sub {
     my $args = dejsonify(body_params());
 
     my $response = model('pair')->flare($args) 
