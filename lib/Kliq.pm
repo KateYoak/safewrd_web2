@@ -153,7 +153,7 @@ get '/contact_id' => sub {
 };
 
 get '/archives' => sub {
-    my $archives = undef;
+    my @archives = ();
     my $base_path = "/tmp/video_recordings";
     my $archive_url_base = "rtmp://api.tranzmt.it:1935/archives";
     if (session('user_id')) {
@@ -170,7 +170,8 @@ get '/archives' => sub {
             my $filename = $base_path . "/" . $event->id . ".flv";
             if (-e $filename) {
                 my $archive_url = $archive_url_base . "/" . $event->id;
-                push(@{$archives}, $archive_url);
+                my $event_type = $event->kliq->is_emergency ? "emergency_flare" : "live_event";
+                push(@archives, { event_id => $event->id, event_title => $event->title, event_type => $event_type, location => $event->location, archive_url => $archive_url });
             }    
         }  
     }
@@ -180,7 +181,7 @@ get '/archives' => sub {
     }
 
     content_type 'application/json';
-    return to_json({ archives => $archives });
+    return to_json(\@archives);
 };
 
 get '/upload' => sub {
