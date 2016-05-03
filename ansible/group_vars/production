@@ -1,0 +1,9 @@
+---
+
+# Users allowed to deploy to production using ansible
+ansible_ssh_users:
+  - tomb
+
+# Users to deploy to production
+deploy_users:
+  - tomb

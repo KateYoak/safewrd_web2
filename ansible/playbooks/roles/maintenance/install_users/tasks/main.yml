@@ -1,0 +1,34 @@
+---
+
+- name: Setup Groups
+  group:
+    name: "{{ user_list[item].group_name }}"
+    gid:  "{{ user_list[item].gid }}"
+  with_items: deploy_users
+
+- name: Setup Users
+  user:
+    name: "{{ user_list[item].name }}"
+    uid: "{{ user_list[item].uid }}"
+    group: "{{ user_list[item].group_name }}"
+    password: "{{ user_list[item].password_hash }}"
+    comment: "{{ user_list[item].comment }}"
+    shell: /bin/bash
+  with_items: deploy_users
+
+- name: Install User SSH Key
+  authorized_key:
+    user: "{{ item }}"
+    key: "{{ lookup( 'file',  '../../../../../pubkeys/' + item + '.pub' ) }}"
+  with_items: deploy_users
+
+- name: Set up Sudoer Files
+  template:
+    src: sudoers_template.j2
+    dest: /etc/sudoers.d/{{ user_list[item].uid }}_{{user_list[item].name }}
+    owner: root
+    group: root
+    mode: 0440
+    validate: 'visudo -cf %s'
+  with_items: deploy_users
+  when: user_list[item].sudo_access

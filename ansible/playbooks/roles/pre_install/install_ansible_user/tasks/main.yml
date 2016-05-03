@@ -1,0 +1,24 @@
+---
+
+- name: Setup Ansible Group
+  group:
+    name: "{{ ansible_user.group_name }}"
+    gid:  "{{ ansible_user.gid }}"
+
+- name: Setup Ansible User
+  user:
+    name: "{{ ansible_user.name }}"
+    uid: "{{ ansible_user.uid }}"
+    group: "{{ ansible_user.group_name }}"
+    password: "*"
+    comment: "{{ ansible_user.comment }}"
+    shell: /bin/bash
+
+- name: Grant password-less sudo for Ansible User
+  copy:
+    src: sudoers_ansible
+    dest: /etc/sudoers.d/{{ ansible_user.uid }}_ansible
+    owner: root
+    group: root
+    mode: 0440
+    validate: 'visudo -cf %s'

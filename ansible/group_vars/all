@@ -1,0 +1,20 @@
+---
+
+# This user is used specifically for all ansible connections
+ansible_user:
+  name:       ansible
+  group_name: ansible
+  uid:        1005
+  gid:        1005
+  comment:    "Ansible Access User"
+
+# dictionary of all users, keyed by their username
+user_list:
+  tomb:
+    name:          tomb
+    group_name:    users
+    uid:           1050
+    gid:           100
+    sudo_access:   true
+    comment:       "Tom Bloor"
+    password_hash: $6$gih9XiovBp4Dp9$/azf3DHnkJghump.4ArNVKSlvDauGLtRKWBSxr4SKx9oqaBe8ykWSlJZ3KS8DonsPjSnAjnkCIPo87zMP7S.21
