@@ -2,6 +2,6 @@
 
 - name: Install URL Shortener SSH Access Keys
   authorized_key:
-    user: "{{ item }}"
+    user: "{{ short_user.name }}"
     key: "{{ lookup( 'file',  '../../../../../pubkeys/' + item + '.pub' ) }}"
   with_items: short_ssh_users
