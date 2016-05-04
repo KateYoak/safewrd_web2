@@ -6,4 +6,6 @@
   sudo: yes
 
   roles:
-    - api/install_api_repo
+    - maintenance/install_api_user
+    - maintenance/install_api_user_ssh_keys
+    - common/install_installation_packages

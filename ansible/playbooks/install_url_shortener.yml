@@ -1,0 +1,11 @@
+---
+
+- name: Install API on all API Hosts
+  hosts: url_shortener_host
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - maintenance/install_url_shortener_user
+    - maintenance/install_url_shortener_user_ssh_keys
+    - common/install_installation_packages
