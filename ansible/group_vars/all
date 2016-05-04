@@ -8,6 +8,22 @@ ansible_user:
   gid:        1005
   comment:    "Ansible Access User"
 
+# The user the API will be deployed under
+api_user:
+  name:       ubuntu
+  group_name: ubuntu
+  uid:        1009
+  gid:        1009
+  comment:    "Default Ubuntu User"
+
+# The user the URL Shortener will be deployed under
+short_user:
+  name:       ubuntu
+  group_name: ubuntu
+  uid:        1009
+  gid:        1009
+  comment:    "Default Ubuntu User"
+
 # dictionary of all users, keyed by their username
 user_list:
   tomb:

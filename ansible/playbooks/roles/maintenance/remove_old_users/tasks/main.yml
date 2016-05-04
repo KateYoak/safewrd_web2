@@ -1,0 +1,8 @@
+---
+
+- name: Remove All Trace Of Old Users From Target Machines
+  user:
+    name:   "{{ item }}"
+    state:  absent
+    remove: yes
+  with_items: old_users
