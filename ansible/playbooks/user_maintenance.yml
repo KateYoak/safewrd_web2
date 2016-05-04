@@ -1,6 +1,6 @@
 ---
 
-- name: Pre install tasks for all nodes specified
+- name: User Access maintenance for Ansible and all other users set on the box
   hosts: all
   remote_user: ansible
   sudo: yes
