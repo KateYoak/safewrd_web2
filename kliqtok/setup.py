@@ -6,13 +6,13 @@ setup(
     packages = find_packages(),
     install_requires = (
         'bottle',
-        'opentok',
+        'opentok-python-sdk',
         'sqlalchemy',
         'oauthlib',
         'mysql-python',
         'redis',
         'futures',
-        'marrow.mailer',
+        'marrow.mailer==4.0.0',
         'jinja2',
         ),
     setup_requires = (
