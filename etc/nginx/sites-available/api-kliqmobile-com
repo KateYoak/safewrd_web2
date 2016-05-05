@@ -37,9 +37,17 @@ server {
         root /home/ubuntu/media;
     }
 
+    location ~ ^/mediathumbs/ {
+        root /home/ubuntu/media;
+    }
+
     location ~ ^/kliqs/ {
         root /home/ubuntu/media;
     }    
+
+    location /media/thumbs/ {
+        alias /home/ubuntu/media/mediathumbs/;
+    }
 
     # Serve static files using Nginx thus allowing Dancer to handle more
     # dynamic content requests.
@@ -116,6 +124,11 @@ server {
         track_uploads vidloads 30s;
     }
 
+    # This url is is proxied to a bottle app.
+    location /v1/tok_sessions/ {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/ubuntu/kliqtok/uwsgi.sock;
+    }
 
     #---- DANCER ---- 
 
