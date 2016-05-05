@@ -14,6 +14,7 @@ setup(
         'futures',
         'marrow.mailer==4.0.0',
         'jinja2',
+        'uwsgi',
         ),
     setup_requires = (
         'nose',
