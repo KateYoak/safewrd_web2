@@ -636,13 +636,13 @@ foreach my $resource(qw/
 
 foreach my $resource (qw/kliqs events/) {
     post '/' . $resource . '/:id' => sub {
-        my $id = params->{id};
+        my $resource_id = params->{id};
         my $args = dejsonify(body_params());
         my $id = $args->{id};
         my $suffix = $args->{suffix} || '.png';
         my $url = "http://api.tranzmt.it/$resource/$id$suffix";
 
-        my $row = model($resource)->update($id, { image => $url })
+        my $row = model($resource)->update($resource_id, { image => $url })
             or die("Invalid $resource update");
 
         if(my $error = $row->{error}) {
@@ -654,10 +654,10 @@ foreach my $resource (qw/kliqs events/) {
         }
         else {
             redis->rpush(cloudPush => to_json({
-                id        => $id,
+                id        => $resource_id,
                 key       => "$id$suffix",
                 src       => $args->{path},
-                container => $container . '-images'
+                container => $resource . '-images'
             }));
             return status_accepted($row);
         }
