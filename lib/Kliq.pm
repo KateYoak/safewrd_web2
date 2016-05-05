@@ -308,6 +308,10 @@ sub body_params {
             $uuid = $1;
             $dest = config->{asset_basepath} . "/kliqs/$uuid$suffix";
         }
+        if(request->path =~ /^\/v1\/events\/(.*)/) {
+            $uuid = $1;
+            $dest = config->{asset_basepath} . "/events/$uuid$suffix";
+        }
         else {
             $uuid = $UG->create_str();
             $dest = config->{asset_basepath} . "/uservids/$uuid$suffix";
@@ -630,33 +634,35 @@ foreach my $resource(qw/
         };
 }
 
-post '/kliqs/:id' => sub {
-    my $kliq_id = params->{id};
-    my $args = dejsonify(body_params());
-    my $id = $args->{id};
-    my $suffix = $args->{suffix} || '.png';
-    my $url = "http://api.tranzmt.it/kliqs/$id$suffix";
+foreach my $resource (qw/kliqs events/) {
+    post '/' . $resource . '/:id' => sub {
+        my $id = params->{id};
+        my $args = dejsonify(body_params());
+        my $id = $args->{id};
+        my $suffix = $args->{suffix} || '.png';
+        my $url = "http://api.tranzmt.it/$resource/$id$suffix";
 
-    my $row = model('kliqs')->update($kliq_id, { image => $url }) 
-        or die("Invalid kliq update");
+        my $row = model($resource)->update($id, { image => $url })
+            or die("Invalid $resource update");
 
-    if(my $error = $row->{error}) {
-        if($error->{code} eq 'missing') {
-            return status_not_found($error);
+        if(my $error = $row->{error}) {
+            if($error->{code} eq 'missing') {
+                return status_not_found($error);
+            }
+            warning "Upload $resource image error: " . (ref($error) ? to_json($error) : $error);
+            return status_bad_request($error);
         }
-        warning "Upload Kliq image error: " . (ref($error) ? to_json($error) : $error);
-        return status_bad_request($error);
-    }
-    else {
-        redis->rpush(cloudPush => to_json({
-            id        => $kliq_id,
-            key       => "$id$suffix",
-            src       => $args->{path},
-            container => 'clqs-images'
-        }));
-        return status_accepted($row);
-    }
-};
+        else {
+            redis->rpush(cloudPush => to_json({
+                id        => $id,
+                key       => "$id$suffix",
+                src       => $args->{path},
+                container => $container . '-images'
+            }));
+            return status_accepted($row);
+        }
+    };
+}
 
 #-------------------------------------------------------------------------------
 # ThumbnailComposer -i input.mp4 -ss 5 -t 15 -w 240 -h 160 -interval 5 thumb.jpg
