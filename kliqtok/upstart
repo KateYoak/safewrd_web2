@@ -1,7 +1,7 @@
 # upstart script for kliqtok
 
 setuid ubuntu
-setgid ubuntu
+setgid www-data
 
 description "kliqtok"
 start on runlevel [2345]
@@ -9,4 +9,4 @@ stop on runlevel [06]
 
 env KLIQTOK_HOME=/home/ubuntu/tranzmt-api/kliqtok
 
-exec $KLIQTOK_HOME/env/bin/uwsgi --uid ubuntu --gid ubuntu --master --die-on-term --socket $KLIQTOK_HOME/uwsgi.sock --chdir $KLIQTOK_HOME/kt -p 4 -H $KLIQTOK_HOME/env/ --env KLIQTOK_SETTINGS=kliqprod.ini --file wsgi.py --logto $KLIQTOK_HOME/logs/uwsgi.log
+exec $KLIQTOK_HOME/env/bin/uwsgi --uid ubuntu --gid www-data --master --die-on-term --socket $KLIQTOK_HOME/uwsgi.sock --chdir $KLIQTOK_HOME/kt -p 4 -H $KLIQTOK_HOME/env/ --env KLIQTOK_SETTINGS=kliqprod.ini --file wsgi.py --logto $KLIQTOK_HOME/logs/uwsgi.log --chmod-socket=664
