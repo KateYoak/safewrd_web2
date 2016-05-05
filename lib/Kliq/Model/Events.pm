@@ -33,6 +33,13 @@ around 'create' => sub {
 
 around 'update' => sub {
     my ($orig, $self, $id, $params) = @_;
+
+    # Do not process further for image upload
+    if ($params->{image}) {
+        my $ret_result = $self->$orig($id, $params);
+        return $ret_result;
+    }
+
     my $event_status = $params->{event_status} // '';
     unless ($event_status eq 'new' or $event_status eq 'confirmed'
         or $event_status eq 'deleted' or $event_status eq 'published')
