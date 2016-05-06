@@ -34,3 +34,19 @@ user_list:
     sudo_access:   true
     comment:       "Tom Bloor"
     password_hash: $6$gih9XiovBp4Dp9$/azf3DHnkJghump.4ArNVKSlvDauGLtRKWBSxr4SKx9oqaBe8ykWSlJZ3KS8DonsPjSnAjnkCIPo87zMP7S.21
+  matthewt:
+    name:          matthewt
+    group_name:    users
+    uid:           1051
+    gid:           100
+    sudo_access:   true
+    comment:       "Matt Trout"
+    password_hash: $6$x4.P.IHwQDcM$8W0iPHFBMor/vwyMuR.x3OfawPVjc07AX62MsQk/jIto.Xe7caDCClMH9mpJp3dOcgIKj4sTp6QheI.kr3YjX1
+  chrissyj:
+    name:          chrissyj
+    group_name:    users
+    uid:           1052
+    gid:           100
+    sudo_access:   true
+    comment:       "Chrissy Jackson"
+    password_hash: $6$wka9.pHcvSL9sar$LJlW3ThEvMYdJm2B0b8Z2F5DyoFetyB8/mNLvOaDnUT9wsz0a8bOwYMprjiY5uZ4uulM7CI.xp9EP980O40SL1
