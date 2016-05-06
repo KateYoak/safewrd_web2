@@ -22,7 +22,7 @@ DESCRIPTION
     GET /
         Redirects to <http://developers.tranzmt.it>.
 
-    -- ( work in progress ) --
+    --  ( work in progress )  --
 
 INSTALLATION
     You must first install the dependencies:
