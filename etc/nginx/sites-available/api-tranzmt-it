@@ -45,6 +45,10 @@ server {
         root /var/opt/tranzmt-api/media;
     }    
 
+    location ~ ^/events/ {
+        root /var/opt/tranzmt-api/media;
+    }
+
     location /media/thumbs/ {
         alias /var/opt/tranzmt-api/media/mediathumbs/;
     }
