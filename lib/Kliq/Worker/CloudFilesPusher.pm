@@ -53,18 +53,18 @@ sub work {
         );
         $object->put_filename($src); # 'Data corruption error'
 
-        if($container eq 'kliqs-images') {
+        if($dest eq 'kliqs-images') {
             my $id = $data->{id} || fileparse($src, qr/\.[^.]*/);
             my $kliq = $self->schema->resultset('Kliq')->find($data->{id})
                 or die('Kliq ' . $data->{id} . ' not found');
-            my $url = $CDNBASE{$container} . $file;
+            my $url = $CDNBASE{$dest} . $file;
             $kliq->update({ image => $url }) or die("Invalid kliq update");
         }
-        if($container eq 'events-images') {
+        if($dest eq 'events-images') {
             my $id = $data->{id} || fileparse($src, qr/\.[^.]*/);
             my $event = $self->schema->resultset('Event')->find($data->{id})
                 or die('Event ' . $data->{id} . ' not found');
-            my $url = $CDNBASE{$container} . $file;
+            my $url = $CDNBASE{$dest} . $file;
             $event->update({ image => $url }) or die("Invalid event update");
         }
         elsif($container eq 'clqs-media') {
