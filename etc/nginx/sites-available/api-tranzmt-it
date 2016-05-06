@@ -16,37 +16,37 @@ server {
     client_body_timeout 15m;
     send_timeout 15m;    
 
-    access_log /var/log/nginx/kliqmobile.com/api-access.log;    
-    error_log  /var/log/nginx/kliqmobile.com/api-error.log;
+    access_log /var/log/nginx/api.tranzmt.it/access.log;
+    error_log  /var/log/nginx/api.tranzmt.it/error.log;
 
     #---- STATIC ----
 
     location ~ ^/shares/ {
-        root /home/ubuntu/media;
+        root /var/opt/tranzmt-api/media;
     }
 
     location ~ ^/assets/ {
-        root /home/ubuntu/media;
+        root /var/opt/tranzmt-api/media;
     }
 
     location ~ ^/uservids/ {
-        root /home/ubuntu/media;
+        root /var/opt/tranzmt-api/media;
     }
     
     location ~ ^/userthumbs/ {
-        root /home/ubuntu/media;
+        root /var/opt/tranzmt-api/media;
     }
 
     location ~ ^/mediathumbs/ {
-        root /home/ubuntu/media;
+        root /var/opt/tranzmt-api/media;
     }
 
     location ~ ^/kliqs/ {
-        root /home/ubuntu/media;
+        root /var/opt/tranzmt-api/media;
     }    
 
     location /media/thumbs/ {
-        alias /home/ubuntu/media/mediathumbs/;
+        alias /var/opt/tranzmt-api/media/mediathumbs/;
     }
 
     # Serve static files using Nginx thus allowing Dancer to handle more
@@ -55,7 +55,7 @@ server {
     # static ('/public') folder to the same server as Nginx or accessible
     # from by Nginx over the network.
     location ~ ^/(images|css|javascripts)/ { 
-        root /home/ubuntu/kliq-api/public;
+        root /home/ubuntu/tranzmt-api/public;
         expires 30d;
     }
 
@@ -75,7 +75,7 @@ server {
     }
 
     location /upload {
-        root /home/ubuntu/media;
+        root /var/opt/tranzmt-api/media;
         #rewrite ^ /upload.html last;
     }
 
@@ -87,7 +87,7 @@ server {
         # Store files to this directory
         # The directory is hashed, subdirectories 0 1 2 3 4 5 6 7 8 9 should exist    
         # i.e. make sure to create /u/apps/bugle/shared/uploads_tmp/0 /u/apps/bugle/shared/uploads_tmp/1 etc.
-        upload_store /home/ubuntu/media/uploads 1;
+        upload_store /var/opt/tranzmt-api/media/uploads 1;
 
         # set permissions on the uploaded files
         upload_store_access user:rw group:rw all:r;
@@ -127,7 +127,7 @@ server {
     # This url is is proxied to a bottle app.
     location /v1/tok_sessions/ {
         include uwsgi_params;
-        uwsgi_pass unix:/home/ubuntu/kliqtok/uwsgi.sock;
+        uwsgi_pass unix:/home/ubuntu/tranzmt-api/kliqtok/uwsgi.sock;
     }
 
     #---- DANCER ---- 
