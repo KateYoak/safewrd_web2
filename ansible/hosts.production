@@ -1,2 +1,5 @@
 [tranzmt-backup-oldsrv]
 45.55.41.16
+
+[basic_hosts:children]
+tranzmt-backup-oldsrv
