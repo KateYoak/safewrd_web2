@@ -5,24 +5,31 @@ ansible_ssh_users:
   - tomb
   - matthewt
   - chrissyj
+  - duncand
 
 # Users to deploy to production
 deploy_users:
   - tomb
   - matthewt
   - chrissyj
+  - duncand
+  - sachinjsk
 
 # Users allowed to access the api user through ssh
 api_ssh_users:
   - tomb
   - matthewt
   - chrissyj
+  - duncand
+  - sachinjsk
 
 # Users allowed to access the url shortener user through ssh
 short_ssh_users:
   - tomb
   - matthewt
   - chrissyj
+  - duncand
+  - sachinjsk
 
 # Users to remove from the machine
 old_users:
