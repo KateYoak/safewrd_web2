@@ -61,7 +61,7 @@ session_is_http_only: 0
 #      debug : 0
 #      persistent: 1
 
-asset_basepath: /var/opt/clqs-api/media
+asset_basepath: /var/opt/tranzmt-api/media
 
 sites:
     facebook:
