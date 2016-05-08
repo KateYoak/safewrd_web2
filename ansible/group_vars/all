@@ -50,3 +50,19 @@ user_list:
     sudo_access:   true
     comment:       "Chrissy Jackson"
     password_hash: $6$wka9.pHcvSL9sar$LJlW3ThEvMYdJm2B0b8Z2F5DyoFetyB8/mNLvOaDnUT9wsz0a8bOwYMprjiY5uZ4uulM7CI.xp9EP980O40SL1
+  duncand:
+    name:          duncand
+    group_name:    users
+    uid:           1053
+    gid:           100
+    sudo_access:   true
+    comment:       "Darren Duncan"
+    password_hash: $6$G6UM7nfq$zPrONGjg.OcZVFfspB0JQb8O8PUglfaQNyijzNyoXYqjKb3YvIi1gIjigi6jndOuiBTaFboMZHfTA8DR/9POC/
+  sachinjsk:
+    name:          sachinjsk
+    group_name:    users
+    uid:           1054
+    gid:           100
+    sudo_access:   true
+    comment:       "Sachin Sebastian"
+    password_hash: $6$.qo84c6F$umP4vhz7BcDnA1qciAAtdMh.cykCSSQOaq1advVDU44J7xUmDwVCOHf2Wj4mGegrIY.INxokrIF11rDoHtzx11
