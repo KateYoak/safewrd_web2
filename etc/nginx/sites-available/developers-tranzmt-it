@@ -12,10 +12,10 @@ server {
         index index.html index.htm;
 
         location /media/thumbs/ {
-             alias /var/opt/tranzmt-api/media/mediathumbs/;
+             alias /var/opt/clqs-api/media/mediathumbs/;
         }
         location /mediathumbs/ {
-             alias /var/opt/tranzmt-api/media/mediathumbs/;
+             alias /var/opt/clqs-api/media/mediathumbs/;
         }
         location / {
                 # First attempt to serve request as file, then
