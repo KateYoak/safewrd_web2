@@ -164,8 +164,16 @@ get '/archives' => sub {
             return;
         }
 
-        # Get events
-        my $events = schema->resultset('Event')->search({ user_id => $user->id });
+        # Get user owned events, and incoming events
+        my $events = schema->resultset('Event')->search(
+            [
+                { 'contact.user_id' => $user->id },
+                { 'me.user_id' => $user->id }
+            ],
+            { 
+                join     => { kliq => { contacts_map => 'contact' } },
+                order_by => { -desc => 'me.created' }
+            });
         while (my $event = $events->next) {
             my $filename = $base_path . "/" . $event->id . ".flv";
             if (-e $filename) {
