@@ -327,18 +327,27 @@ sub body_params {
             title    => params->{title}
         };
     }
-    #-- uploads to Nginx (user videos)
+    #-- uploads to Nginx (user audio/videos)
     elsif(params->{'upload.size'} && params->{'upload.path'} && params->{'upload.name'}) {
         my ($_name, $_path, $suffix) = fileparse(params->{'upload.name'}, qr/\.[^.]*/);
-        die("Invalid format $suffix") unless $suffix =~ /^\.(mp4|m4v|mpeg|mpg|3gp|webm)$/;
-
         my $uuid = $UG->create_str();
-        my $dest = config->{asset_basepath} . "/uservids/$uuid$suffix";
-        move(params->{'upload.path'}, $dest);
 
-        eval {
-            thumb_vid($dest, $uuid);
-        };
+        my $dest;
+        if ($suffix =~ /^\.(mp4|m4v|mpeg|mpg|3gp|webm)$/) {
+            $dest = config->{asset_basepath} . "/uservids/$uuid$suffix";
+            move(params->{'upload.path'}, $dest);
+
+            eval {
+                thumb_vid($dest, $uuid);
+            };
+        }
+        elsif ($suffix =~ /^\.(mp3|wav)$/) {
+       	    $dest = config->{asset_basepath} . "/useraudio/$uuid$suffix";
+            move(params->{'upload.path'}, $dest);
+        }
+        else {
+            die("Invalid format $suffix");
+        }
 
         return {
             id       => $uuid,
