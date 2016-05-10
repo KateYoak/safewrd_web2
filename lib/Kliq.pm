@@ -240,7 +240,8 @@ get '/t/error' => sub {
 
 my %qparams = (
     contacts => ['service'],
-    kliqs => ['name']
+    kliqs    => ['name'],
+    events   => ['eventStatus'],
 );
 
 sub search_params {
