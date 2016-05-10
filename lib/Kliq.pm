@@ -250,7 +250,17 @@ sub search_params {
     my $crit = {};
     foreach(@{ $qparams{$resource} }) {
         next unless params->{$_};
-        $crit->{decamelize($_)} = delete params->{$_};
+        if (params->{$_} =~ /\|/) {
+            my @or_clause;
+            for my $each_filter (split('\|', params->{$_})) {
+                push(@or_clause, decamelize($_)  => $each_filter);
+            };
+
+            $crit->{-or} = \@or_clause; 
+        }
+        else {
+            $crit->{decamelize($_)} = delete params->{$_};
+        }
     }
 
     return $crit;
