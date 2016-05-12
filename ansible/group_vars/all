@@ -57,7 +57,7 @@ user_list:
     gid:           100
     sudo_access:   true
     comment:       "Darren Duncan"
-    password_hash: $6$G6UM7nfq$zPrONGjg.OcZVFfspB0JQb8O8PUglfaQNyijzNyoXYqjKb3YvIi1gIjigi6jndOuiBTaFboMZHfTA8DR/9POC/
+    password_hash: $6$IZstR/Mi$ArBTKM9wUNdxnftxBCEIx1q5LyLz6XXHTjVAQTBuVruI0IR7g08Uuo4ES2adBgI1OBvVFOx83wohlJujKBHX5.
   sachinjsk:
     name:          sachinjsk
     group_name:    users
