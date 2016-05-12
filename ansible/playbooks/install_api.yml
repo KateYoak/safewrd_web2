@@ -8,4 +8,7 @@
   roles:
     - maintenance/install_api_user
     - maintenance/install_api_user_ssh_keys
+    - common/add_github_known_host
     - common/install_installation_packages
+    - api_host/install_packages
+    - api_host/install_nginx
