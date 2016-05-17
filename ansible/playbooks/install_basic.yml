@@ -1,0 +1,9 @@
+---
+
+- name: Install Basic items on Basic Hosts
+  hosts: basic_hosts
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - common/install_installation_packages

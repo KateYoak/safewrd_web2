@@ -1,0 +1,29 @@
+---
+
+- name: User Access maintenance for Ansible and all other users set on the box
+  hosts: all
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - maintenance/remove_old_users
+    - maintenance/install_ansible_ssh_keys
+    - maintenance/install_users
+
+- name: User Access maintenance for API User
+  hosts: api_host
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - maintenance/install_api_user
+    - maintenance/install_api_user_ssh_keys
+
+- name: User Access maintenance for URL Shortener User
+  hosts: url_shortener_host
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - maintenance/install_url_shortener_user
+    - maintenance/install_url_shortener_user_ssh_keys

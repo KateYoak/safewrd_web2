@@ -1,0 +1,15 @@
+---
+
+- name: Setup API User Group
+  group:
+    name: "{{ api_user.group_name }}"
+    gid:  "{{ api_user.gid }}"
+
+- name: Setup API User
+  user:
+    name: "{{ api_user.name }}"
+    uid: "{{ api_user.uid }}"
+    group: "{{ api_user.group_name }}"
+    password: "*"
+    comment: "{{ api_user.comment }}"
+    shell: /bin/bash
