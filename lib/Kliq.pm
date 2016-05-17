@@ -417,7 +417,7 @@ sub dejsonify {
         }
         return $result;
     }
-    elsif(ref($args) eq 'JSON::XS::Boolean') {
+    elsif(ref($args) eq 'JSON::PP::Boolean') {
         return "$args" eq 'true' ? 1 : 0;
     }
     else {
