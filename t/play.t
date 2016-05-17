@@ -14,6 +14,13 @@ my $src = "/home/ubuntu/media/uservids/$uuid$suffix";
 my $trg1 = "/home/ubuntu/media/uservids/YYY-$uuid.mp4";
 my $trg2 = "/home/ubuntu/media/uservids/ZZZ-$uuid.mp4";
 
+if (
+     ! -X "/usr/bin/ffmpeg"
+  || ! -e $src
+) {
+  plan skip_all => "No FFmpeg or target file";
+}
+
 process_vid();
 #qt_vid();
 
@@ -48,3 +55,5 @@ sub qt_vid {
               #         0 ) echo "Success - Overwriting Source"; mv "$filename.fast" "$filename";;
               #         * ) echo "Failure - Removing Destination"; rm "$filename.fast";;
 }
+
+done_testing;
