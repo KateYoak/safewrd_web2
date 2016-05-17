@@ -14,7 +14,7 @@ services:
 install:
   - export HARNESS_OPTIONS=j10:c HARNESS_TIMER=1
   - export AUTOMATED_TESTING=1 NONINTERACTIVE_TESTING=1 PERL_MM_USE_DEFAULT=1
-  - cpanm --quiet Test::Output@1.01
+  - cpanm --quiet BDFOY/Test-Output-1.01.tar.gz
   - cpanm --quiet Moose@2.1800
   - cpanm --quiet MooseX::Types::Parameterizable@0.07
   - cpanm --quiet Mail::Internet@2.14
