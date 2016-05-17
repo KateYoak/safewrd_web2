@@ -14,9 +14,13 @@ services:
 install:
   - export HARNESS_OPTIONS=j10:c HARNESS_TIMER=1
   - export AUTOMATED_TESTING=1 NONINTERACTIVE_TESTING=1 PERL_MM_USE_DEFAULT=1
-  - cpanm -nq --installdeps .
-  - cpanm -nq Devel::Cover
-  - cpanm --no-test FFmpeg::Thumbnail
+  - cpanm --quiet Test::Output@1.01
+  - cpanm --quiet Moose@2.1800
+  - cpanm --quiet MooseX::Types::Parameterizable@0.07
+  - cpanm --quiet Mail::Internet@2.14
+  - cpanm --quiet --installdeps .
+  - cpanm --quiet Devel::Cover
+  - cpanm --quiet --no-test FFmpeg::Thumbnail
   - mysql -u root -e 'CREATE DATABASE kliq21'
   - mysql -u root -e "GRANT ALL ON kliq21.* TO 'kliq_SSM'@'localhost' IDENTIFIED BY 'self-expression'; FLUSH PRIVILEGES"
   - mysql -u kliq_SSM -p'self-expression' < mysql_schema/kliq21_schema.sql
