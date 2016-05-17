@@ -7,7 +7,7 @@ notifications:
 
 language: perl
 perl:
-  - "5.22"
+  - "5.16"
 services:
   - mysql
   - redis-server
@@ -16,11 +16,10 @@ install:
   - export AUTOMATED_TESTING=1 NONINTERACTIVE_TESTING=1 PERL_MM_USE_DEFAULT=1
   - cpanm -nq --installdeps .
   - cpanm -nq Devel::Cover
+  - cpanm --no-test FFmpeg::Thumbnail
   - mysql -u root -e 'CREATE DATABASE kliq21'
   - mysql -u root -e "GRANT ALL ON kliq21.* TO 'kliq_SSM'@'localhost' IDENTIFIED BY 'self-expression'; FLUSH PRIVILEGES"
   - mysql -u kliq_SSM -p'self-expression' < mysql_schema/kliq21_schema.sql
 script:
-  - perl Makefile.PL
-  - make
   - nohup plackup &
-  - PERL5OPT="-Ilib/" prove t/
+  - prove -l
