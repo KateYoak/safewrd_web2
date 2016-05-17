@@ -1,6 +1,10 @@
 use strict;
 use warnings;
 
+print "Use the cpanfile with cpanm\n"
+print "cpanm --installdeps .\n"
+exit 0
+
 use inc::Module::Install;
 
 name            'Kliq';

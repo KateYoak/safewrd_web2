@@ -1,0 +1,7 @@
+---
+
+- name: Install authorized keys for ansible
+  authorized_key:
+    user: ansible
+    key: "{{ lookup( 'file', '../../../../../pubkeys/' + item + '.pub' ) }}"
+  with_items: ansible_ssh_users

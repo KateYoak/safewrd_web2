@@ -1,0 +1,10 @@
+---
+
+- name: Install or Update Installation Packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 3600
+  with_items: installation_packages

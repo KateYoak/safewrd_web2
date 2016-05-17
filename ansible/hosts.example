@@ -1,0 +1,20 @@
+# Example hosts file
+
+# If you want to apply custom variables to a local machine (for example, when
+# developing) use this section and add a group_vars/local variables file to
+# modify them. This section is optional
+[local]
+192.168.0.2
+
+# To deploy a machine with the production settings, place its IP address or
+# hostname in this section. Alternatively, create a production:children section
+# for grouping other sections under
+[production]
+192.168.0.2
+
+# List of groups which should have the api items deployed to them
+[api_host:children]
+production
+
+[url_shortener_host:children]
+production

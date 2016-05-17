@@ -1,0 +1,4 @@
+hosts
+hosts.local
+log/*
+group_vars/local

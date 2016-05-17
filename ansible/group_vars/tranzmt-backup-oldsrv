@@ -1,0 +1,24 @@
+---
+
+# Users allowed to deploy to production using ansible
+ansible_ssh_users:
+  - tomb
+  - matthewt
+  - chrissyj
+  - duncand
+
+# Users to deploy to production
+deploy_users:
+  - tomb
+  - matthewt
+  - chrissyj
+  - duncand
+  - sachinjsk
+
+# Users to remove from the machine
+old_users:
+
+# OS Packages to install for maintenance and installation setup
+installation_packages:
+  - vim
+  - rsync

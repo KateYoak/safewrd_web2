@@ -1,0 +1,6 @@
+logs
+*.egg
+*.pyc
+env
+.coverage
+*.egg-info

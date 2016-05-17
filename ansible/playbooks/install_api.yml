@@ -1,0 +1,11 @@
+---
+
+- name: Install API on all API Hosts
+  hosts: api_host
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - maintenance/install_api_user
+    - maintenance/install_api_user_ssh_keys
+    - common/install_installation_packages

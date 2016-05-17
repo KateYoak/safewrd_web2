@@ -1,0 +1,7 @@
+---
+
+- name: Install API User SSH Access Key
+  authorized_key:
+    user: "{{ api_user.name }}"
+    key: "{{ lookup( 'file',  '../../../../../pubkeys/' + item + '.pub' ) }}"
+  with_items: api_ssh_users

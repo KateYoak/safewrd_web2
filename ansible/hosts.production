@@ -1,0 +1,18 @@
+[tranzmt-backup-oldsrv]
+45.55.41.16
+
+[tranzmt-production-01]
+45.55.62.82
+
+[production:children]
+tranzmt-production-01
+
+# Host Function Settings
+[basic_hosts:children]
+tranzmt-backup-oldsrv
+
+[api_host:children]
+tranzmt-production-01
+
+[url_shortener_host:children]
+tranzmt-production-01
