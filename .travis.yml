@@ -24,7 +24,6 @@ install:
   - mysql -u root -e 'CREATE DATABASE kliq21'
   - mysql -u root -e "GRANT ALL ON kliq21.* TO 'kliq_SSM'@'localhost' IDENTIFIED BY 'self-expression'; FLUSH PRIVILEGES"
   - mysql -u kliq_SSM -p'self-expression' < mysql_schema/kliq21_schema.sql
-  - lns -s config.example.yml config.yml
+  - ln -s config.example.yml config.yml
 script:
-  - nohup plackup &
   - prove -l
