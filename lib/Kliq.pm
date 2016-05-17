@@ -154,7 +154,7 @@ get '/contact_id' => sub {
 
 get '/archives' => sub {
     my @archives = ();
-    my $base_path = "/tmp/video_recordings";
+    my $base_path = "/var/opt/clqs-api/media/video_recordings";
     my $archive_url_base = "rtmp://api.tranzmt.it:1935/archives";
     if (session('user_id')) {
         my $user = schema->resultset('User')->find({ id => session('user_id') });
@@ -164,8 +164,16 @@ get '/archives' => sub {
             return;
         }
 
-        # Get events
-        my $events = schema->resultset('Event')->search({ user_id => $user->id });
+        # Get user owned events, and incoming events
+        my $events = schema->resultset('Event')->search(
+            [
+                { 'contact.user_id' => $user->id },
+                { 'me.user_id' => $user->id }
+            ],
+            { 
+                join     => { kliq => { contacts_map => 'contact' } },
+                order_by => { -desc => 'me.created' }
+            });
         while (my $event = $events->next) {
             my $filename = $base_path . "/" . $event->id . ".flv";
             if (-e $filename) {
@@ -175,8 +183,7 @@ get '/archives' => sub {
             }    
         }  
     }
-
-    if(!session('user_id')) {
+    else {
         request->path_info('/error/unauthorized');
     }
 
@@ -241,7 +248,8 @@ get '/t/error' => sub {
 
 my %qparams = (
     contacts => ['service'],
-    kliqs => ['name']
+    kliqs    => ['name'],
+    events   => ['eventStatus'],
 );
 
 sub search_params {
@@ -250,7 +258,17 @@ sub search_params {
     my $crit = {};
     foreach(@{ $qparams{$resource} }) {
         next unless params->{$_};
-        $crit->{decamelize($_)} = delete params->{$_};
+        if (params->{$_} =~ /\|/) {
+            my @or_clause;
+            for my $each_filter (split('\|', params->{$_})) {
+                push(@or_clause, decamelize($_)  => $each_filter);
+            };
+
+            $crit->{-or} = \@or_clause; 
+        }
+        else {
+            $crit->{decamelize($_)} = delete params->{$_};
+        }
     }
 
     return $crit;
@@ -328,18 +346,27 @@ sub body_params {
             title    => params->{title}
         };
     }
-    #-- uploads to Nginx (user videos)
+    #-- uploads to Nginx (user audio/videos)
     elsif(params->{'upload.size'} && params->{'upload.path'} && params->{'upload.name'}) {
         my ($_name, $_path, $suffix) = fileparse(params->{'upload.name'}, qr/\.[^.]*/);
-        die("Invalid format $suffix") unless $suffix =~ /^\.(mp4|m4v|mpeg|mpg|3gp|webm)$/;
-
         my $uuid = $UG->create_str();
-        my $dest = config->{asset_basepath} . "/uservids/$uuid$suffix";
-        move(params->{'upload.path'}, $dest);
 
-        eval {
-            thumb_vid($dest, $uuid);
-        };
+        my $dest;
+        if ($suffix =~ /^\.(mp4|m4v|mpeg|mpg|3gp|webm)$/) {
+            $dest = config->{asset_basepath} . "/uservids/$uuid$suffix";
+            move(params->{'upload.path'}, $dest);
+
+            eval {
+                thumb_vid($dest, $uuid);
+            };
+        }
+        elsif ($suffix =~ /^\.(mp3|wav)$/) {
+       	    $dest = config->{asset_basepath} . "/useraudio/$uuid$suffix";
+            move(params->{'upload.path'}, $dest);
+        }
+        else {
+            die("Invalid format $suffix");
+        }
 
         return {
             id       => $uuid,

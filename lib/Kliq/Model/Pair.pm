@@ -50,10 +50,30 @@ sub pair {
             });
         if($is_code_present) {
             # We have the code, now lets update the pair
-            $is_code_present->title($data->{title});
+            $is_code_present->title($data->{title}) if ($data->{title});
             $is_code_present->parent_device_id($data->{parent_device_id});
             $is_code_present->parent_user_id($data->{parent_user_id});
 
+            # Now lets create a kliq
+            my $child_contact_id = $self->schema->resultset('Contact')->find({
+                    user_id => $is_code_present->child_user_id,
+                    owner_id => $self->user->id,
+                });
+            my $parent_contact_id = $self->schema->resultset('Contact')->find({
+                    user_id => $is_code_present->parent_user_id,
+                    owner_id => $self->user->id,
+                });
+
+            my $kliq = $self->schema->resultset('Kliq')->create({
+                    name => 'PAIR_KLIQ',
+                    user_id => $is_code_present->child_user_id,
+                    is_emergency => 1,
+                    contacts_map => [
+                        { contact_id => $parent_contact_id->id },
+                        { contact_id => $child_contact_id->id },
+                    ]
+                });
+            $is_code_present->kliq_id($kliq->id);
             $is_code_present->update();
 
             return $is_code_present->id;

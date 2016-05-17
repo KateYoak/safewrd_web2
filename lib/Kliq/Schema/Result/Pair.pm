@@ -51,8 +51,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->uuid_columns('id');
 
-__PACKAGE__->belongs_to(user => 'Kliq::Schema::Result::User', 'parent_user_id');
-__PACKAGE__->belongs_to(user => 'Kliq::Schema::Result::User', 'child_user_id');
+__PACKAGE__->belongs_to(parent_user => 'Kliq::Schema::Result::User', 'parent_user_id');
+__PACKAGE__->belongs_to(child_user => 'Kliq::Schema::Result::User', 'child_user_id');
 __PACKAGE__->belongs_to(kliq => 'Kliq::Schema::Result::Kliq', 'kliq_id');
 
 sub _serializable_rels {
