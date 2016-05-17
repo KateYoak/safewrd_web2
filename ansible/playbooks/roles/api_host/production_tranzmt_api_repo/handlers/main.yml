@@ -1,0 +1,16 @@
+---
+
+- name: restart tranzmt-api
+  service:
+    name: tranzmt-api
+    state: restarted
+
+- name: restart tranzmt-worker
+  service:
+    name: tranzmt-worker
+    state: restarted
+
+- name: restart kliqtok
+  service:
+    name: kliqtok
+    state: restarted
