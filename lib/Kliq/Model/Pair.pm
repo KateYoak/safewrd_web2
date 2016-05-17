@@ -56,8 +56,8 @@ sub pair {
 
             # Now lets create a kliq
             my $parent_contact_id = $self->schema->resultset('Contact')->find({
-                    user_id => $is_code_present->parent_user_id,
-                    owner_id => $self->user->id,
+                    user_id  => $is_code_present->parent_user_id,
+                    owner_id => $is_code_present->child_user_id,
                 });
 
             my $kliq = $self->schema->resultset('Kliq')->create({
