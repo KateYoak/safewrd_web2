@@ -398,6 +398,7 @@ sub thumb_vid {
 
 sub dejsonify {
     my $args = shift;
+
     if(!ref($args)) {
         return $args;
     }
@@ -417,8 +418,8 @@ sub dejsonify {
         }
         return $result;
     }
-    elsif(ref($args) eq 'JSON::XS::Boolean') {
-        return "$args" eq 'true' ? 1 : 0;
+    elsif(JSON::is_bool($args)) {
+        return "$args";
     }
     else {
         die("Wrong arguments $args");
