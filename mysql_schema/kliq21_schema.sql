@@ -376,6 +376,7 @@ CREATE TABLE `users` (
   `gender` enum('male','female') DEFAULT NULL,
   `profile_photo` blob,
   `picture` varchar(500) DEFAULT NULL,
+  `geo_location` varchar(255) DEFAULT NULL,
   `email_verified` tinyint(1) DEFAULT '0',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

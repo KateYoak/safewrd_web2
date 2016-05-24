@@ -78,6 +78,11 @@ __PACKAGE__->add_columns(
         size => 500,
         is_serializable => 0
     },
+    geo_location => {
+        data_type => "varchar",
+        is_nullable => 1,
+        size => 255
+    },
     email_verified => {
         data_type => "tinyint",
         size => 1,
