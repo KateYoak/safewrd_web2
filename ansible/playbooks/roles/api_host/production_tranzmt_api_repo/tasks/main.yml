@@ -37,3 +37,9 @@
     chdir: "/home/ubuntu/tranzmt-api/kliqtok"
   register: python_setup_py_develop
   changed_when: "'Installed /home/ubuntu/tranzmt-api/kliqtok/env' in python_setup_py_develop.stdout"
+
+- name: Setup production configuration
+  file:
+    path: "/home/ubuntu/tranzmt-api/config.yml"
+    src: "/home/ubuntu/tranzmt-api/config.prod.yml"
+    state: link
