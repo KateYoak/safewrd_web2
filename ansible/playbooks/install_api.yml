@@ -1,6 +1,6 @@
 ---
 
-- name: Install API on all API Hosts
+- name: Install API dependencies on all API Hosts
   hosts: api_host
   remote_user: ansible
   sudo: yes
@@ -21,3 +21,11 @@
   roles:
     - common/install_perlbrew
     - api_host/production_tranzmt_api_repo
+
+- name: Install Dependencies from repository
+  hosts: api_host
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - api_host/install_amsiggen
