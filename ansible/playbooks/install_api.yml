@@ -30,3 +30,5 @@
   roles:
     - api_host/install_amsiggen
     - api_host/production_init_scripts
+    - api_host/production_media_folders
+    - api_host/production_nginx_configs

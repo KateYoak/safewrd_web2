@@ -1,27 +1,19 @@
 ---
 
 - name: reload init config
-  remote_user: "{{ ansible_user.name }}"
-  sudo: yes
   shell: initctl reload-configuration
 
 - name: restart tranzmt-api
-  remote_user: "{{ ansible_user.name }}"
-  sudo: yes
   service:
     name: tranzmt-api
     state: restarted
 
 - name: restart tranzmt-worker
-  remote_user: "{{ ansible_user.name }}"
-  sudo: yes
   service:
     name: tranzmt-worker
     state: restarted
 
 - name: restart kliqtok
-  remote_user: "{{ ansible_user.name }}"
-  sudo: yes
   service:
     name: kliqtok
     state: restarted
