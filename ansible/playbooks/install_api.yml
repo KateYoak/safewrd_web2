@@ -20,3 +20,4 @@
 
   roles:
     - common/install_perlbrew
+    - api_host/production_tranzmt_api_repo

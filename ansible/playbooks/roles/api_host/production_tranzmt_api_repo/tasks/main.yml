@@ -1,8 +1,6 @@
 ---
 
 - name: Fetch and update master Tranzmt-Api branch
-  remote_user: "ubuntu"
-  sudo: no
   git:
     repo: "git@github.com:TRANZMT-IT/tranzmt-api.git"
     dest: "/home/ubuntu/tranzmt-api"
@@ -16,13 +14,12 @@
 
 # This cpanm step is not a handler, as if it dies during a setup we need to be able to re-run it.
 - name: Install api and worker dependencies
-  remote_user: "ubuntu"
-  sudo: no
   shell: source ~/perl5/perlbrew/etc/bashrc && cpanm --installdeps .
   args:
+    executable: /bin/bash
     chdir: "/home/ubuntu/tranzmt-api"
   register: cpanm_tranzmt_api
-  changed_when: "'installed' in cpanm_shadownms.stdout"
+  changed_when: "'installed' in cpanm_tranzmt_api.stdout"
   notify:
     - reload init config
     - restart tranzmt-api
@@ -30,18 +27,25 @@
     - restart kliqtok
 
 - name: Force FFmpeg::Thumbnail install
-  remote_user: "ubuntu"
-  sudo: no
   shell: source ~/perl5/perlbrew/etc/bashrc && cpanm --force FFmpeg::Thumbnail
+  args:
+    executable: /bin/bash
   register: cpanm_ffmpeg_thumbnail
-  changed_when: "'is up to date' not in cpanm_ffmpeg_thumbnaili.stdout"
+  changed_when: "'is up to date' not in cpanm_ffmpeg_thumbnail.stdout"
 
 - name: Link startup scripts
+  remote_user: "{{ ansible_user.name }}"
+  sudo: yes
   file:
     path: "{{ item.target }}"
     src: "{{ item.source }}"
     state: link
   with_items:
-    - { source: '/home/ubuntu/tranmzmt-api/etc/init/tranzmt-api.conf', target: '/etc/init/tranzmt-api.conf' }
-    - { source: '/home/ubuntu/tranmzmt-api/etc/init/tranzmt-worker.conf', target: '/etc/init/tranzmt-worker.conf' }
-    - { source: '/home/ubuntu/tranmzmt-api/ikliqtok/upstart', target: '/etc/init/kliqtok.conf' }
+    - { source: '/home/ubuntu/tranzmt-api/etc/init/tranzmt-api.conf', target: '/etc/init/tranzmt-api.conf' }
+    - { source: '/home/ubuntu/tranzmt-api/etc/init/tranzmt-worker.conf', target: '/etc/init/tranzmt-worker.conf' }
+    - { source: '/home/ubuntu/tranzmt-api/kliqtok/upstart', target: '/etc/init/kliqtok.conf' }
+  notify:
+    - reload init config
+    - restart tranzmt-api
+    - restart tranzmt-worker
+    - restart kliqtok
