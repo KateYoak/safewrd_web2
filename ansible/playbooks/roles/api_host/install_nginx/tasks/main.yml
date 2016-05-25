@@ -71,3 +71,9 @@
   args:
     chdir: "/root/nginx-install/nginx-1.8.1/"
     creates: "/usr/sbin/nginx"
+
+- name: Setup nginx init script
+  shell: make
+  args:
+    chdir: "/root/nginx-install/nginx-sysvinit-script"
+    creates: "/etc/init.d/nginx"

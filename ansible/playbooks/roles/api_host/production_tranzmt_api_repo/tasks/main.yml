@@ -27,7 +27,7 @@
     - restart kliqtok
 
 - name: Force FFmpeg::Thumbnail install
-  shell: source ~/perl5/perlbrew/etc/bashrc && cpanm --force FFmpeg::Thumbnail
+  shell: source ~/perl5/perlbrew/etc/bashrc && cpanm --notest FFmpeg::Thumbnail
   args:
     executable: /bin/bash
   register: cpanm_ffmpeg_thumbnail
