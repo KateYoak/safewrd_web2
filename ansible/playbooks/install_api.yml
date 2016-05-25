@@ -12,3 +12,11 @@
     - common/install_installation_packages
     - api_host/install_packages
     - api_host/install_nginx
+
+- name: Set up API Codebase and modules
+  hosts: api_host
+  remote_user: "{{ api_user.name }}"
+  sudo: no
+
+  roles:
+    - common/install_perlbrew
