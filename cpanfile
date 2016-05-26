@@ -82,6 +82,7 @@ requires 'Module::Runtime';
 requires 'Moo';
 requires 'MooX::Options';
 requires 'namespace::clean';
+requires 'DBIx::Class::Fixtures';
 
 #-------------#
 # Worker Deps #
