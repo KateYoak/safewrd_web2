@@ -73,6 +73,16 @@ requires 'WebService::Rackspace::CloudFiles';
 requires 'YAML::XS'                   => '0.38';
 requires 'namespace::autoclean'       => '0.13';
 
+#----------------#
+# DH Script Deps #
+#----------------#
+
+requires 'DBIx::Class::DeploymentHandler' => '0.002218';
+requires 'Module::Runtime';
+requires 'Moo';
+requires 'MooX::Options';
+requires 'namespace::clean';
+
 #-------------#
 # Worker Deps #
 #-------------#
