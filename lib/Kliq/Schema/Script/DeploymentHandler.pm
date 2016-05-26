@@ -85,6 +85,7 @@ This is the connected schema. This uses the 'schema_class' attribute and
 has schema => (
   is      => 'lazy',
   builder => sub {
+    my $self = shift;
     return use_module( $self->schema_class )->connect( $self->connection );
   },
 );
@@ -114,7 +115,7 @@ defaults to returning the following:
 
 has databases => (
   is      => 'ro',
-  default => sub { [ 'mysql' ] },
+  default => sub { [ 'PostgreSQL' ] },
 );
 
 =head2 dh
