@@ -5,7 +5,6 @@
 requires 'Mail::Internet'                 => '== 2.14';
 requires 'Moose'                          => '== 2.1800';
 requires 'MooseX::Types::Parameterizable' => '== 0.07';
-requires 'Test::Output'                   => '== 1.01';
 
 #---------------#
 # Standard Deps #
