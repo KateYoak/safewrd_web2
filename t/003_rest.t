@@ -2,6 +2,10 @@ use strict;
 use warnings;
 use Test::More;
 
+if ( $ENV{TRAVIS} ) {
+  plan skip_all => "Test will not work under Travis";
+}
+
 use Kliq;
 use Dancer::Test;
 use JSON qw/from_json to_json/;

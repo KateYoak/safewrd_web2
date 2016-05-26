@@ -4,6 +4,11 @@ use warnings;
 use strict;
 
 use Test::More;
+
+if ( $ENV{TRAVIS} ) {
+  plan skip_all => "Test will not work under Travis";
+}
+
 use File::Find;
 
 my @modules;

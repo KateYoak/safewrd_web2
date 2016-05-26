@@ -3,6 +3,9 @@
 use strict;
 use warnings;
 use Test::More;
+
+plan skip_all => "Test is for url shortener";
+
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
