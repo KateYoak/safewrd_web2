@@ -154,7 +154,7 @@ get '/contact_id' => sub {
 
 get '/archives' => sub {
     my @archives = ();
-    my $base_path = "/var/opt/clqs-api/media/video_recordings";
+    my $base_path = "/var/opt/clqs-api/media/archives";
     my $archive_url_base = "rtmp://api.tranzmt.it:1935/archives";
     if (session('user_id')) {
         my $user = schema->resultset('User')->find({ id => session('user_id') });
