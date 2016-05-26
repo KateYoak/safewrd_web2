@@ -86,7 +86,14 @@ has schema => (
   is      => 'lazy',
   builder => sub {
     my $self = shift;
-    return use_module( $self->schema_class )->connect( $self->connection );
+    my $connection = $self->connection;
+    $connection =~ s/username=(.*?);//; my $user = $1;
+    $connection =~ s/password=(.*?);//; my $pass = $1;
+    return use_module( $self->schema_class )->connect(
+      $connection,
+      $user,
+      $pass,
+    );
   },
 );
 
