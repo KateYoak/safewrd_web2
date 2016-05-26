@@ -39,6 +39,7 @@ BEGIN {
         $connection,
         $user,
         $pass,
+        { quote_names => 1 },
       );
     },
   );
@@ -54,6 +55,7 @@ BEGIN {
         $connection,
         $user,
         $pass,
+        { quote_names => 1 },
       );
     },
   );
