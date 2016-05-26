@@ -1,6 +1,11 @@
 use strict;
 use warnings;
 use Test::More;
+
+if ( $ENV{TRAVIS} ) {
+  plan skip_all => "Test will not work under Travis";
+}
+
 use Test::Exception;
 
 use IPC::Cmd qw/run/;

@@ -3,6 +3,11 @@
 use strict;
 use warnings;
 use Test::More;
+
+if ( $ENV{TRAVIS} ) {
+  plan skip_all => "Test will not work under Travis";
+}
+
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
