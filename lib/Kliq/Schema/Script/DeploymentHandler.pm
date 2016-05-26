@@ -118,14 +118,14 @@ has databases => (
   default => sub { [ 'PostgreSQL' ] },
 );
 
-=head2 dh
+=head2 _dh
 
 This returns the actual DeploymentHandler, set up using the 'schema',
 'script_directory', and 'database' attributes, and the 'force' option.
 
 =cut
 
-has dh => (
+has _dh => (
   is => 'lazy',
   builder => sub {
     my ( $self ) = @_;

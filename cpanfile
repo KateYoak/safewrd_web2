@@ -11,7 +11,7 @@ requires 'MooseX::Types::Parameterizable' => '== 0.07';
 #---------------#
 
 requires 'Const::Fast'                => '0.012';
-requires 'DBD::mysql'                 => '4.022';
+requires 'DBD::Pg';
 requires 'DBIx::Class'                => '0.08198';
 requires 'DBIx::Class::Helpers'       => '2.015';
 requires 'DBIx::Class::InflateColumn::Serializer'  => '0.03';
