@@ -1,3 +1,9 @@
+[tranzmt-nameserver-01]
+45.55.207.44
+
+[tranzmt-nameserver-02]
+45.55.206.196
+
 [tranzmt-backup-oldsrv]
 45.55.41.16
 
@@ -10,6 +16,8 @@ tranzmt-production-01
 # Host Function Settings
 [basic_hosts:children]
 tranzmt-backup-oldsrv
+tranzmt-nameserver-01
+tranzmt-nameserver-02
 
 [api_host:children]
 tranzmt-production-01
