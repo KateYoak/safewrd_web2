@@ -153,6 +153,10 @@ __PACKAGE__->many_to_many(kliqs => 'map_kliqs', 'kliq' );
 __PACKAGE__->has_many(map_shares => 'Kliq::Schema::Result::ShareContact','contact_id');
 __PACKAGE__->many_to_many(shares => 'map_shares', 'share' );
 
+sub _serializable_rels {
+    return qw/+user/;
+}
+
 sub insert {
     my ( $self, @args ) = @_;
 
