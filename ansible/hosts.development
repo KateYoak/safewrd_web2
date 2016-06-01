@@ -1,0 +1,6 @@
+[tranzmt-development-wowza]
+104.131.56.162
+
+# Host Function Settings
+[basic_hosts:children]
+tranzmt-development-wowza
