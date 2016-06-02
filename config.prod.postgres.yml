@@ -143,7 +143,7 @@ plugins:
            #dsn:  "dbi:SQLite:dbname=./t/var/kliq.db"
            #-- mysql
            dsn:  dbi:Pg:dbname=tranzmt_api;host=db-master.prod.nyc3.tranzmt.it
-           user: tranzmt_api
+           user: tranzmt_api_user
            pass: express88hotels59thimble
            options:
              quote_names: 1
