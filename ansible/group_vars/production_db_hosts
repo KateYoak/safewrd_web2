@@ -1,0 +1,6 @@
+---
+
+ufw_postgres_interface: "eth1"
+
+ufw_postgres_allowed_ips:
+  - "10.132.8.153/32"

@@ -1,0 +1,9 @@
+---
+
+- name: Ensure ufw is installed and up to date
+  apt:
+    name: ufw
+    state: latest
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 3600

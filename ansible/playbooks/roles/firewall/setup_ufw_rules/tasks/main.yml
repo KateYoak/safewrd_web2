@@ -1,0 +1,23 @@
+---
+
+- name: Ensure only ssh port allowed on all interfaces
+  ufw:
+    rule: allow
+    port: 22
+    proto: tcp
+
+- name: Ensure postgres port allowed on specific interface
+  ufw:
+    rule: allow
+    port: 5432
+    proto: tcp
+    interface: "{{ ufw_postgres_interface }}"
+    direction: "in"
+    from_ip: "{{ item }}"
+  with_items: ufw_postgres_allowed_ips
+
+# This needs to be last, so that other rules are set up first
+- name: Ensure ufw is enabled, and deny access by default
+  ufw:
+    state: enabled
+    policy: deny

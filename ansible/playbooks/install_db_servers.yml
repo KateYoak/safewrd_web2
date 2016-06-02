@@ -1,12 +1,22 @@
 ---
 
-- name: Install Basic items on Basic Hosts
+- name: Setup access restrictions on DB Hosts
+  hosts: production_db_hosts
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - maintenance/setup_sshd
+
+- name: Install items on DB Hosts
   hosts: production_db_hosts
   remote_user: ansible
   sudo: yes
 
   roles:
     - common/install_installation_packages
+    - firewall/install_ufw
+    - firewall/setup_ufw_rules
     - production_db_hosts/setup_postgres_apt_repo
     - production_db_hosts/install_postgres_9-4
     - production_db_hosts/install_maint_tools
