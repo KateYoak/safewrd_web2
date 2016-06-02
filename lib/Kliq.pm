@@ -277,11 +277,11 @@ sub search_params {
 my %qorder = (
     contacts => 'name',
     kliqs => 'name',
-    shares => 'created DESC',
-    tokens => 'created DESC',
-    uploads => 'created DESC',
-    events  => 'created DESC',
-    #timeline => 'created DESC',
+    shares => { -desc => 'created' },
+    tokens => { -desc => 'created' },
+    uploads => { -desc => 'created' },
+    events  => { -desc => 'created' },
+    #timeline => { -desc => 'created' },
 );
 
 sub query_filters {

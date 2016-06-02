@@ -1,0 +1,13 @@
+---
+
+- name: Ensure ssh port allowed on all interfaces
+  ufw:
+    rule: allow
+    port: 22
+    proto: tcp
+
+# This needs to be last, so that other rules are set up first
+- name: Ensure ufw is enabled, and deny access by default
+  ufw:
+    state: enabled
+    policy: deny

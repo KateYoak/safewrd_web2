@@ -2,3 +2,4 @@ hosts
 hosts.local
 log/*
 group_vars/local
+host_vars/192.168.*
