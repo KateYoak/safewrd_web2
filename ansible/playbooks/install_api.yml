@@ -9,3 +9,5 @@
     - maintenance/install_api_user
     - maintenance/install_api_user_ssh_keys
     - common/install_installation_packages
+    - postgresql/setup_postgres_apt_repo
+    - postgresql/install_postgres_client_9-4
