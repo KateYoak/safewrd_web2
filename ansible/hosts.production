@@ -10,6 +10,9 @@
 [tranzmt-production-01]
 45.55.62.82
 
+[tranzmt-production-db-master]
+104.236.22.168
+
 [production:children]
 tranzmt-production-01
 
@@ -27,3 +30,6 @@ tranzmt-production-01
 
 [url_shortener_host:children]
 tranzmt-production-01
+
+[production_db_hosts:children]
+tranzmt-production-db-master

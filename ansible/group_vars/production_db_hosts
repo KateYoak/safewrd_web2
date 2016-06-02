@@ -1,5 +1,28 @@
 ---
 
+# Users allowed to deploy to production db server using ansible
+ansible_ssh_users:
+  - tomb
+  - matthewt
+  - chrissyj
+  - duncand
+
+# Users to deploy to the production db server
+deploy_users:
+  - tomb
+  - matthewt
+  - chrissyj
+  - duncand
+
+# OS Packages to install for maintenance and installation setup
+installation_packages:
+  - vim
+  - build-essential
+
+pg_hba_hosts:
+  - { database: "tranzmt_api", user: "tranzmt_api_user", address: "10.132.8.153/32" }
+  - { database: "tranzmt_api", user: "tranzmt_api_ddl", address: "10.132.8.153/32" }
+
 ufw_postgres_interface: "eth1"
 
 ufw_postgres_allowed_ips:
