@@ -14,6 +14,9 @@ deploy_users:
   - chrissyj
   - duncand
 
+# Users to remove from hosts
+old_users:
+
 # OS Packages to install for maintenance and installation setup
 installation_packages:
   - vim
