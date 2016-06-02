@@ -1,0 +1,23 @@
+---
+
+- name: Install Basic items on Basic Hosts
+  hosts: production_db_hosts
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - common/install_installation_packages
+    - production_db_hosts/setup_postgres_apt_repo
+    - production_db_hosts/install_postgres_9-4
+    - production_db_hosts/install_maint_tools
+
+- name: Setup Databases and Access
+  hosts: production_db_hosts
+  remote_user: ansible
+  become: yes
+  become_user: postgres
+
+  roles:
+    - production_db_hosts/setup_users
+    - production_db_hosts/setup_database
+    - production_db_hosts/setup_user_privs

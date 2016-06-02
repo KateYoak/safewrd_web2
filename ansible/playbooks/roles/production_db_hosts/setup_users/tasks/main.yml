@@ -1,0 +1,10 @@
+---
+
+- name: Ensure Users are present
+  postgresql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    role_attr_flags: "{{ item.roles }}"
+  with_items:
+    - { name: 'tranzmt_api_ddl', password: 'force78yarg56puppy', roles: 'LOGIN,CREATEDB' }
+    - { name: 'tranzmt_api_user', password: 'express88hotels59thimble', roles: 'LOGIN' }

@@ -1,0 +1,23 @@
+---
+
+- name: Ensure DDL user has full privileges on tranzmt_api
+  postgresql_privs:
+    database: "tranzmt_api"
+    privs: "ALL"
+    type: "database"
+    obj: "tranzmt_api"
+    role: "tranzmt_api_ddl"
+    grant_option: yes
+    state: present
+
+- name: Ensure basic user has usage privileges on tranzmt_api
+  postgresql_privs:
+    database: "tranzmt_api"
+    privs: "USAGE"
+    type: "schema"
+    obj: "public"
+    role: "tranzmt_api_user"
+    grant_option: no
+    state: present
+
+
