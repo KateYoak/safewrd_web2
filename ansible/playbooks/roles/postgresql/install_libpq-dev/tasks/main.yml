@@ -1,0 +1,9 @@
+---
+
+- name: Install Maintenance tools
+  apt:
+    name: "libpq-dev"
+    state: latest
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 3600
