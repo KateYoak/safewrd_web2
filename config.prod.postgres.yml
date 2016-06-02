@@ -142,7 +142,7 @@ plugins:
            #-- sqlite
            #dsn:  "dbi:SQLite:dbname=./t/var/kliq.db"
            #-- mysql
-           dsn:  dbi:Pg:dbname=tranzmt_api;host=127.0.0.1
+           dsn:  dbi:Pg:dbname=tranzmt_api;host=db-master.prod.nyc3.tranzmt.it
            user: tranzmt_api
            pass: express88hotels59thimble
            options:
