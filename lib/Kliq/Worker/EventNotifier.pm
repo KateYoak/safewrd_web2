@@ -73,7 +73,7 @@ sub work {
             # Send push notifications only for published events
             if (($action eq 'emergency_flare' || $action eq 'live_event') && $event->event_status eq 'published') {
                 my $stream_url = q{rtmp://api.tranzmt.it:1935/live/} . $event->id;
-                $self->redis->rpush(notifyPush => to_json({
+                $self->redis->rpush(notifyPhone => to_json({
                     type => 'push',
                     carnival_payload => {
                         notification => {

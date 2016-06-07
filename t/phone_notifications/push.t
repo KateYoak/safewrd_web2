@@ -27,7 +27,7 @@ my $request_hash = {
     },
 };
 
-$r->rpush(notifyPush => to_json({
+$r->rpush(notifyPhone => to_json({
         request => $request_hash
     }));
 

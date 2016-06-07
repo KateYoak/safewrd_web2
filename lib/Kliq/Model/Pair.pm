@@ -104,7 +104,7 @@ sub flare {
                 id => $data->{pair_id}
             });
         if ($pair) {
-            $self->redis->rpush(notifyPush => to_json({
+            $self->redis->rpush(notifyPhone => to_json({
                 type => 'push',
                 carnival_payload => {
                     notification => {

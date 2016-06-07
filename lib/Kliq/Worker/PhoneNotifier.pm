@@ -1,4 +1,4 @@
-package Kliq::Worker::PushNotifier;
+package Kliq::Worker::PhoneNotifier;
 
 use utf8;
 use namespace::autoclean;
@@ -28,14 +28,13 @@ sub work {
 
     my $config = $self->config or die("Missing config");
     
-    $self->logger->info("Starting PushNotifier: " . Dumper($data));
+    $self->logger->info("Starting PhoneNotifier: " . Dumper($data));
 
     try {
-        # Prepare push data
         my $request_hash = $data->{request};
 
         # Check for mandatory params (carnival_payload, type)
-        die "Skipping push notification. Failed data check" if (!$request_hash);
+        die "Skipping notification. Failed data check" if (!$request_hash);
         die "Missing 'type' param in request" if (!$request_hash->{type});
         die "Missing 'carnival_payload' param in request" if (!$request_hash->{carnival_payload});
 
