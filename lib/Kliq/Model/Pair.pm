@@ -112,7 +112,7 @@ sub flare {
                         payload => {
                             action    => 'parent_pair_flare',
                             badge     => 1,
-                            sound     => 'event.wav',
+                            sound     => 'Default.caf',
                             alert     => 'Parent Pair Flare',
                             kliq_id   => $pair->kliq_id,
                         },
