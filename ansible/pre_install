@@ -1,0 +1,16 @@
+#! /bin/sh
+
+CONNECTION_USER=$1
+
+if [ -z $CONNECTION_USER ]; then
+  echo "Must provide connection username"
+  echo "usage: $0 <username>"
+  exit 1
+fi
+
+NOW=$(date +"%F_%H-%M")
+LOGFILE="log/$NOW.log"
+
+echo "Writing Ansible Log to $LOGFILE"
+
+ANSIBLE_LOG_PATH=$LOGFILE ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i hosts -k -K playbooks/pre_install.yml --extra-vars "remote_user=$CONNECTION_USER"

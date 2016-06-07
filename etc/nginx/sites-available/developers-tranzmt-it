@@ -1,0 +1,33 @@
+server {
+    listen        80;
+    server_name   developers.tranzmt.it;
+
+    access_log /var/log/nginx/developers.tranzmt.it/access.log;
+    error_log  /var/log/nginx/developers.tranzmt.it/error.log;
+
+    auth_basic "closed website";
+    auth_basic_user_file /etc/nginx/htpasswd_developers;
+
+        root /home/ubuntu/tranzmt-api/doc-api;
+        index index.html index.htm;
+
+        location /media/thumbs/ {
+             alias /var/opt/clqs-api/media/mediathumbs/;
+        }
+        location /mediathumbs/ {
+             alias /var/opt/clqs-api/media/mediathumbs/;
+        }
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to index.html
+                try_files $uri $uri/ /index.html;
+                # Uncomment to enable naxsi on this location
+                # include /etc/nginx/naxsi.rules
+        }
+
+      # Disabled as does not seem to be used in the docs at present
+      # location /vid {
+      #  root /home/ubuntu/kliq-api/tmp;
+      #  try_files $uri $uri/ /index.html;
+      #  }
+}

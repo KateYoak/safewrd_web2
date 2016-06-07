@@ -154,7 +154,7 @@ get '/contact_id' => sub {
 
 get '/archives' => sub {
     my @archives = ();
-    my $base_path = "/var/opt/clqs-api/media/video_recordings";
+    my $base_path = "/var/opt/clqs-api/media/archives";
     my $archive_url_base = "rtmp://api.tranzmt.it:1935/archives";
     if (session('user_id')) {
         my $user = schema->resultset('User')->find({ id => session('user_id') });
@@ -174,7 +174,10 @@ get '/archives' => sub {
                 join     => { kliq => { contacts_map => 'contact' } },
                 order_by => { -desc => 'me.created' }
             });
+        my @event_ids;
         while (my $event = $events->next) {
+            next if (grep { $event->id eq $_ } @event_ids);
+            push(@event_ids, $event->id);
             my $filename = $base_path . "/" . $event->id . ".flv";
             if (-e $filename) {
                 my $archive_url = $archive_url_base . "/" . $event->id;
@@ -277,11 +280,11 @@ sub search_params {
 my %qorder = (
     contacts => 'name',
     kliqs => 'name',
-    shares => 'created DESC',
-    tokens => 'created DESC',
-    uploads => 'created DESC',
-    events  => 'created DESC',
-    #timeline => 'created DESC',
+    shares => { -desc => 'created' },
+    tokens => { -desc => 'created' },
+    uploads => { -desc => 'created' },
+    events  => { -desc => 'created' },
+    #timeline => { -desc => 'created' },
 );
 
 sub query_filters {
@@ -398,6 +401,7 @@ sub thumb_vid {
 
 sub dejsonify {
     my $args = shift;
+
     if(!ref($args)) {
         return $args;
     }
@@ -417,8 +421,8 @@ sub dejsonify {
         }
         return $result;
     }
-    elsif(ref($args) eq 'JSON::XS::Boolean') {
-        return "$args" eq 'true' ? 1 : 0;
+    elsif(JSON::is_bool($args)) {
+        return "$args";
     }
     else {
         die("Wrong arguments $args");

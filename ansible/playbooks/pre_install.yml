@@ -1,0 +1,10 @@
+---
+
+- name: Pre install tasks for all nodes specified
+  hosts: all
+  remote_user: "{{ remote_user }}"
+  sudo: yes
+
+  roles:
+    - pre_install/install_ansible_user
+    - maintenance/install_ansible_ssh_keys

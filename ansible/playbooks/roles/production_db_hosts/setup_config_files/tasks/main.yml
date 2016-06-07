@@ -1,0 +1,19 @@
+---
+
+- name: Ensure pg_hba.conf is templated
+  template:
+    src: "pg_hba.conf.production.j2"
+    dest: "/etc/postgresql/9.4/main/pg_hba.conf"
+    owner: "postgres"
+    group: "postgres"
+    mode: 0640
+  notify: restart postgresql
+
+- name: Ensure postgres.conf is templated
+  template:
+    src: "postgresql.conf.production.j2"
+    dest: "/etc/postgresql/9.4/main/postgresql.conf"
+    owner: "postgres"
+    group: "postgres"
+    mode: "0644"
+  notify: restart postgresql

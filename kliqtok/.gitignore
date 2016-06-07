@@ -1,0 +1,7 @@
+logs
+*.egg
+*.pyc
+env
+.coverage
+*.egg-info
+kliqprod.ini

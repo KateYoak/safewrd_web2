@@ -58,7 +58,7 @@ __PACKAGE__->has_many(
     );
 
 sub _serializable_rels {
-    return qw/contacts/;
+    return qw/+contacts/;
 }
 
 1;

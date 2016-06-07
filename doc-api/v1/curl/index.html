@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="Content-Language" content="en-us" />
+  <meta http-equiv="imagetoolbar" content="false" />
+  <meta name="MSSmartTagsPreventParsing" content="true" />
+  <title>cURL Examples | Tranzmt API</title>
+  <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+  <link href="/css/960.css" rel="stylesheet" type="text/css" />
+  <link href="/css/uv_active4d.css" rel="stylesheet" type="text/css" />
+  <link href="/css/documentation.css" media="screen" rel="stylesheet" type="text/css">
+  <link href="/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+  <link href="/css/custom.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js" type="text/javascript"></script>
+  <script src="/js/documentation.js" type="text/javascript"></script>
+</head>
+<body class="api">
+
+    <div id="header-wrapper">
+      <div id="header">
+        <div>
+          <a class="logo" href="/"><img src="/images/logo_developer.png" width="140" height="110" /></a>
+          <ul class="nav">
+            <li><a href="/v1/">API v1</a></li>
+            <li><a href="https://www.assembla.com/spaces/kliq-m/tickets">Support</a></li>
+          </ul>
+        </div>
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+
+    <div id="wrapper">
+      <div class="content">
+    <h1 id="curl-examples">cURL Examples</h1>
+
+<h2 id="store-cookie">Store Cookie</h2>
+
+<p>As explained in the <a href="/v1/auth/">Authentication</a> section, a new session
+will be initiated and a cookie will be set if not provided in the request,
+and all further API requests should provide the <code>access_token</code> cookie
+within the session.</p>
+
+<p>You can store the resulting cookie in a local file, to use on subsequent
+test requests using the <code>-b</code> parameter:</p>
+
+<pre><code>curl -c cookies.txt http://api.tranzmt.it/v1
+</code></pre>
+
+<h2 id="create-an-oauth-token-native-app">Create an OAuth token (native app)</h2>
+
+<pre><code>curl -b cookies.txt --data-binary @token.json -X POST http://api.tranzmt.it/v1/tokens
+</code></pre>
+
+<p>The file that contains the data (token.json in the example above) would look like this:</p>
+
+<pre><code>{
+    "token":"111222333",
+    "service":"google"
+}
+</code></pre>
+
+<p>This will automatically start synchronizing the user’s contact list.</p>
+
+<h2 id="get-all-the-users-contacts">Get all the user’s contacts</h2>
+
+<pre><code>curl -b cookies.txt http://api.tranzmt.it/v1/contacts
+</code></pre>
+
+<h2 id="add-a-kliq-with-contacts">Add a kliq with contacts</h2>
+
+<pre><code>curl -b cookies.txt --data-binary @kliq.json -X POST http://api.tranzmt.it/v1/kliqs
+</code></pre>
+
+<p>The <em>kliq.json</em> file could contain:</p>
+
+<pre><code>{
+    "name":"Even Cooler Kliq",
+    "is_emergency":1,
+    "contactsMap":
+    [{
+        "contactId":"1A9F1F2B-A297-1014-8D7F-A3F7C84F2656"
+    }]
+}
+</code></pre>
+
+<h2 id="edit-a-kliq">Edit a Kliq</h2>
+
+<pre><code>curl -b cookies.txt --data-binary @kliq2.json -X PUT http://api.tranzmt.it/v1/kliqs/31269EE0-A297-1014-BB8E-A3F7C84F2656
+</code></pre>
+
+<p>With as file contents, the properties you want changed:</p>
+
+<pre><code>{
+    "name":"Coolest Kliq"
+}
+</code></pre>
+
+<h2 id="upload-an-image">Upload an image</h2>
+
+<pre><code>curl -b cookies.txt --form upload=@image.png http://api.tranzmt.it/v1/uploads
+</code></pre>
+
+<p>Here, image.png gets uploaded to the user’s account.</p>
+
+<h2 id="share-the-upload-with-kliqs">Share the upload with kliqs</h2>
+
+<pre><code>curl -b cookies.txt --data-binary @share.json -X POST http://api.tranzmt.it/v1/shares
+</code></pre>
+
+<p>The share.json file contains:</p>
+
+<pre><code>{
+    "uploadId":"47D22DA3-DAA6-1014-9CD7-0BF3C84F2656",
+    "message":"Check this out",
+    "contactsMap":[{ "contactId": "1A9F1F2B-A297-1014-8D7F-A3F7C84F2656" }],
+    "kliqsMap":[{ "kliqId": 1 }]
+}
+</code></pre>
+
+<h2 id="add-a-comment-to-a-share">Add a comment to a share</h2>
+
+<pre><code>curl -b cookies.txt --data-binary @comment.json -X POST http://api.tranzmt.it/v1/comments
+</code></pre>
+
+<p>Comment.json contains:</p>
+
+<pre><code>{
+    "shareId":"3C3CB47C-A297-1014-93D2-A3F7C84F2656",
+    "text":"Wow, this is cool"
+}
+</code></pre>
+
+<h2 id="delete-a-kliq">Delete a kliq</h2>
+
+<pre><code>curl -b cookies.txt -X DELETE http://api.tranzmt.it/v1/kliqs/31269EE0-A297-1014-BB8E-A3F7C84F2656
+</code></pre>
+
+      </div>
+
+    <div id="js-sidebar" class="sidebar-shell">
+      <div class="js-toggle-list sidebar-module expandable">
+        <ul>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/">Summary</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v1/auth/">Authentication</a></li>
+              <li><a href="/v1/curl/">cURL Examples</a></li>
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/users/">Users</a></h3>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/tokens/">Tokens</a></h3>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/personas/">Personas</a></h3>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/contacts/">Contacts</a></h3>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/kliqs/">Kliqs</a></h3>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/uploads/">Uploads</a></h3>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/shares/">Shares</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v1/timeline/">Timeline</a></li>
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/comments/">Comments</a></h3>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/media/">Media</a></h3>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v1/assets/">Assets</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v1/zencoder/">Zencoder callback</a></li>
+            </ul>
+          </li>
+
+        </ul>
+      </div> <!-- /sidebar-module -->
+      <div class="sidebar-module">
+        <p>This website is a <a href="https://www.assembla.com/code/kliq-m/git-7/repo/instructions" target="_blank">Tranzmt documentation repo</a>. Please help us by cloning the project and adding to it.</p>
+      </div>
+    </div><!-- /sidebar-shell -->
+
+    </div><!-- #wrapper -->
+
+    <div id="footer" >
+      <div class="lower_footer">
+        <div class="footer_inner clearfix">
+            <div id="legal">
+              <!--[if IE]><a class="home_ie" href="http://tranzmt.it">Home</a><![endif]-->
+              <![if !IE]><a class="home" href="http://tranzmt.it">Home</a><![endif]>
+
+              <p>&copy; <span id="year">year</span> Tranzmt Mobile, LLC. All rights reserved.</p>
+            </div><!-- /#legal or /#legal_ie-->
+
+        </div><!-- /.site -->
+      </div><!-- /.lower_footer -->
+    </div><!-- /#footer -->
+  </body>
+</html>
