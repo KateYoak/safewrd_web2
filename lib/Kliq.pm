@@ -174,7 +174,10 @@ get '/archives' => sub {
                 join     => { kliq => { contacts_map => 'contact' } },
                 order_by => { -desc => 'me.created' }
             });
+        my @event_ids;
         while (my $event = $events->next) {
+            next if (grep { $event->id eq $_ } @event_ids);
+            push(@event_ids, $event->id);
             my $filename = $base_path . "/" . $event->id . ".flv";
             if (-e $filename) {
                 my $archive_url = $archive_url_base . "/" . $event->id;
