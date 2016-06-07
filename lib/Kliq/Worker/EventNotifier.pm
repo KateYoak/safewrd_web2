@@ -25,7 +25,6 @@ sub work {
 
     #-- send notifications) 
 
-    my @twits    = ();
     my %personas = ();
     my $mailPushed = 0;
 
@@ -63,21 +62,37 @@ sub work {
         if ($contact->user_id) {
             $self->logger->info("Events created to send push notifications to: " . $contact->user_id);
             my $action = 'live_event';
+            my $alert_message = "Live Event - " . $event->title;
+            my $alert_sound   = "event.wav";
             if ($kliq->is_emergency) {
                 $action = 'emergency_flare';
+                $alert_message = "Emergency Flare - incoming live video stream";
+                $alert_sound   = "flare.wav";
             }
 
-            $self->redis->rpush(notifyPush => to_json({
-                action    => $action,
-                sender    => $personas{$contact->service},
-                when_occurs => ''.$event->when_occurs,
-                title     => $event->title,
-                location  => $event->location,
-                event_id  => $event->id,
-                event_status => $event->event_status,
-                contact_id => $contact->id,
-                uid        => $contact->user_id
-            }));
+            # Send push notifications only for published events
+            if (($action eq 'emergency_flare' || $action eq 'live_event') && $event->event_status eq 'published') {
+                my $stream_url = q{rtmp://api.tranzmt.it:1935/live/} . $event->id;
+                $self->redis->rpush(notifyPush => to_json({
+                    type => 'push',
+                    carnival_payload => {
+                        notification => {
+                            to => [{ name => 'user_id', criteria => [$contact->user_id] }],
+                            payload => {
+                                action    => $action,
+                                badge     => 1,
+                                sound     => $alert_sound,
+                                alert     => $alert_message,
+                                location  => $event->location,
+                                live_stream_url => $stream_url,
+                            },
+                        },
+                    },
+                }));
+            }
+        }
+        else {
+            $self->logger->info("Not sending push notification. Missing user_id");
         } 
     }
     $self->logger->info("Events pushed to email") if($mailPushed);

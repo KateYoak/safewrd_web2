@@ -33,14 +33,11 @@ sub work {
     try {
         # Prepare push data
         my $request_hash = $data->{request};
-        if (!$request_hash) {
-            $request_hash = $self->prepare_request_data($data);
-        }
 
-        # Check for mandatory params (to, payload)
+        # Check for mandatory params (carnival_payload, type)
         die "Skipping push notification. Failed data check" if (!$request_hash);
-        die "Missing 'to' param in request" if (!$request_hash->{to});
-        die "Missing 'payload' param in request" if (!$request_hash->{payload});
+        die "Missing 'type' param in request" if (!$request_hash->{type});
+        die "Missing 'carnival_payload' param in request" if (!$request_hash->{carnival_payload});
 
         for my $os ('ios', 'android') {
             my $username = $config->{$os}->{bundle_id};
@@ -48,18 +45,22 @@ sub work {
             my $carnival_base_uri = $config->{$os}->{base_uri};
 
             my $ua  = LWP::UserAgent->new;
-            my $uri = URI->new($carnival_base_uri . '/notifications');
+            my $end_point = "/notifications";
+            if ($request_hash->{type} eq 'in-app') {
+                $end_point = "/messages";
+            }
+            my $uri = URI->new($carnival_base_uri . $end_point);
 
-            my $request_json = encode_json({ notification => $request_hash });
+            my $request_json = encode_json($request_hash->{carnival_payload});
             my $request = POST($uri, "Content-type" => "application/json", Accept => "application/json", Content => $request_json);
             $request->authorization_basic($username, $password);
 
             $self->logger->info("Processing pull request for: " . $os);
-            #$self->logger->debug("Raw request: " . Dumper($request)); 
+            $self->logger->debug("Raw request: " . Dumper($request)); 
             my $response = $ua->request($request);
             if ($response->is_success) {
                 my $response_json = decode_json($response->content);
-                #$self->logger->debug("Raw response: " . Dumper($response_json));
+                $self->logger->debug("Raw response: " . Dumper($response_json));
                 $self->logger->info("Notification sent - Success");
             }
             else {
@@ -71,50 +72,6 @@ sub work {
         my $err = $self->format_error($_);
         $self->logger->error("$err");
     };
-}
-
-sub prepare_request_data {
-    my ($self, $data) = @_;
-
-    my $request_hash;
-
-    # Flare push notification
-    if ($data->{action} && $data->{uid}) {
-        my $evst = $data->{event_status};
- 
-        if (($data->{action} eq 'emergency_flare' || $data->{action} eq 'live_event') && !($evst eq 'published')) {
-            $self->logger->error(q{can't send message for event id }.$data->{event_id}
-                .q{ with invalid event_status }.$evst);
-            return;
-        }
-
-        my $stream_url = q{rtmp://api.tranzmt.it:1935/live/} . $data->{event_id};
-
-        #$request_hash->{to} = '*'; # Leaving it here for initial testing
-        $request_hash->{to} = [{ name => 'user_id', criteria => [$data->{uid}] }];
-        $request_hash->{payload} = {
-            alert    => "Live Event - " . $data->{title},
-            badge    => 1,
-            sound    => "event.wav",
-            action   => $data->{action},
-            location => $data->{location},
-            live_stream_url => $stream_url,
-        };
-
-        # Emergency flare notification
-        if ($data->{action} eq 'emergency_flare') {
-            $request_hash->{payload}->{alert} = "Emergency Flare - incoming live video stream";
-            $request_hash->{payload}->{sound} = "flare.wav";
-        }
-
-        # Parent pair flare notification
-        if ($data->{action} eq 'parent_pair_flare') {
-            $request_hash->{payload}->{alert}   = "Parent Pair Flare";
-            $request_hash->{payload}->{kliq_id} = $data->{kliq_id};
-        }
-    }
-    
-    return $request_hash;
 }
 
 __PACKAGE__->meta->make_immutable;
