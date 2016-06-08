@@ -1,0 +1,7 @@
+---
+
+- name: Create nginx required directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items: nginx_required_directories

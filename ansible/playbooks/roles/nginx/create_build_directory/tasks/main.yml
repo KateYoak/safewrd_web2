@@ -1,0 +1,6 @@
+---
+
+- name: Create nginx build directory
+  file:
+    path: "/root/nginx-install/archives"
+    state: directory

@@ -1,0 +1,21 @@
+---
+
+- name: Create configure script
+  template:
+    src: buildscript.j2
+    dest: /root/nginx-install/buildscript
+    owner: root
+    group: root
+    mode: 0744
+
+- name: Run configure script
+  shell: ./buildscript
+  args:
+    chdir: "/root/nginx-install/"
+    creates: "Makefile"
+
+- name: Make and install nginx
+  shell: make && make install
+  args:
+    chdir: "/root/nginx-install/nginx-1.8.1/"
+    creates: "/usr/sbin/nginx"

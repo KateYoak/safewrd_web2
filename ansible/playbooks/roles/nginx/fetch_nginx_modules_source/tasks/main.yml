@@ -1,0 +1,16 @@
+---
+
+- name: Download nginx modules
+  get_url:
+    url:  "{{ item.url }}"
+    dest: "/root/nginx-install/archives/{{ item.dest }}.tar.gz"
+    force: no
+  with_items: nginx_modules
+
+- name: Extract nginx modules
+  unarchive:
+    src: "/root/nginx-install/archives/{{ item.dest }}.tar.gz"
+    creates: "{{ item.dest }}"
+    copy: no
+    dest: "/root/nginx-install"
+  with_items: nginx_modules

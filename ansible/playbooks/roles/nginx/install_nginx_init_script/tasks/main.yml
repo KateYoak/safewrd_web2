@@ -1,0 +1,20 @@
+---
+
+- name: Download nginx init script
+  get_url:
+    url:  "https://github.com/Fleshgrinder/nginx-sysvinit-script/archive/master.tar.gz"
+    dest: "/root/nginx-install/archives/nginx-sysvinit-script.tar.gz"
+    force: no
+
+- name: Extract nginx init script
+  unarchive:
+    src: "/root/nginx-install/archives/nginx-sysvinit-script.tar.gz"
+    creates: "nginx-sysvinit-script"
+    copy: no
+    dest: "/root/nginx-install"
+
+- name: Setup nginx init script
+  shell: make
+  args:
+    chdir: "/root/nginx-install/nginx-sysvinit-script"
+    creates: "/etc/init.d/nginx"
