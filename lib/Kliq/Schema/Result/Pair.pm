@@ -17,33 +17,40 @@ __PACKAGE__->add_columns(
     },
     title => {
         data_type => "VARCHAR",
+        is_nullable => 1,
         size => 255
     },    
     parent_device_id => {
         data_type => 'VARCHAR',
+        is_nullable => 1,
         size => 36,
     },    
     child_device_id => {
         data_type => 'VARCHAR',
+        is_nullable => 1,
         size => 36,
     },    
     parent_user_id => {
         data_type => 'CHAR',
         size => 36,
         is_foreign_key => 1,
+        is_nullable => 1,
     },    
     child_user_id => {
         data_type => 'CHAR',
         size => 36,
         is_foreign_key => 1,
+        is_nullable => 1,
     },    
     kliq_id => {
         data_type => 'CHAR',
         size => 36,
         is_foreign_key => 1,
+        is_nullable => 1,
     },
     code => {
         data_type => "CHAR",
+        is_nullable => 1,
         size => 8
     },    
 );

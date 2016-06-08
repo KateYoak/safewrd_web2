@@ -9,7 +9,7 @@ setup(
         'opentok-python-sdk',
         'sqlalchemy',
         'oauthlib',
-        'mysql-python',
+        'psycopg2',
         'redis',
         'futures',
         'marrow.mailer==4.0.0',

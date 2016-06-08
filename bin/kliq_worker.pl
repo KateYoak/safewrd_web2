@@ -47,7 +47,7 @@ my %WORKERMAP = (
     notifyTwitter  => sub { ('TwitterNotifier',  $config->{sites}->{twitter}) },
     notifyFacebook => sub { ('FacebookNotifier', $config->{sites}->{facebook}) },
     notifyLinkedIn => sub { ('LinkedInNotifier', $config->{sites}->{linkedin}) },
-    notifyPush     => sub { ('PushNotifier', $config->{sites}->{carnival}) },
+    notifyPhone    => sub { ('PhoneNotifier', $config->{sites}->{carnival}) },
     sliceVideo     => sub { ('VideoClipper', { asset_basepath => $config->{asset_basepath} })  },
     uploadS3       => sub { ('S3Uploader', $config->{sites}->{'amazon-s3'}) },
     zencode        => sub { ('Zencoder', { zencoder => $config->{sites}->{'zencoder'}, rackspace => $config->{sites}->{'rackspace'} }) },

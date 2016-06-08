@@ -1,0 +1,11 @@
+---
+
+- name: Ensure postgres port allowed on specific interface
+  ufw:
+    rule: allow
+    port: 5432
+    proto: tcp
+    interface: "{{ ufw_postgres_interface }}"
+    direction: "in"
+    from_ip: "{{ item }}"
+  with_items: ufw_postgres_allowed_ips

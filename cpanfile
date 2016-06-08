@@ -11,7 +11,7 @@ requires 'MooseX::Types::Parameterizable' => '== 0.07';
 #---------------#
 
 requires 'Const::Fast'                => '0.012';
-requires 'DBD::mysql'                 => '4.022';
+requires 'DBD::Pg';
 requires 'DBIx::Class'                => '0.08198';
 requires 'DBIx::Class::Helpers'       => '2.015';
 requires 'DBIx::Class::InflateColumn::Serializer'  => '0.03';
@@ -72,6 +72,17 @@ requires 'WWW::Mixpanel'              => '0.07';
 requires 'WebService::Rackspace::CloudFiles';
 requires 'YAML::XS'                   => '0.38';
 requires 'namespace::autoclean'       => '0.13';
+
+#----------------#
+# DH Script Deps #
+#----------------#
+
+requires 'DBIx::Class::DeploymentHandler' => '0.002218';
+requires 'Module::Runtime';
+requires 'Moo';
+requires 'MooX::Options';
+requires 'namespace::clean';
+requires 'DBIx::Class::Fixtures';
 
 #-------------#
 # Worker Deps #

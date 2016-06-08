@@ -8,7 +8,7 @@ use warnings;
 use JSON;
 use base 'DBIx::Class::Schema';
 
-our $VERSION = 1;
+our $VERSION = 2;
 
 __PACKAGE__->load_namespaces(
     default_resultset_class => 'ResultSet',

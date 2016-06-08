@@ -1,0 +1,10 @@
+# Managed by Ansible
+
+# DO NOT DISABLE!
+# Database administrative login by Unix domain socket
+local   all             postgres                                peer
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+{% for host in pg_hba_hosts %}
+host  {{ host.database }}  {{ host.user }}  {{ host.address }}  md5
+{% endfor %}

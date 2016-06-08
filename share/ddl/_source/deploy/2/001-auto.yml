@@ -1,0 +1,2742 @@
+---
+schema:
+  procedures: {}
+  tables:
+    cms_asset:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - asset_format_id
+          match_type: ''
+          name: cms_asset_fk_asset_format_id
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields:
+            - id
+          reference_table: cms_asset_format
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - share_id
+          match_type: ''
+          name: cms_asset_fk_share_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: shares
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - media_id
+          match_type: ''
+          name: cms_asset_fk_media_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: cms_media
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - upload_id
+          match_type: ''
+          name: cms_asset_fk_upload_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: uploads
+          type: FOREIGN KEY
+      fields:
+        asset_format_id:
+          data_type: integer
+          default_value: ~
+          extra:
+            unsigned: 1
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: asset_format_id
+          order: 3
+          size:
+            - 0
+        created:
+          data_type: DATETIME
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 15
+          size:
+            - 0
+        height:
+          data_type: smallint
+          default_value: 0
+          extra:
+            unsigned: 1
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: height
+          order: 11
+          size:
+            - 0
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        is_active:
+          data_type: tinyint
+          default_value: 1
+          extra:
+            unsigned: 1
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: is_active
+          order: 13
+          size:
+            - 1
+        is_preview:
+          data_type: tinyint
+          default_value: 0
+          extra:
+            unsigned: 1
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: is_preview
+          order: 12
+          size:
+            - 1
+        last_modified:
+          data_type: DATETIME
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: last_modified
+          order: 16
+          size:
+            - 0
+        media_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: media_id
+          order: 4
+          size:
+            - 36
+        meta:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: meta
+          order: 14
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 7
+          size:
+            - 255
+        share_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: share_id
+          order: 6
+          size:
+            - 36
+        signature:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: signature
+          order: 9
+          size:
+            - 512
+        type:
+          data_type: enum
+          default_value: video
+          extra:
+            list:
+              - clip
+              - video
+              - cover
+              - banner
+              - other
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: type
+          order: 2
+          size:
+            - 0
+        upload_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: upload_id
+          order: 5
+          size:
+            - 36
+        url:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: url
+          order: 8
+          size:
+            - 255
+        width:
+          data_type: smallint
+          default_value: 0
+          extra:
+            unsigned: 1
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: width
+          order: 10
+          size:
+            - 0
+      indices:
+        - fields:
+            - asset_format_id
+          name: cms_asset_idx_asset_format_id
+          options: []
+          type: NORMAL
+        - fields:
+            - share_id
+          name: cms_asset_idx_share_id
+          options: []
+          type: NORMAL
+        - fields:
+            - media_id
+          name: cms_asset_idx_media_id
+          options: []
+          type: NORMAL
+        - fields:
+            - upload_id
+          name: cms_asset_idx_upload_id
+          options: []
+          type: NORMAL
+      name: cms_asset
+      options: []
+      order: 14
+    cms_asset_format:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - file_extension
+          match_type: ''
+          name: file_extension
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: UNIQUE
+        - deferrable: 1
+          expression: ''
+          fields:
+            - label
+          match_type: ''
+          name: label
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: UNIQUE
+      fields:
+        description:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: description
+          order: 4
+          size:
+            - 128
+        file_extension:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 1
+          name: file_extension
+          order: 6
+          size:
+            - 16
+        id:
+          data_type: integer
+          default_value: ~
+          extra:
+            unsigned: 1
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        label:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 1
+          name: label
+          order: 3
+          size:
+            - 16
+        mime_type:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: mime_type
+          order: 5
+          size:
+            - 64
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 2
+          size:
+            - 64
+        zencoder_params:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: zencoder_params
+          order: 7
+          size:
+            - 0
+      indices:
+        - fields:
+            - label
+          name: idx_label
+          options: []
+          type: NORMAL
+      name: cms_asset_format
+      options: []
+      order: 1
+    cms_media:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: cms_media_fk_user_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        created:
+          data_type: DATETIME
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 9
+          size:
+            - 0
+        description:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: description
+          order: 6
+          size:
+            - 512
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        last_modified:
+          data_type: DATETIME
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: last_modified
+          order: 10
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 4
+          size:
+            - 256
+        source_video:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: source_video
+          order: 8
+          size:
+            - 256
+        status:
+          data_type: enum
+          default_value: new
+          extra:
+            list:
+              - new
+              - processing
+              - error
+              - ready
+              - published
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: status
+          order: 7
+          size:
+            - 0
+        title:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: title
+          order: 5
+          size:
+            - 256
+        type:
+          data_type: enum
+          default_value: movie
+          extra:
+            list:
+              - movie
+              - episode
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: type
+          order: 2
+          size:
+            - 0
+        user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 3
+          size:
+            - 36
+      indices:
+        - fields:
+            - user_id
+          name: cms_media_idx_user_id
+          options: []
+          type: NORMAL
+      name: cms_media
+      options: []
+      order: 3
+    comments:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - share_id
+          match_type: ''
+          name: comments_fk_share_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: shares
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: comments_fk_user_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: current_timestamp
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 6
+          size:
+            - 0
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        picture:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: picture
+          order: 4
+          size:
+            - 500
+        share_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: share_id
+          order: 3
+          size:
+            - 36
+        text:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: text
+          order: 5
+          size:
+            - 512
+        user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 2
+          size:
+            - 36
+      indices:
+        - fields:
+            - share_id
+          name: comments_idx_share_id
+          options: []
+          type: NORMAL
+        - fields:
+            - user_id
+          name: comments_idx_user_id
+          options: []
+          type: NORMAL
+      name: comments
+      options: []
+      order: 13
+    contacts:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - owner_id
+            - handle
+            - service
+          match_type: ''
+          name: owner_service_contact
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: UNIQUE
+        - deferrable: 1
+          expression: ''
+          fields:
+            - owner_id
+          match_type: ''
+          name: contacts_fk_owner_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: contacts_fk_user_id
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: current_timestamp
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 20
+          size:
+            - 0
+        email:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: email
+          order: 9
+          size:
+            - 50
+        gender:
+          data_type: enum
+          default_value: ~
+          extra:
+            list:
+              - male
+              - female
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: gender
+          order: 13
+          size:
+            - 0
+        handle:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 1
+          name: handle
+          order: 4
+          size:
+            - 300
+        hash:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: hash
+          order: 5
+          size:
+            - 35
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        image:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: image
+          order: 12
+          size:
+            - 255
+        language:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: language
+          order: 18
+          size:
+            - 10
+        location:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: location
+          order: 16
+          size:
+            - 200
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 8
+          size:
+            - 50
+        optedin:
+          data_type: tinyint
+          default_value: 0
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: optedin
+          order: 19
+          size:
+            - 1
+        org_name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: org_name
+          order: 14
+          size:
+            - 75
+        org_title:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: org_title
+          order: 15
+          size:
+            - 75
+        owner_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 1
+          name: owner_id
+          order: 3
+          size:
+            - 36
+        phone:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: phone
+          order: 10
+          size:
+            - 15
+        screen_name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: screen_name
+          order: 7
+          size:
+            - 75
+        service:
+          data_type: enum
+          default_value: ~
+          extra:
+            list:
+              - google
+              - twitter
+              - facebook
+              - yahoo
+              - linkedin
+              - manual
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 1
+          name: service
+          order: 6
+          size:
+            - 0
+        timezone:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: timezone
+          order: 17
+          size:
+            - 75
+        user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 2
+          size:
+            - 36
+        website:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: website
+          order: 11
+          size:
+            - 200
+      indices:
+        - fields:
+            - owner_id
+          name: contacts_idx_owner_id
+          options: []
+          type: NORMAL
+        - fields:
+            - user_id
+          name: contacts_idx_user_id
+          options: []
+          type: NORMAL
+      name: contacts
+      options: []
+      order: 4
+    events:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - kliq_id
+          match_type: ''
+          name: events_fk_kliq_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: kliqs
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: events_fk_user_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: current_timestamp
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 10
+          size:
+            - 0
+        event_status:
+          data_type: varchar
+          default_value: new
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: event_status
+          order: 9
+          size:
+            - 20
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        image:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: image
+          order: 5
+          size:
+            - 150
+        kliq_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: kliq_id
+          order: 3
+          size:
+            - 36
+        location:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: location
+          order: 7
+          size:
+            - 64
+        price:
+          data_type: decimal
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: price
+          order: 8
+          size:
+            - 10
+            - 2
+        title:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: title
+          order: 4
+          size:
+            - 64
+        user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 2
+          size:
+            - 36
+        when_occurs:
+          data_type: datetime
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: when_occurs
+          order: 6
+          size:
+            - 0
+      indices:
+        - fields:
+            - kliq_id
+          name: events_idx_kliq_id
+          options: []
+          type: NORMAL
+        - fields:
+            - user_id
+          name: events_idx_user_id
+          options: []
+          type: NORMAL
+      name: events
+      options: []
+      order: 9
+    kliq_contact_map:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - kliq_id
+            - contact_id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - contact_id
+          match_type: ''
+          name: kliq_contact_map_fk_contact_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: contacts
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - kliq_id
+          match_type: ''
+          name: kliq_contact_map_fk_kliq_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: kliqs
+          type: FOREIGN KEY
+      fields:
+        contact_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: contact_id
+          order: 2
+          size:
+            - 36
+        kliq_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: kliq_id
+          order: 1
+          size:
+            - 36
+      indices:
+        - fields:
+            - contact_id
+          name: kliq_contact_map_idx_contact_id
+          options: []
+          type: NORMAL
+        - fields:
+            - kliq_id
+          name: kliq_contact_map_idx_kliq_id
+          options: []
+          type: NORMAL
+      name: kliq_contact_map
+      options: []
+      order: 11
+    kliqs:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: kliqs_fk_user_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: current_timestamp
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 6
+          size:
+            - 0
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        image:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: image
+          order: 4
+          size:
+            - 150
+        is_emergency:
+          data_type: tinyint
+          default_value: 0
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: is_emergency
+          order: 5
+          size:
+            - 1
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 3
+          size:
+            - 100
+        user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 2
+          size:
+            - 36
+      indices:
+        - fields:
+            - user_id
+          name: kliqs_idx_user_id
+          options: []
+          type: NORMAL
+      name: kliqs
+      options: []
+      order: 5
+    oauth_tokens:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: oauth_tokens_fk_user_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: current_timestamp
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 7
+          size:
+            - 0
+        expires:
+          data_type: VARCHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: expires
+          order: 8
+          size:
+            - 64
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        persona_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: persona_id
+          order: 3
+          size:
+            - 36
+        secret:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: secret
+          order: 5
+          size:
+            - 4096
+        service:
+          data_type: enum
+          default_value: ~
+          extra:
+            list:
+              - google
+              - twitter
+              - facebook
+              - yahoo
+              - linkedin
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: service
+          order: 6
+          size:
+            - 0
+        token:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: token
+          order: 4
+          size:
+            - 4096
+        user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 2
+          size:
+            - 36
+      indices:
+        - fields:
+            - user_id
+          name: oauth_tokens_idx_user_id
+          options: []
+          type: NORMAL
+      name: oauth_tokens
+      options: []
+      order: 6
+    pair:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - child_user_id
+          match_type: ''
+          name: pair_fk_child_user_id
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - kliq_id
+          match_type: ''
+          name: pair_fk_kliq_id
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields:
+            - id
+          reference_table: kliqs
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - parent_user_id
+          match_type: ''
+          name: pair_fk_parent_user_id
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        child_device_id:
+          data_type: VARCHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: child_device_id
+          order: 4
+          size:
+            - 36
+        child_user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: child_user_id
+          order: 6
+          size:
+            - 36
+        code:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: code
+          order: 8
+          size:
+            - 8
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        kliq_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: kliq_id
+          order: 7
+          size:
+            - 36
+        parent_device_id:
+          data_type: VARCHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: parent_device_id
+          order: 3
+          size:
+            - 36
+        parent_user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: parent_user_id
+          order: 5
+          size:
+            - 36
+        title:
+          data_type: VARCHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: title
+          order: 2
+          size:
+            - 255
+      indices:
+        - fields:
+            - child_user_id
+          name: pair_idx_child_user_id
+          options: []
+          type: NORMAL
+        - fields:
+            - kliq_id
+          name: pair_idx_kliq_id
+          options: []
+          type: NORMAL
+        - fields:
+            - parent_user_id
+          name: pair_idx_parent_user_id
+          options: []
+          type: NORMAL
+      name: pair
+      options: []
+      order: 10
+    personas:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: personas_fk_user_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: current_timestamp
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 15
+          size:
+            - 0
+        email:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: email
+          order: 7
+          size:
+            - 50
+        gender:
+          data_type: enum
+          default_value: ~
+          extra:
+            list:
+              - male
+              - female
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: gender
+          order: 11
+          size:
+            - 0
+        handle:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: handle
+          order: 3
+          size:
+            - 300
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        image:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: image
+          order: 10
+          size:
+            - 255
+        language:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: language
+          order: 14
+          size:
+            - 10
+        location:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: location
+          order: 12
+          size:
+            - 200
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 6
+          size:
+            - 50
+        profile_url:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: profile_url
+          order: 8
+          size:
+            - 200
+        screen_name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: screen_name
+          order: 5
+          size:
+            - 75
+        service:
+          data_type: enum
+          default_value: ~
+          extra:
+            list:
+              - google
+              - twitter
+              - facebook
+              - yahoo
+              - linkedin
+              - kliq
+              - manual
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: service
+          order: 4
+          size:
+            - 0
+        timezone:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: timezone
+          order: 13
+          size:
+            - 75
+        user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 2
+          size:
+            - 36
+        website:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: website
+          order: 9
+          size:
+            - 200
+      indices:
+        - fields:
+            - user_id
+          name: personas_idx_user_id
+          options: []
+          type: NORMAL
+      name: personas
+      options: []
+      order: 7
+    share_contact_map:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - contact_id
+          match_type: ''
+          name: share_contact_map_fk_contact_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: contacts
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - share_id
+          match_type: ''
+          name: share_contact_map_fk_share_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: shares
+          type: FOREIGN KEY
+      fields:
+        contact_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: contact_id
+          order: 3
+          size:
+            - 36
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: current_timestamp
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 9
+          size:
+            - 0
+        delivered:
+          data_type: tinyint
+          default_value: 0
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: delivered
+          order: 8
+          size:
+            - 1
+        hash:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: hash
+          order: 4
+          size:
+            - 100
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        link:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: link
+          order: 5
+          size:
+            - 200
+        method:
+          data_type: enum
+          default_value: ~
+          extra:
+            list:
+              - twitter
+              - facebook
+              - im
+              - email
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: method
+          order: 6
+          size:
+            - 0
+        service:
+          data_type: enum
+          default_value: ~
+          extra:
+            list:
+              - google
+              - twitter
+              - facebook
+              - yahoo
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: service
+          order: 7
+          size:
+            - 0
+        share_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: share_id
+          order: 2
+          size:
+            - 36
+      indices:
+        - fields:
+            - contact_id
+          name: share_contact_map_idx_contact_id
+          options: []
+          type: NORMAL
+        - fields:
+            - share_id
+          name: share_contact_map_idx_share_id
+          options: []
+          type: NORMAL
+      name: share_contact_map
+      options: []
+      order: 15
+    share_kliq_map:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - share_id
+            - kliq_id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - kliq_id
+          match_type: ''
+          name: share_kliq_map_fk_kliq_id
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields:
+            - id
+          reference_table: kliqs
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - share_id
+          match_type: ''
+          name: share_kliq_map_fk_share_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: shares
+          type: FOREIGN KEY
+      fields:
+        kliq_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: kliq_id
+          order: 2
+          size:
+            - 36
+        share_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: share_id
+          order: 1
+          size:
+            - 36
+      indices:
+        - fields:
+            - kliq_id
+          name: share_kliq_map_idx_kliq_id
+          options: []
+          type: NORMAL
+        - fields:
+            - share_id
+          name: share_kliq_map_idx_share_id
+          options: []
+          type: NORMAL
+      name: share_kliq_map
+      options: []
+      order: 16
+    shares:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - media_id
+          match_type: ''
+          name: shares_fk_media_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: cms_media
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - upload_id
+          match_type: ''
+          name: shares_fk_upload_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: uploads
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: shares_fk_user_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        allow_location_share:
+          data_type: tinyint
+          default_value: 0
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: allow_location_share
+          order: 10
+          size:
+            - 1
+        allow_reshare:
+          data_type: tinyint
+          default_value: 0
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: allow_reshare
+          order: 9
+          size:
+            - 1
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: current_timestamp
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 12
+          size:
+            - 0
+        geo_location:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: geo_location
+          order: 7
+          size:
+            - 256
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        media_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: media_id
+          order: 3
+          size:
+            - 36
+        message:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: message
+          order: 6
+          size:
+            - 1024
+        offset:
+          data_type: mediumint
+          default_value: 0
+          extra:
+            unsigned: 1
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: offset
+          order: 8
+          size:
+            - 0
+        status:
+          data_type: enum
+          default_value: new
+          extra:
+            list:
+              - new
+              - processing
+              - error
+              - ready
+              - published
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: status
+          order: 11
+          size:
+            - 0
+        title:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: title
+          order: 5
+          size:
+            - 64
+        upload_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: upload_id
+          order: 4
+          size:
+            - 36
+        user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 2
+          size:
+            - 36
+      indices:
+        - fields:
+            - media_id
+          name: shares_idx_media_id
+          options: []
+          type: NORMAL
+        - fields:
+            - upload_id
+          name: shares_idx_upload_id
+          options: []
+          type: NORMAL
+        - fields:
+            - user_id
+          name: shares_idx_user_id
+          options: []
+          type: NORMAL
+      name: shares
+      options: []
+      order: 12
+    uploads:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: uploads_fk_user_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        created:
+          data_type: DATETIME
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 8
+          size:
+            - 0
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        mime_type:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: mime_type
+          order: 5
+          size:
+            - 64
+        path:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: path
+          order: 6
+          size:
+            - 500
+        status:
+          data_type: enum
+          default_value: new
+          extra:
+            list:
+              - new
+              - processing
+              - error
+              - ready
+              - published
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: status
+          order: 7
+          size:
+            - 0
+        suffix:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: suffix
+          order: 4
+          size:
+            - 6
+        title:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: title
+          order: 3
+          size:
+            - 64
+        user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 2
+          size:
+            - 36
+      indices:
+        - fields:
+            - user_id
+          name: uploads_idx_user_id
+          options: []
+          type: NORMAL
+      name: uploads
+      options: []
+      order: 8
+    users:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - username
+          match_type: ''
+          name: username
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: UNIQUE
+      fields:
+        active:
+          data_type: tinyint
+          default_value: 0
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: active
+          order: 5
+          size:
+            - 1
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: current_timestamp
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 13
+          size:
+            - 0
+        email:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: email
+          order: 4
+          size:
+            - 128
+        email_verified:
+          data_type: tinyint
+          default_value: 0
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: email_verified
+          order: 12
+          size:
+            - 1
+        first_name:
+          data_type: varchar
+          default_value: ''
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: first_name
+          order: 6
+          size:
+            - 32
+        gender:
+          data_type: enum
+          default_value: ~
+          extra:
+            list:
+              - male
+              - female
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: gender
+          order: 8
+          size:
+            - 0
+        geo_location:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: geo_location
+          order: 11
+          size:
+            - 255
+        id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 36
+        last_name:
+          data_type: varchar
+          default_value: ''
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: last_name
+          order: 7
+          size:
+            - 32
+        password:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: password
+          order: 3
+          size:
+            - 0
+        picture:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: picture
+          order: 10
+          size:
+            - 500
+        profile_photo:
+          data_type: blob
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: profile_photo
+          order: 9
+          size:
+            - 0
+        username:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 1
+          name: username
+          order: 2
+          size:
+            - 32
+      indices: []
+      name: users
+      options: []
+      order: 2
+    zencoder_outputs:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - asset_format_id
+          match_type: ''
+          name: zencoder_outputs_fk_asset_format_id
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields:
+            - id
+          reference_table: cms_asset_format
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - share_id
+          match_type: ''
+          name: zencoder_outputs_fk_share_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: shares
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - media_id
+          match_type: ''
+          name: zencoder_outputs_fk_media_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: cms_media
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - upload_id
+          match_type: ''
+          name: zencoder_outputs_fk_upload_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: uploads
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: zencoder_outputs_fk_user_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        asset_format_id:
+          data_type: integer
+          default_value: ~
+          extra:
+            unsigned: 1
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: asset_format_id
+          order: 6
+          size:
+            - 0
+        created:
+          data_type: DATETIME
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 10
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          extra:
+            unsigned: 1
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        last_modified:
+          data_type: DATETIME
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: last_modified
+          order: 11
+          size:
+            - 0
+        media_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: media_id
+          order: 3
+          size:
+            - 36
+        share_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: share_id
+          order: 5
+          size:
+            - 36
+        state:
+          data_type: enum
+          default_value: pending
+          extra:
+            list:
+              - pending
+              - submitting
+              - transcoding
+              - finished
+              - failed
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: state
+          order: 9
+          size:
+            - 0
+        upload_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: upload_id
+          order: 4
+          size:
+            - 36
+        user_id:
+          data_type: CHAR
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 2
+          size:
+            - 36
+        zc_job_id:
+          data_type: integer
+          default_value: ~
+          extra:
+            unsigned: 1
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: zc_job_id
+          order: 7
+          size:
+            - 0
+        zc_output_id:
+          data_type: integer
+          default_value: ~
+          extra:
+            unsigned: 1
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: zc_output_id
+          order: 8
+          size:
+            - 0
+      indices:
+        - fields:
+            - asset_format_id
+          name: zencoder_outputs_idx_asset_format_id
+          options: []
+          type: NORMAL
+        - fields:
+            - share_id
+          name: zencoder_outputs_idx_share_id
+          options: []
+          type: NORMAL
+        - fields:
+            - media_id
+          name: zencoder_outputs_idx_media_id
+          options: []
+          type: NORMAL
+        - fields:
+            - upload_id
+          name: zencoder_outputs_idx_upload_id
+          options: []
+          type: NORMAL
+        - fields:
+            - user_id
+          name: zencoder_outputs_idx_user_id
+          options: []
+          type: NORMAL
+      name: zencoder_outputs
+      options: []
+      order: 17
+  triggers: {}
+  views: {}
+translator:
+  add_drop_table: 0
+  filename: ~
+  no_comments: 0
+  parser_args:
+    sources:
+      - CmsAsset
+      - CmsAssetFormat
+      - CmsMedia
+      - Comment
+      - Contact
+      - Event
+      - Kliq
+      - KliqContact
+      - OauthToken
+      - Pair
+      - Persona
+      - Share
+      - ShareContact
+      - ShareKliq
+      - Upload
+      - User
+      - ZencoderOutput
+  parser_type: SQL::Translator::Parser::DBIx::Class
+  producer_args: {}
+  producer_type: SQL::Translator::Producer::YAML
+  show_warnings: 0
+  trace: 0
+  version: 0.11021

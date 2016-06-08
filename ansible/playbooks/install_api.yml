@@ -11,6 +11,9 @@
     - common/add_github_known_host
     - common/install_installation_packages
     - api_host/install_packages
+    - postgresql/setup_postgres_apt_repo
+    - postgresql/install_postgres_client_9-4
+    - postgresql/install_libpq-dev
     - api_host/install_nginx
 
 - name: Set up API Codebase and modules
