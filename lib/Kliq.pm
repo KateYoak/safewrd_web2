@@ -35,6 +35,10 @@ my $MT = MIME::Types->new;
 #------ init -------------------------------------------------------------------
 
 hook 'before' => sub {
+
+    # Modify name of process
+    $0 = join(' ', 'kliq worker', request->method, request->path);
+
     my $domain = request->host;
     $domain =~ s/:.*$//;
     $domain =~ s/^(.*)\.(.*)\.(.*)$/$2\.$3/g;
@@ -100,6 +104,11 @@ hook 'before' => sub {
     elsif(!$user) {
         request->path_info('/error/unauthorized');
     }
+};
+
+hook after => sub {
+  # reset process name once finished
+  $0 = 'kliq worker (idle)';
 };
 
 #------ /api -------------------------------------------------------------------
