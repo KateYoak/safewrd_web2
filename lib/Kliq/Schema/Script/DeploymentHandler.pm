@@ -122,7 +122,7 @@ defaults to returning the following:
 
 has databases => (
   is      => 'ro',
-  default => sub { [ 'PostgreSQL' ] },
+  default => sub { [ 'PostgreSQL', 'MySQL' ] },
 );
 
 =head2 _dh
