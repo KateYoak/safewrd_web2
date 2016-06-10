@@ -32,7 +32,7 @@ __PACKAGE__->add_columns(
     handle => {
         data_type => "varchar",
         is_nullable => 0,
-        size => 300
+        size => 255,
     },
     hash => {
         data_type => "varchar",
