@@ -8,4 +8,4 @@ use lib "$Bin/../lib";
 
 use Kliq::Schema::Script::DeploymentHandler;
 
-Kliq::Schema::Script::DeploymentHandler->new_with_options( schema_class => 'Kliq::Schema' );
+Kliq::Schema::Script::DeploymentHandler->new_with_actions( schema_class => 'Kliq::Schema' );

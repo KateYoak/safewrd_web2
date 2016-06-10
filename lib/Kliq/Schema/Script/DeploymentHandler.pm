@@ -213,15 +213,16 @@ sub cmd_upgrade {
 
 These are misc details about this script item
 
-=head2 BUILD
+=head2 new_with_actions
 
 The build function is the actual magic behind the commands, allowing any
 subroutine which exists with the prefix 'cmd_' to be ran from the command line.
 
 =cut
 
-sub BUILD {
-  my ( $self ) = @_;
+sub new_with_actions {
+  my $class = shift;
+  my $self = $class->new_with_options( @_ );
 
   my ( $cmd, @extra ) = @ARGV;
 
