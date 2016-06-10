@@ -74,6 +74,7 @@ sub work {
             if (($action eq 'emergency_flare' || $action eq 'live_event') && $event->event_status eq 'published') {
                 my $stream_url = q{rtmp://api.tranzmt.it:1935/live/} . $event->id;
                 $self->redis->rpush(notifyPhone => to_json({
+                  request => {
                     type => 'push',
                     carnival_payload => {
                         notification => {
@@ -88,6 +89,7 @@ sub work {
                             },
                         },
                     },
+                  },
                 }));
             }
         }
