@@ -24,15 +24,13 @@ with qw/
     /;
 
 sub work {
-    my ($self, $data) = @_;
+    my ($self, $request_hash) = @_;
 
     my $config = $self->config or die("Missing config");
     
-    $self->logger->info("Starting PhoneNotifier: " . Dumper($data));
+    $self->logger->info("Starting PhoneNotifier: " . Dumper($request_hash));
 
     try {
-        my $request_hash = $data->{request};
-
         # Check for mandatory params (carnival_payload, type)
         die "Skipping notification. Failed data check" if (!$request_hash);
         die "Missing 'type' param in request" if (!$request_hash->{type});

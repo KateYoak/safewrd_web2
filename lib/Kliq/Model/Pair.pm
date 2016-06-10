@@ -105,7 +105,6 @@ sub flare {
             });
         if ($pair) {
             $self->redis->rpush(notifyPhone => to_json({
-              request => {
                 type => 'push',
                 carnival_payload => {
                     notification => {
@@ -119,7 +118,6 @@ sub flare {
                         },
                     },
                 },
-              },
             }));
 
             return 1;
