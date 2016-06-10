@@ -209,6 +209,23 @@ sub cmd_upgrade {
   $self->_dh->upgrade;
 }
 
+=head2 user_rights
+
+This command will grant the correct user rights for tranzmt_api_user on all the
+various tables etc.
+
+=cut
+
+sub cmd_user_rights {
+  my ( $self ) = @_;
+
+  $self->schema->storage->dbh_do( sub {
+    my ($storage, $dbh, @cols) = @_;
+    $dbh->do( "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA PUBLIC TO tranzmt_api_user" );
+    $dbh->do( "GRANT SELECT,UPDATE,USAGE ON ALL SEQUENCES IN SCHEMA PUBLIC TO tranzmt_api_user" );
+  } );
+}
+
 =head1 MISC FUNCTIONS
 
 These are misc details about this script item
