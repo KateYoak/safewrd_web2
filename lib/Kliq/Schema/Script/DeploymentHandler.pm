@@ -122,7 +122,7 @@ defaults to returning the following:
 
 has databases => (
   is      => 'ro',
-  default => sub { [ 'PostgreSQL' ] },
+  default => sub { [ 'PostgreSQL', 'MySQL' ] },
 );
 
 =head2 _dh
@@ -209,19 +209,37 @@ sub cmd_upgrade {
   $self->_dh->upgrade;
 }
 
+=head2 user_rights
+
+This command will grant the correct user rights for tranzmt_api_user on all the
+various tables etc.
+
+=cut
+
+sub cmd_user_rights {
+  my ( $self ) = @_;
+
+  $self->schema->storage->dbh_do( sub {
+    my ($storage, $dbh, @cols) = @_;
+    $dbh->do( "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA PUBLIC TO tranzmt_api_user" );
+    $dbh->do( "GRANT SELECT,UPDATE,USAGE ON ALL SEQUENCES IN SCHEMA PUBLIC TO tranzmt_api_user" );
+  } );
+}
+
 =head1 MISC FUNCTIONS
 
 These are misc details about this script item
 
-=head2 BUILD
+=head2 new_with_actions
 
 The build function is the actual magic behind the commands, allowing any
 subroutine which exists with the prefix 'cmd_' to be ran from the command line.
 
 =cut
 
-sub BUILD {
-  my ( $self ) = @_;
+sub new_with_actions {
+  my $class = shift;
+  my $self = $class->new_with_options( @_ );
 
   my ( $cmd, @extra ) = @ARGV;
 
