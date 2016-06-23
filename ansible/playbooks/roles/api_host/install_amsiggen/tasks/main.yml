@@ -1,0 +1,8 @@
+---
+
+- name: Extract amSigGen code to target location
+  unarchive:
+    src: "/home/ubuntu/tranzmt-api/var/amSigGen.tar.gz"
+    creates: "/usr/local/bin/amSigGen"
+    copy: no
+    dest: "/usr/local/bin"

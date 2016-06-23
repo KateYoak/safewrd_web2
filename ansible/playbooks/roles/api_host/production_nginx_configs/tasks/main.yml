@@ -1,0 +1,44 @@
+---
+
+- name: Create nginx build directory and required directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "/var/log/nginx/api.tranzmt.it"
+    - "/var/log/nginx/developers.tranzmt.it"
+
+- name: Install nginx main config
+  shell: rsync -it /home/ubuntu/tranzmt-api/etc/nginx/nginx.conf /etc/nginx/nginx.conf
+  register: rsync_nginx_conf
+  changed_when: "rsync_nginx_conf.stdout != ''"
+  notify:
+    - restart nginx
+
+- name: Install developer endpoint htpasswd
+  shell: rsync -it /home/ubuntu/tranzmt-api/etc/nginx/htpasswd_developers /etc/nginx/htpasswd_developers
+  register: rsync_htpasswd_developers
+  changed_when: "rsync_htpasswd_developers.stdout != ''"
+
+- name: Install all sites-available configs
+  shell: rsync -it /home/ubuntu/tranzmt-api/etc/nginx/sites-available/* /etc/nginx/sites-available/
+  register: rsync_sites_available
+  changed_when: "rsync_sites_available.stdout != ''"
+  notify:
+    - restart nginx
+
+- name: Create sites-enabled for api.tranzmt.it
+  shell: ln -s ../sites-available/api-tranzmt-it .
+  args:
+    creates: "/etc/nginx/sites-enabled/api-tranzmt-it"
+    chdir: "/etc/nginx/sites-enabled"
+  notify:
+    - restart nginx
+
+- name: Create sites-enabled for developers.tranzmt.it
+  shell: ln -s ../sites-available/developers-tranzmt-it .
+  args:
+    creates: "/etc/nginx/sites-enabled/developers-tranzmt-it"
+    chdir: "/etc/nginx/sites-enabled"
+  notify:
+    - restart nginx

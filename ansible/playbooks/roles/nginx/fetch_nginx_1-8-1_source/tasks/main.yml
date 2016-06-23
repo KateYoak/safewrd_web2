@@ -1,0 +1,14 @@
+---
+
+- name: Download nginx 1.8.1 source
+  get_url:
+    url: "http://nginx.org/download/nginx-1.8.1.tar.gz"
+    dest: "/root/nginx-install/archives/nginx-1.8.1.tar.gz"
+    force: no
+
+- name: Extract nginx 1.8.1 source
+  unarchive:
+    src: "/root/nginx-install/archives/nginx-1.8.1.tar.gz"
+    creates: "nginx-1.8.1"
+    copy: no
+    dest: "/root/nginx-install"

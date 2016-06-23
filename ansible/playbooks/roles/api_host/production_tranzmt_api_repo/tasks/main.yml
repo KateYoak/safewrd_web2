@@ -1,0 +1,45 @@
+---
+
+- name: Fetch and update master Tranzmt-Api branch
+  git:
+    repo: "git@github.com:TRANZMT-IT/tranzmt-api.git"
+    dest: "/home/ubuntu/tranzmt-api"
+    version: "master"
+    update: yes
+
+# This cpanm step is not a handler, as if it dies during a setup we need to be able to re-run it.
+- name: Install api and worker dependencies
+  shell: source ~/perl5/perlbrew/etc/bashrc && cpanm --installdeps .
+  args:
+    executable: /bin/bash
+    chdir: "/home/ubuntu/tranzmt-api"
+  register: cpanm_tranzmt_api
+  changed_when: "'installed' in cpanm_tranzmt_api.stdout"
+
+- name: Force FFmpeg::Thumbnail install
+  shell: source ~/perl5/perlbrew/etc/bashrc && cpanm --notest FFmpeg::Thumbnail
+  args:
+    executable: /bin/bash
+  register: cpanm_ffmpeg_thumbnail
+  changed_when: "'is up to date' not in cpanm_ffmpeg_thumbnail.stdout"
+
+- name: Install KliqTok virtualenv
+  shell: virtualenv --no-site-packages env
+  args:
+    executable: /bin/bash
+    chdir: "/home/ubuntu/tranzmt-api/kliqtok"
+    creates: "/home/ubuntu/tranzmt-api/kliqtok/env"
+
+- name: Install KliqTok dependencies
+  shell: source env/bin/activate && python setup.py develop
+  args:
+    executable: /bin/bash
+    chdir: "/home/ubuntu/tranzmt-api/kliqtok"
+  register: python_setup_py_develop
+  changed_when: "'Installed /home/ubuntu/tranzmt-api/kliqtok/env' in python_setup_py_develop.stdout"
+
+- name: Setup production configuration
+  file:
+    path: "/home/ubuntu/tranzmt-api/config.yml"
+    src: "/home/ubuntu/tranzmt-api/config.prod.yml"
+    state: link

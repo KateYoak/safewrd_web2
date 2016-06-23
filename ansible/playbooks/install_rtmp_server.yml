@@ -1,0 +1,21 @@
+---
+
+- name: User Access maintenance for Ansible and all other users set on the box
+  hosts: rtmp_servers
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - maintenance/remove_old_users
+    - maintenance/install_ansible_ssh_keys
+    - maintenance/install_users
+    - common/install_installation_packages
+
+- name: Set up nginx
+  hosts: rtmp_servers
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - nginx/install_basic_dependencies
+    - api_host/install_nginx

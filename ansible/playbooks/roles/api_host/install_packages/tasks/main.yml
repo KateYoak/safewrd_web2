@@ -1,0 +1,21 @@
+---
+
+- name: Install OS Packages for API Hosting
+  apt:
+    name: "{{ item }}"
+    state: present
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 3600
+  with_items:
+    - redis-server
+    - mysql-server-5.5
+    - libssl-dev
+    - libmysqlclient-dev
+    - libxml2-dev
+    - libexpat1-dev
+    - libav-tools
+    - libpcre3
+    - libpcre3-dev
+    - python-virtualenv
+    - python-dev

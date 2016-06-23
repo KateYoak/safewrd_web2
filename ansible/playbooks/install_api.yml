@@ -1,6 +1,6 @@
 ---
 
-- name: Install API on all API Hosts
+- name: Install API dependencies on all API Hosts
   hosts: api_host
   remote_user: ansible
   sudo: yes
@@ -8,7 +8,30 @@
   roles:
     - maintenance/install_api_user
     - maintenance/install_api_user_ssh_keys
+    - common/add_github_known_host
     - common/install_installation_packages
+    - api_host/install_packages
     - postgresql/setup_postgres_apt_repo
     - postgresql/install_postgres_client_9-4
     - postgresql/install_libpq-dev
+    - api_host/install_nginx
+
+- name: Set up API Codebase and modules
+  hosts: api_host
+  remote_user: "{{ api_user.name }}"
+  sudo: no
+
+  roles:
+    - common/install_perlbrew
+    - api_host/production_tranzmt_api_repo
+
+- name: Install Dependencies from repository
+  hosts: api_host
+  remote_user: ansible
+  sudo: yes
+
+  roles:
+    - api_host/install_amsiggen
+    - api_host/production_init_scripts
+    - api_host/production_media_folders
+    - api_host/production_nginx_configs
