@@ -1,0 +1,16 @@
+---
+
+- name: Link startup scripts
+  file:
+    path: "{{ item.target }}"
+    src: "{{ item.source }}"
+    state: link
+  with_items:
+    - { source: '/home/ubuntu/tranzmt-api/etc/init/tranzmt-api.conf', target: '/etc/init/tranzmt-api.conf' }
+    - { source: '/home/ubuntu/tranzmt-api/etc/init/tranzmt-worker.conf', target: '/etc/init/tranzmt-worker.conf' }
+    - { source: '/home/ubuntu/tranzmt-api/kliqtok/upstart', target: '/etc/init/kliqtok.conf' }
+  notify:
+    - reload init config
+    - restart tranzmt-api
+    - restart tranzmt-worker
+    - restart kliqtok

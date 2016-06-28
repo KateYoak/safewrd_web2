@@ -1,0 +1,11 @@
+---
+
+- name: Create media folder for api
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: 0777 # yes this is a bad idea
+  with_items:
+    - "/var/opt/clqs-api/media"

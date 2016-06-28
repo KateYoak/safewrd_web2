@@ -1,0 +1,32 @@
+---
+
+- name: Initialise Perlbrew install
+  shell: curl -L http://install.perlbrew.pl | bash
+  args:
+    creates: "~/perl5/perlbrew"
+
+- name: Add sourcing line to bashrc
+  lineinfile:
+    dest: "~/.bashrc"
+    regexp: "^source ~/perl5/perlbrew/etc/bashrc$"
+    line: "source ~/perl5/perlbrew/etc/bashrc"
+
+- name: Install production perl version
+  shell: "source ~/perl5/perlbrew/etc/bashrc && perlbrew install -j 4 5.16.0"
+  args:
+    executable: /bin/bash
+  register: perlbrew_install_5_16
+  failed_when: "'Installation process failed' in perlbrew_install_5_16.stderr"
+  changed_when: "'is already installed' not in perlbrew_install_5_16.stderr"
+
+- name: Verify cpanm is installed
+  shell: "source ~/perl5/perlbrew/etc/bashrc && perlbrew install-cpanm"
+  args:
+    executable: /bin/bash
+    creates: "~/perl5/perlbrew/bin/cpanm"
+
+- name: Switch to production perl version
+  shell: "source ~/perl5/perlbrew/etc/bashrc && perlbrew switch 5.16.0"
+  args:
+    executable: /bin/bash
+  changed_when: false # this will always do something, so just ignore the change
