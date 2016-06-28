@@ -1,11 +1,12 @@
 ---
 
 - name: Set up Development Servers with basic requirements
-  hosts: all
+  hosts: dev_servers
   remote_user: ansible
   sudo: yes
 
   roles:
+    - maintenance/setup_sshd
     - maintenance/install_users
     - common/install_installation_packages
     - api_host/install_packages
