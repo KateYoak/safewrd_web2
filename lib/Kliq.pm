@@ -203,6 +203,78 @@ get '/archives' => sub {
     return to_json(\@archives);
 };
 
+post '/notify_video_view' => sub {
+    my $args = dejsonify(body_params());
+
+    if ($args->{stream_owner_user_id} && $args->{stream_viewer_user_id}) {
+        my $owner_persona = schema->resultset('Persona')->search({
+            user_id => $args->{stream_owner_user_id},
+            service => 'google'
+        })->single();
+        my $viewer_persona = schema->resultset('Persona')->search({
+            user_id => $args->{stream_viewer_user_id},
+            service => 'google'
+        })->single();
+
+        if ($owner_persona && $viewer_persona) {
+            # Send in-app messages
+            my $request_hash_owner = {
+                type => 'in-app',
+                carnival_payload => {
+                    message => {
+                        to => [{ name => 'user_id', criteria => [$args->{stream_owner_user_id}] }],
+                        title => $viewer_persona->name . " watched your Video Test",
+                        type => "text_message",
+                        text => $viewer_persona->name . " watched your Video Test",
+                        notification => {
+                            payload => {
+                                action    => 'test_video_viewed',
+                                badge     => 1,
+                                sound     => "flare.wav",
+                                alert     => $viewer_persona->name . " have just confirmed they watched your emergency Flare video test.",
+                                stream_owner_user_id => $args->{stream_owner_user_id},
+                                stream_viewer_user_id => $args->{stream_viewer_user_id},
+                            },
+                        },
+                    },
+                },
+            };
+            redis->rpush(notifyPhone => to_json($request_hash_owner));
+
+            my $request_hash_viewer = {
+                type => 'in-app',
+                carnival_payload => {
+                    message => {
+                        to => [{ name => 'user_id', criteria => [$args->{stream_viewer_user_id}] }],
+                        title => "You are officially in " . $owner_persona->name . "'s emergency Flare group",
+                        type => "text_message",
+                        text => "You are officially in " . $owner_persona->name . " emergency Flare group",
+                        notification => {
+                            payload => {
+                                action    => 'test_video_viewed',
+                                badge     => 1,
+                                sound     => "flare.wav",
+                                alert     => "You are officially in " . $owner_persona->name . "'s emergency Flare group, so if they are ever in trouble and they say their 'Safe word' you will be the first to know by getting an emergency live video stream.",
+                                stream_owner_user_id => $args->{stream_owner_user_id},
+                                stream_viewer_user_id => $args->{stream_viewer_user_id},
+                            },
+                        },
+                    },
+                },
+            };
+            redis->rpush(notifyPhone => to_json($request_hash_viewer));
+        }
+        else {
+            return status_bad_request("Invalid stream_owner_user_id/stream_viewer_user_id");
+        }
+
+        status_ok({ success => 1 });
+    }
+    else {
+        return status_bad_request("Missing params stream_owner_user_id/stream_viewer_user_id");
+    }
+};
+
 get '/upload' => sub {
     template "upload", { }, { layout => undef };
 };

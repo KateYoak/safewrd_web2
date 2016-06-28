@@ -41,7 +41,7 @@ around 'update' => sub {
     }
 
     my $event_status = $params->{event_status} // '';
-    unless ($event_status eq 'new' or $event_status eq 'confirmed'
+    unless ($event_status eq 'new' or $event_status eq 'test' or $event_status eq 'confirmed'
         or $event_status eq 'deleted' or $event_status eq 'published')
     {
         return {error => {
@@ -52,7 +52,7 @@ around 'update' => sub {
     }
     # TODO: Consider validating whether other fields may be changed too or not.
     my $result = $self->$orig($id, {event_status => $event_status});
-    if ($event_status eq 'confirmed' or $event_status eq 'published')
+    if ($event_status eq 'confirmed' or $event_status eq 'published' or $event_status eq 'test')
     {
         $self->redis->rpush(notifyEvent => to_json({event => $id}));
     }
