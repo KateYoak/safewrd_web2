@@ -70,8 +70,15 @@ sub work {
                 $alert_sound   = "flare.wav";
             }
 
-            # Send push notifications only for published events
-            if (($action eq 'emergency_flare' || $action eq 'live_event') && $event->event_status eq 'published') {
+            # Test flare
+            if ($event->event_status eq 'test') {
+                $action = 'emergency_test_flare';
+                $alert_message = "Emergency Flare Video Test - incoming live video stream";
+                $alert_sound   = "flare.wav";
+            }
+
+            # Send push notifications only for published/test events
+            if ($event->event_status eq 'published' || $event->event_status eq 'test') {
                 my $stream_url = q{rtmp://api.tranzmt.it:1935/live/} . $event->id;
                 $self->redis->rpush(notifyPhone => to_json({
                     type => 'push',
@@ -85,6 +92,7 @@ sub work {
                                 alert     => $alert_message,
                                 location  => $event->location,
                                 live_stream_url => $stream_url,
+                                stream_owner_user_id => $kliq->user_id,
                             },
                         },
                     },
