@@ -12,3 +12,6 @@
     - api_host/install_packages
     - nginx/install_basic_dependencies
     - api_host/install_nginx
+    - postgresql/setup_postgres_apt_repo
+    - postgresql/install_postgres_client_9-4
+    - postgresql/install_libpq-dev
