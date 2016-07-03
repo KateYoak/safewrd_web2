@@ -190,8 +190,16 @@ get '/archives' => sub {
             my $filename = $base_path . "/" . $event->id . ".flv";
             if (-e $filename) {
                 my $archive_url = $archive_url_base . "/" . $event->id;
-                my $event_type = $event->kliq->is_emergency ? "emergency_flare" : "live_event";
-                push(@archives, { event_id => $event->id, event_title => $event->title, event_type => $event_type, location => $event->location, archive_url => $archive_url });
+
+                my $event_type = 'live_event';
+                if ($event->event_status eq 'test') {
+                    $event_type = "emergency_test_flare";
+                }
+                elsif ($event->kliq->is_emergency) {
+                    $event_type = "emergency_flare";
+                }
+
+                push(@archives, { event_id => $event->id, user_id => $event->user_id, event_title => $event->title, event_type => $event_type, location => $event->location, archive_url => $archive_url });
             }    
         }  
     }
