@@ -90,7 +90,44 @@ sub user_persona {
         $persona = $self->create_persona($info, $data, $uid);
         $do_import++;
     }
-$do_import++;
+
+    $do_import++;
+    
+    # Lets send push notifications to all contacts who invited this user
+    my $contacts = $self->schema->resultset('Contact')->search({
+            user_id => $uid
+        });
+    my $contacts_flag;
+    while (my $contact = $contacts->next) {
+        if ($contact->owner_id) {
+            # Skip duplicate contacts
+            next if $contacts_flag->{$contact->owner_id};
+            $contacts_flag->{$contact->owner_id} = 1;
+
+            my $contact_name = $contact->name || $contact->email;
+            $self->redis->rpush(notifyPhone => to_json({
+                type => 'in-app',
+                carnival_payload => {
+                    message => {
+                        to    => [{ name => 'user_id', criteria => [$contact->owner_id] }],
+                        type  => "text_message",
+                        title => "Your friend $contact_name joined Tranzmt",
+                        text  => "Your friend $contact_name joined Tranzmt",
+                        notification => {
+                            payload => {
+                                action    => 'contact_on_tranzmt',
+                                badge     => 1,
+                                sound     => "Default.caf",
+                                alert     => "Your friend $contact_name joined Tranzmt",
+                                contact_id => $contact->id,
+                            },
+                        },
+                    },
+                },
+            }));
+        }
+    }
+
     $user ||= $self->schema->resultset('User')->find($uid);
     $persona ||= $re_persona;
     my $token = $self->updated_token($user, $persona, $re_token, $data);
