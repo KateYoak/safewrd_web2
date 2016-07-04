@@ -42,8 +42,10 @@ my %WORKERMAP = (
         $logger->info("importContacts " . $data->{service} . ', user ' . $data->{user} . ', session ' . $data->{session} );
         return ($IMPORTMAP{$data->{service}}, $config->{sites}->{$data->{service}});
         },
-    notifyEmail    => sub { ('MailNotifier',     $config->{plugins}->{Email})  },
+    notifyEmail      => sub { ('MailNotifier',     $config->{plugins}->{Email})  },
     notifyEventEmail => sub { ('MailEventNotifier', $config->{plugins}->{Email})  },
+    notifyKliq       => sub { ('KliqNotifier',     $config->{plugins}->{Email})  },
+    notifyKliqEmail  => sub { ('MailKliqNotifier', $config->{plugins}->{Email})  },
     notifyTwitter  => sub { ('TwitterNotifier',  $config->{sites}->{twitter}) },
     notifyFacebook => sub { ('FacebookNotifier', $config->{sites}->{facebook}) },
     notifyLinkedIn => sub { ('LinkedInNotifier', $config->{sites}->{linkedin}) },
