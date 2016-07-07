@@ -1,0 +1,28 @@
+---
+
+# Users allowed to deploy to maintain dev using ansible
+ansible_ssh_users:
+  - tomb
+  - matthewt
+  - chrissyj
+  - duncand
+
+# Users to deploy to development
+deploy_users:
+  - tomb
+  - matthewt
+  - chrissyj
+  - duncand
+  - sachinjsk
+  - jessr
+
+# Users to remove from the machine
+old_users:
+
+# OS Packages to install for maintenance and installation setup
+installation_packages:
+  - git
+  - vim
+  - build-essential
+  - tmux
+  - tree
