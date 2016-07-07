@@ -74,3 +74,11 @@ user_list:
     sudo_access:   true
     comment:       "Jess Robinson"
     password_hash: $6$ZinpJ0.2GxlJKuJ.$O8olP/XNYnzEFf3acsFuyqOo9ai7Q3LPuI7OuOq8DFSzT3ZJprZ3cX6MdcjwvTY8zAle/XMu14/32.ezVCL2L1
+  johnnyr:
+    name:          johnnyr
+    group_name:    users
+    uid:           1055
+    gid:           100
+    sudo_access:   false
+    comment:       "Johnny Rich"
+    password_hash: '*'
