@@ -108,14 +108,24 @@ sites:
     zencoder:
         apikey: 'cb2c6adc86bb5398949a9ab2e03647ea'
     carnival:
-        ios:
-            bundle_id: 'com.tranzmt.tranzmtalpha'
-            apikey: '58bdcb9cfb8957353fb4ea08d07a09765eab2292'    
-            base_uri: 'https://api.carnivalmobile.com/v3'
-        android:
-            bundle_id: 'com.tranzmt.app'
-            apikey: 'c51028c7733fbff64a952d361b75cbfc42dac22d'    
-            base_uri: 'https://api.carnivalmobile.com/v3'
+        tranzmt:
+            ios:
+                bundle_id: 'com.tranzmt.tranzmtalpha'
+                apikey: '58bdcb9cfb8957353fb4ea08d07a09765eab2292'    
+                base_uri: 'https://api.carnivalmobile.com/v3'
+            android:
+                bundle_id: 'com.tranzmt.app'
+                apikey: 'c51028c7733fbff64a952d361b75cbfc42dac22d'    
+                base_uri: 'https://api.carnivalmobile.com/v3'
+        flare:
+            ios:
+                bundle_id: 'com.tranzmt.tranzmtalpha'
+                apikey: '58bdcb9cfb8957353fb4ea08d07a09765eab2292'    
+                base_uri: 'https://api.carnivalmobile.com/v3'
+            android:
+                bundle_id: 'com.flare.app'
+                apikey: 'f6435516980cbcc1c93e74378067073717dd5631'    
+                base_uri: 'https://api.carnivalmobile.com/v3'
 
 plugins:
     Email:
