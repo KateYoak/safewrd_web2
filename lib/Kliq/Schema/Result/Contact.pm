@@ -26,7 +26,6 @@ __PACKAGE__->add_columns(
         size => 36,
         is_nullable => 0,
         is_foreign_key => 1,
-        is_serializable => 0
     },
 ## MOVE2PERSONA
     handle => {
