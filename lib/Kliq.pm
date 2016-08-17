@@ -161,6 +161,30 @@ get '/contact_id' => sub {
     return to_json({ contact_id => $contact->id });
 };
 
+get '/contacts_summary' => sub {
+    my $summary = {};
+    if (session('user_id')) {
+        my $contacts_summary = schema->resultset('Contact')->search(
+            {
+                user_id => session('user_id') 
+            },
+            {
+                select   => [ 'service', { count => 'id' } ],
+                as       => [qw/service cnt/],
+                group_by => [qw/service/] 
+            });
+        while (my $row = $contacts_summary->next) {
+            $summary->{$row->service} = $row->get_column('cnt');
+        }
+    }
+    else {
+        request->path_info('/error/unauthorized');
+    }
+
+    content_type 'application/json';
+    return to_json($summary);
+};
+
 get '/archives' => sub {
     my @archives = ();
     my $base_path = "/var/opt/clqs-api/media/archives";
