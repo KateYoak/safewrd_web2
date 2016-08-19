@@ -166,7 +166,7 @@ get '/contacts_summary' => sub {
     if (session('user_id')) {
         my $contacts_summary = schema->resultset('Contact')->search(
             {
-                user_id => session('user_id') 
+                owner_id => session('user_id') 
             },
             {
                 select   => [ 'service', { count => 'id' } ],
