@@ -12,6 +12,7 @@ set session => 'Kliq';
 
 load_app 'Kliq'; #, prefix => '/api';
 load_app 'Kliq::Routes::Auth';
+load_app 'ChatbotAPI';
 
 ## reset asset_basepath for local testing
 if($^O =~ /Win32/) {
@@ -47,5 +48,4 @@ builder {
         $app;
     };
 };
-
 

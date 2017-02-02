@@ -101,6 +101,10 @@ hook 'before' => sub {
     elsif(request->path =~ '^/v1/media') {
         return;
     }    
+    elsif(request->path =~ '^/v1/webhook') {    
+        # let chatbot api handle this
+        return;
+    }
     elsif(!$user) {
         request->path_info('/error/unauthorized');
     }
