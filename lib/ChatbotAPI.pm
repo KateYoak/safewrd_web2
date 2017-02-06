@@ -26,54 +26,51 @@ post '/webhook' => sub {
     my $req = from_json($body);
     _debug( 'Request Body (JSON):' . Dumper($req) );
 
-    my $message = ""; 
-    my $request_params = {};
-    if ( $req->{'result'}->{'action'} eq 'input.welcome' ) {
-        my $code = $req->{'result'}->{'parameters'}->{'code'};
-        if ( $code ) {
-            _debug( 'Code: ' . $code );
-            # do something with code
-            $message = qq/Hi, I'm the Flarebot, I will help you create your own personal Flare safety group made up of 5 of your close friends or family. Okay, lets get started. Lets start with adding any FB Messenger friends to your Safety group. Whats the name of a FB friend you want to add to your Flare Safety Group?/;
-            $request_params = {
-                speech   => $message,
+    my $MAX_SAFETYGROUP  = 5;
+    my $result           = $req->{'result'};
+    my $id               = $req->{'id'}; 
+    my $session_id       = $req->{'sessionId'}; 
+    my $timestamp        = $req->{'timestamp'};
+    my $status           = $req->{'status'};
+    my $original_request = $req->{'originalRequest'};
+
+    if ( $result->{'action'} eq 'add.friend' ) {
+        my $friend_name = $result->{'parameters'}->{'friend-name'};
+        my $context_prefix = 'add-friend';
+        if ( $friend_name ne 'no' ) {
+            _debug( 'Params: ' . Dumper( $result->{'parameters'} ) );
+
+            # get user
+            my $current_user = ''; # fetch from DB
+            # get friend names
+            my @friends      = ();  # resolve from user
+            # store friend
+
+            # count friends
+            my $friend_count = '6';  # resolve from user
+            my $context_out  = join( "-", $context_prefix, $friend_count ); 
+            if ( $friend_count > $MAX_SAFETYGROUP ) {
+                $context_out = join( "-", $context_prefix, 'more' ); 
+            }
+
+            # flow of control using contexts
+            my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+            my $request_params = {
+                speech   => $fulfillment->{'speech'},
                 contextOut  => [ 
                     { 
-                        name     => 'facebook-friend-name',
-                        lifespan => 5,
+                        name     => $context_out, 
+                        lifespan => 1,
                     },
                 ],
             };
+            return _process_request( $request_params );
+        }
+        else {
+        
         }
     }
-    elsif ( $req->{'result'}->{'action'} eq 'facebook-add-friend' ) {
-        my $friend_name = $req->{'result'}->{'parameters'}->{'given-name'};
-        _debug( 'Friend Name: ' . $friend_name );
-        if ( $friend_name ) {
-            # do something with friend name (store)
-            $message = qq/Okay, $friend_name, I found them... do you want to add another?/;
-            $request_params = {
-                speech   => $message,
-                contextOut  => [ 
-                    { 
-                        name     => 'facebook-friend-name',
-                        lifespan => 5,
-                    },
-                ],
-            };
-        }
-    }
-    else {
-        $message = qq/Default/;
-        $request_params = {
-            speech   => $message,
-            contextOut  => [ 
-                { 
-                    name     => 'input.unknown',
-                },
-            ],
-        };
-    }
-    return _process_request( $request_params );
+
 
 };
 
