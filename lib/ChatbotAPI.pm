@@ -88,12 +88,23 @@ post '/webhook' => sub {
 
             # get user
             my $current_user = ''; # fetch from DB
-            # get friend names
-            my @friends; # resolve from user
             # store friend
+            my $friend = schema->resultset('Contact')->create({
+                owner_id => $user->id,
+                handle   => $friend_name,
+                name     => $friend_name,
+                service  => 'manual',
+            });
+
+            _debug( 'Contact ID: ' . $friend->id );
+
+            # get friend names
+            my @friends = schema->resultset('Contact')->search({
+                owner_id => $user->id,
+            });
 
             # count friends
-            my $friend_count = 6;  # resolve from user
+            my $friend_count = scalar(@friends);  # resolve from user
             my $context_out  = join( "-", $context_prefix, $friend_count ); 
             if ( $friend_count > $MAX_SAFETYGROUP ) {
                 $context_out = join( "-", $context_prefix, 'more' ); 
