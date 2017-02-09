@@ -28,45 +28,55 @@ post '/webhook' => sub {
     my $req = from_json($body);
     _debug( 'Request Body (JSON):' . Dumper($req) );
 
-    my $MAX_SAFETYGROUP  = 5;
+    my $MAX_SAFETYGROUP  = 5; # TODO: Config file
     my $result           = $req->{'result'};
     my $id               = $req->{'id'}; 
-    my $session_id       = $req->{'sessionId'}; 
+    my $api_session_id       = $req->{'sessionId'}; 
     my $timestamp        = $req->{'timestamp'};
     my $status           = $req->{'status'};
     my $original_request = $req->{'originalRequest'}; # data from client UI
-    my $service          = $original_request->{'source'};
-    my $handle           = _resolve_handle( $original_request ), 
+    my $service          = $original_request->{'source'} || 'API.ai';
+    my $handle           = ($service ne 'API.ai') ? join( '-', 'dev', $api_session_id ) : _resolve_handle( $original_request );
 
+    session test => "Test";
     # capture user data
     _debug( 'Session Object: ' . Dumper(session) );
     _debug( 'User Data: ' . Dumper( $original_request ) );
-    # check persona, get user id using persona
-    my $persona = Kliq::model('tokens')->get_persona( 
-        $handle,
-        $service,
-    );
     my $user;
-    my $user_id;
-    # create user if persona does not exist
-    if (!defined($persona)) {
-        eval {
-            $user = Kliq::model('tokens')->create_user();
-        };
-        if ($@) {
-            var error => "Unable to create user " . $@;
-            request->path_info('/error');
+    if (!session('user_id')) {
+        # check persona, get user id using persona
+        my $persona = Kliq::model('tokens')->get_persona( 
+            $handle,
+            $service,
+        );
+        # create user if persona does not exist
+        # CAVEAT: Creates a user per persona, if you are on another service it will create a differen user
+        if (!defined($persona)) {
+            _debug( 'DEBUG: Creating a user for this persona' );
+            eval {
+                $user = Kliq::model('tokens')->create_user();
+            };
+            if ($@) {
+                var error => "Unable to create user " . $@;
+                request->path_info('/error');
+            }
+            _debug( 'Service: ' . $service );
+            my $info = {
+                service => $service,
+                user_id => $user->id,
+                handle  => $handle,
+            }; 
+            $persona = Kliq::model('tokens')->create_persona($info, { service => $service }, $user->id);
         }
-        $user_id = $user->id; 
-        _debug( 'Service: ' . $service );
-        my $info = {
-            user_id => $user->id,
-            handle  => $handle,
-        }; 
-        $persona = Kliq::model('tokens')->create_persona($info, { service => $service }, $user_id);
+        _debug( 'Persona ID: ' . $persona->id );
+        session user_id => $persona->user_id;
     }
-    _debug( 'User ID: ' . $user_id );
-    _debug( 'Persona ID: ' . $persona->id );
+
+    _debug( 'Session User ID: ' . session->{'user_id'} );
+
+    if (!defined($user)) {
+        $user = schema->resultset('User')->find(session('user_id')); 
+    }
 
     # check user and create user / session if it doesn't exist
 
