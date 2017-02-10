@@ -22,6 +22,7 @@ use Try::Tiny;
 use WWW::Mixpanel;
 use IPC::Cmd qw/run/;
 use Kliq::Model::ZencoderOutput;
+use LWP::UserAgent;
 
 set serializer => 'JSON';
 #set logger     => 'log_handler';
@@ -103,6 +104,9 @@ hook 'before' => sub {
     }    
     elsif(request->path =~ '^/v1/webhook') {    
         # let chatbot api handle this
+        return;
+    }
+    elsif(request->path =~ '^/v1/rtmp_url') {    
         return;
     }
     elsif(!$user) {
@@ -237,6 +241,28 @@ get '/archives' => sub {
 
     content_type 'application/json';
     return to_json(\@archives);
+};
+
+get '/rtmp_url' => sub {
+
+    my $load_balancer_endpoint = URI->new('http://67.205.174.42:3030/freeserver');
+    my $ua = LWP::UserAgent->new();
+    my $response = $ua->get($$load_balancer_endpoint);
+
+    if($response->is_success()) {
+        my $content  = $response->decoded_content();
+        my $route    = from_json($content);
+        my $rtmp_url = URI->new('http://' . $route->{'ip'} . ':1935/live');
+        content_type 'application/json';
+        return to_json({
+            rtmp_url => $rtmp_url->canonical,
+        });
+    }
+    else {
+        var error => 'resource unavailable, please retry';
+        request->path_info('/error');
+    }
+
 };
 
 post '/notify_video_view' => sub {
