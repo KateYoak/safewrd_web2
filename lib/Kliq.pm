@@ -71,7 +71,7 @@ hook 'before' => sub {
     # this assumes http, but what if some idiot app uses a non-standard referrer like android-app://com.Slack, I'm looking at you slack
     if(request->referer) {
         my $ref = URI->new(request->referer);
-        print STDERR Dumper( $ref );
+        # print STDERR Dumper( $ref );
         if ($ref->isa('URI::_foreign')) { #handle non-http uris
             session referer_domain => 'http://m.tranzmt.it';
         }
