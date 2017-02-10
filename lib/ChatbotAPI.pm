@@ -14,7 +14,8 @@ use Data::Dumper;
 set serializer => 'JSON';
 
 my $DEBUG  = 1;
-my $SOURCE = 'proto-onboarding-chatbotapi';
+my $SOURCE = 'onboarding-chatbot';
+my $MAX_SAFETYGROUP  = 5; # TODO: Config file
 # test
 get '/webhook' => sub {
     return "Hello World";
@@ -28,17 +29,15 @@ post '/webhook' => sub {
     my $req = from_json($body);
     _debug( 'Request Body (JSON):' . Dumper($req) );
 
-    my $MAX_SAFETYGROUP  = 5; # TODO: Config file
     my $result           = $req->{'result'};
     my $id               = $req->{'id'}; 
-    my $api_session_id       = $req->{'sessionId'}; 
+    my $api_session_id   = $req->{'sessionId'}; 
     my $timestamp        = $req->{'timestamp'};
     my $status           = $req->{'status'};
     my $original_request = $req->{'originalRequest'}; # data from client UI
-    my $service          = $original_request->{'source'} || 'API.ai';
-    my $handle           = ($service ne 'API.ai') ? join( '-', 'dev', $api_session_id ) : _resolve_handle( $original_request );
+    my $service          = $original_request->{'source'} || 'manual';
+    my $handle           = ($service eq 'manual') ? join( '-', 'dev-api-ai', $api_session_id ) : _resolve_handle( $original_request );
 
-    session test => "Test";
     # capture user data
     _debug( 'Session Object: ' . Dumper(session) );
     _debug( 'User Data: ' . Dumper( $original_request ) );
@@ -80,51 +79,137 @@ post '/webhook' => sub {
 
     # check user and create user / session if it doesn't exist
 
-    if ( $result->{'action'} eq 'add.friend' ) {
+    if ( $result->{'action'} =~ /^(greet\.)?add\.friend$/i ) {
         my $friend_name = $result->{'parameters'}->{'friend-name'};
         my $context_prefix = 'add-friend';
-        if ( ($friend_name) and $friend_name !~ /^(No)$/i ) {
+        if ( $friend_name !~ /^(No)$/i ) {
             _debug( 'Params: ' . Dumper( $result->{'parameters'} ) );
 
-            # get user
-            my $current_user = ''; # fetch from DB
-            # store friend
-            my $friend = schema->resultset('Contact')->create({
-                owner_id => $user->id,
-                handle   => $friend_name,
-                name     => $friend_name,
-                service  => 'manual',
-            });
+            # store friend if there is a friend, else prompt user
+            if ($friend_name) {
+                my $friend = schema->resultset('Contact')->create({
+                    owner_id => $user->id,
+                    handle   => join( ':', $SOURCE, $user->id, $friend_name),
+                    name     => $friend_name,
+                    service  => 'manual',
+                });
 
-            _debug( 'Contact ID: ' . $friend->id );
+                _debug( 'Contact ID: ' . $friend->id );
+            }
 
             # get friend names
             my @friends = schema->resultset('Contact')->search({
                 owner_id => $user->id,
-            });
+                handle   => {
+                    like => join( ':', $SOURCE, $user->id )  . '%',
+                }
+            })->all();
 
-            # count friends
-            my $friend_count = scalar(@friends);  # resolve from user
-            my $context_out  = join( "-", $context_prefix, $friend_count ); 
+            # count friends and prompt for next friend 
+            my @contexts;
+            my $friend_count = int(scalar(@friends)) + 1;
             if ( $friend_count > $MAX_SAFETYGROUP ) {
-                $context_out = join( "-", $context_prefix, 'more' ); 
+                push @contexts, { 
+                    name => 'yes-add-friend',
+                    lifespan => 1,
+                }; 
+                push @contexts, {
+                    name => 'no-create-safetygroup',
+                    lifespan => 1,
+                };
+            }
+            else {
+                push @contexts, { 
+                    name => join( "-", $context_prefix, $friend_count ),
+                    lifespan => 1,
+                }; 
             }
 
             # flow of control using contexts
             my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
             my $request_params = {
                 speech   => $fulfillment->{'speech'},
-                contextOut  => [ 
-                    { 
-                        name     => $context_out, 
-                        lifespan => 1,
-                    },
-                ],
+                contextOut  => \@contexts, 
             };
             return _process_request( $request_params );
         }
         else {
         
+        }
+    }
+    elsif ( $result->{'action'} eq 'create.safetygroup' ) {
+        my $group_name = $result->{'parameters'}->{'group-name'};
+        if ( $group_name ) {
+            my $kliq_group = schema->resultset('Kliq')->create({
+                user_id      => $user->id,
+                name         => $group_name,
+                is_emergency => 1,
+            });
+            my @friends = schema->resultset('Contact')->search({
+                owner_id => $user->id,
+                handle   => {
+                    like => join( ':', $SOURCE, $user->id )  . '%',
+                }
+            });
+            foreach my $f (@friends) {
+                my $kliq_map = schema->resultset('KliqContact')->create({
+                    kliq_id    => $kliq_group->id,
+                    contact_id => $f->id,
+                });
+            }
+            my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+            my $request_params = {
+                speech   => $fulfillment->{'speech'},
+                contextOut  => [ 
+                    {
+                        name     => 'create-safeword',
+                        lifespan => 1,
+                    }
+                ],
+            };
+            return _process_request( $request_params );
+        }
+    }
+    elsif ( $result->{'action'} eq 'create.safeword' ) {
+        my $safeword = $result->{'parameters'}->{'safeword'};
+        if ( $safeword ) {
+            my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+
+            # interpolate friend count
+            if ($fulfillment->{'speech'} =~ /{{friend-count}}/i) {
+                my @friends = schema->resultset('Contact')->search({
+                    owner_id => $user->id,
+                    handle   => {
+                        like => join( ':', $SOURCE, $user->id )  . '%',
+                    }
+                })->all();
+                my $friend_count = scalar( @friends );
+                $fulfillment->{'speech'} =~ s/{{friend-count}}/$friend_count/g;
+            }
+            else {
+                $fulfillment->{'speech'} =~ s/{{friend-count}}//g;
+            }
+
+            # interpolate url 
+            if ($fulfillment->{'speech'} =~ /{{tranzmt-url}}/i) {
+                # generate url
+                my $url = "";
+                $fulfillment->{'speech'} =~ s/{{tranzmt-url}}/$url/g;
+            }
+            else {
+                $fulfillment->{'speech'} =~ s/{{tranzmt-url}}//g;
+            }
+
+            my $request_params = {
+                speech   => $fulfillment->{'speech'},
+                # contextOut  => [ 
+                #     {
+                #         name     => 'create-safeword',
+                #         lifespan => 1,
+                #     }
+                # ],
+            };
+            return _process_request( $request_params );
         }
     }
     elsif ( $result->{'action'} eq 'input.welcome' ) {
@@ -183,9 +268,6 @@ sub _resolve_handle {
     my $params = shift;
     if ( $params->{'source'} eq 'facebook' ) {
         return $params->{'data'}->{'sender'}->{'id'};
-    }
-    elsif ( !defined($params->{'source'}) ) {
-        return 'API.ai';
     }
     else {
         var error => "Unable to resolve handle for " . $params->{'source'};
