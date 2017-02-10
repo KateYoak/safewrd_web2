@@ -68,10 +68,17 @@ hook 'before' => sub {
 
     #-- set domain referer for postMessage
     
+    # this assumes http, but what if some idiot app uses a non-standard referrer like android-app://com.Slack, I'm looking at you slack
     if(request->referer) {
         my $ref = URI->new(request->referer);
-        session referer_domain 
-            => 'http://' . ($ref->port == 80 ? $ref->host : $ref->host_port);
+        print STDERR Dumper( $ref );
+        if ($ref->isa('URI::_foreign')) { #handle non-http uris
+            session referer_domain => 'http://m.tranzmt.it';
+        }
+        else {
+            session referer_domain 
+                => 'http://' . ($ref->port == 80 ? $ref->host : $ref->host_port);
+        }
     }
     else {
         session referer_domain => 'http://m.tranzmt.it';
@@ -244,8 +251,7 @@ get '/archives' => sub {
 };
 
 get '/rtmp_url' => sub {
-
-    my $load_balancer_endpoint = URI->new('http://67.205.174.42:3030/freeserver');
+    my $load_balancer_endpoint = URI->new('http://receiver.tranzmt.it:3030/freeserver');
     my $ua = LWP::UserAgent->new();
     my $response = $ua->get($load_balancer_endpoint->canonical);
 
