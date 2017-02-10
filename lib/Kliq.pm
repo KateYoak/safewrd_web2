@@ -247,7 +247,7 @@ get '/rtmp_url' => sub {
 
     my $load_balancer_endpoint = URI->new('http://67.205.174.42:3030/freeserver');
     my $ua = LWP::UserAgent->new();
-    my $response = $ua->get($$load_balancer_endpoint);
+    my $response = $ua->get($load_balancer_endpoint->canonical);
 
     if($response->is_success()) {
         my $content  = $response->decoded_content();
