@@ -37,6 +37,11 @@ __PACKAGE__->add_columns(
         default_value => 0,
         is_nullable => 0,
     },
+    safeword => {
+        data_type => "varchar",
+        is_nullable => 1,
+        size => 255,
+    },
     created => {
         data_type => "timestamp",
         datetime_undef_if_invalid => 1,

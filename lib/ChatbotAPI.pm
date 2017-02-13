@@ -13,7 +13,7 @@ use Data::Dumper;
 
 set serializer => 'JSON';
 
-my $DEBUG  = 1;
+my $DEBUG  = 0;
 my $SOURCE = 'onboarding-chatbot';
 my $MAX_SAFETYGROUP  = 5; # TODO: Config file
 # test
@@ -173,17 +173,21 @@ post '/webhook' => sub {
     elsif ( $result->{'action'} eq 'create.safeword' ) {
         my $safeword = $result->{'parameters'}->{'safeword'};
         if ( $safeword ) {
+            my $kliq_group = schema->resultset('Kliq')->search({
+                user_id  => $user->id,
+            })->single();
+            $kliq_group->update({
+                safeword => $safeword,
+            });
+            _debug("Kliq Group ID: " . $kliq_group->id);
             my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
-
             # interpolate friend count
             if ($fulfillment->{'speech'} =~ /{{friend-count}}/i) {
-                my @friends = schema->resultset('Contact')->search({
-                    owner_id => $user->id,
-                    handle   => {
-                        like => join( ':', $SOURCE, $user->id )  . '%',
-                    }
+                my @kliq_members = schema->resultset('KliqContact')->search({
+                    kliq_id => $kliq_group->id,
                 })->all();
-                my $friend_count = scalar( @friends );
+                _debug("Kliq Group Count: " . Dumper(scalar( @kliq_members )));
+                my $friend_count = scalar( @kliq_members );
                 $fulfillment->{'speech'} =~ s/{{friend-count}}/$friend_count/g;
             }
             else {
@@ -193,7 +197,7 @@ post '/webhook' => sub {
             # interpolate url 
             if ($fulfillment->{'speech'} =~ /{{tranzmt-url}}/i) {
                 # generate url
-                my $url = "";
+                my $url = 'http://trzmt.it/18372'; #TODO: URL generation
                 $fulfillment->{'speech'} =~ s/{{tranzmt-url}}/$url/g;
             }
             else {
