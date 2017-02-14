@@ -250,7 +250,7 @@ post '/webhook' => sub {
             })->single();
 
             if (!defined($kliq_group)) {
-                $message = "Do you want to add anybody else to your group?";
+                $message = "Looks like you already have the minimum number of friends on your group, do you want to add anybody else to your group?";
                 push @contexts, { 
                     name => 'yes-add-friend',
                     lifespan => 1,
