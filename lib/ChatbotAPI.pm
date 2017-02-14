@@ -13,7 +13,7 @@ use Data::Dumper;
 
 set serializer => 'JSON';
 
-my $DEBUG  = 1;
+my $DEBUG  = 0;
 my $SOURCE = 'onboarding-chatbot';
 my $MAX_SAFETYGROUP  = 5; # TODO: Config file
 # test
