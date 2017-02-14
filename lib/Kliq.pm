@@ -258,7 +258,7 @@ get '/rtmp_url' => sub {
     if($response->is_success()) {
         my $content  = $response->decoded_content();
         my $route    = from_json($content);
-        my $rtmp_url = URI->new('http://' . $route->{'ip'} . ':1935/live');
+        my $rtmp_url = URI->new('rtmp://' . $route->{'ip'} . ':1935/live');
         content_type 'application/json';
         return to_json({
             rtmp_url => $rtmp_url->canonical,

@@ -52,8 +52,8 @@ sub _build_rtmp_url {
     if($response->is_success()) {
         my $content  = $response->decoded_content();
         my $route    = from_json($content);
-        my $rtmp_url = URI->new('http://' . $route->{'ip'} . ':1935/live');
-        return $rtmp_url->canonical,
+        my $rtmp_url = URI->new('rtmp://' . $route->{'ip'} . ':1935/live');
+        return $rtmp_url->canonical;
     }
     else {
         return undef;
