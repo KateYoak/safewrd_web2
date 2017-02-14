@@ -13,7 +13,7 @@ use Data::Dumper;
 
 set serializer => 'JSON';
 
-my $DEBUG  = 0;
+my $DEBUG  = 1;
 my $SOURCE = 'onboarding-chatbot';
 my $MAX_SAFETYGROUP  = 5; # TODO: Config file
 # test
@@ -226,11 +226,88 @@ post '/webhook' => sub {
         return _process_request( $request_params );
     }
     elsif ( $result->{'action'} eq 'input.unknown' ) {
+        my $context_prefix = 'add-friend';
+        my @contexts = ();
+
+        # get friend names
+        my @friends = schema->resultset('Contact')->search({
+            owner_id => $user->id,
+            handle   => {
+                like => join( ':', $SOURCE, $user->id )  . '%',
+            }
+        })->all();
+
+        my $message = '';
+        # count friends and prompt for next friend 
+        my $friend_count = int(scalar(@friends)) + 1;
+        my $is_complete = 0;
+        if ( $friend_count > $MAX_SAFETYGROUP ) {
+
+            # we got all the friends, check for the safety groupname
+            my $kliq_group = schema->resultset('Kliq')->search({
+                user_id      => $user->id,
+                is_emergency => 1,
+            })->single();
+
+            if (!defined($kliq_group)) {
+                $message = "Do you want to add anybody else to your group?";
+                push @contexts, { 
+                    name => 'yes-add-friend',
+                    lifespan => 1,
+                }; 
+                push @contexts, {
+                    name => 'no-create-safetygroup',
+                    lifespan => 1,
+                };
+            }
+            else {
+                $message = 'Think of what you want your "SafeWord" to be, we recommend it be a phrase rather than a single word. Try to make it something you would rarely ever say - something so unique like "pink grasshoppers"';
+                # safetygroup?  
+                if (!defined($kliq_group->safeword)) {
+                    push @contexts, {
+                        name     => 'create-safeword',
+                        lifespan => 1,
+                    };
+                }
+                elsif (!defined($kliq_group->name)) {
+                    $message = "Do you want to add anybody else to your group?";
+                    push @contexts, { 
+                        name => 'yes-add-friend',
+                        lifespan => 1,
+                    }; 
+                    push @contexts, {
+                        name => 'no-create-safetygroup',
+                        lifespan => 1,
+                    };
+                }
+                else {
+                    # everythings there! 
+                    $is_complete = 1;
+                    my $url = 'http://trzmt.it/18372'; # TODO: url generation
+                    $message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '", all you need to do is download, install and share this URL privately to your ' . $friend_count . ' friends directly in FB Messenger, WeChat, Twitter, Telegram or even SMS and ONLY with your ' . $friend_count . ' friends. ' . $url;
+                    @contexts = ();
+                }
+
+            }
+        }
+        else {
+            if ($friend_count > 1) {
+                $message = "Looks like you've already added some friends. What's the name of friend #" . $friend_count . "?";
+            }
+            else {
+                $message = "What's the name of friend #" . $friend_count . "?";
+            }
+            push @contexts, { 
+                name => join( "-", $context_prefix, $friend_count ),
+                lifespan => 1,
+            }; 
+        }
+
         # flow of control using contexts
         my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
         my $request_params = {
-            speech   => $fulfillment->{'speech'},
-            contextOut  => [],
+            speech   => ($is_complete) ? $message : $fulfillment->{'speech'} . " " . $message,
+            contextOut  => \@contexts,
         };
         return _process_request( $request_params );
     }
