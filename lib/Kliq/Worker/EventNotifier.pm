@@ -48,6 +48,7 @@ sub work {
                 location  => $event->location,
                 price     => $event->price,
                 event_id  => $event->id,
+                rtmp_url  => $event->rtmp_url,
                 event_status => $event->event_status,
                 contact_id => $contact->id,
             }));
@@ -79,7 +80,7 @@ sub work {
 
             # Send push notifications only for published/test events
             if ($event->event_status eq 'published' || $event->event_status eq 'test') {
-                my $stream_url = q{rtmp://api.tranzmt.it:1935/live/} . $event->id;
+                my $stream_url = join('/', $event->rtmp_url, $event->id);
                 $self->redis->rpush(notifyPhone => to_json({
                     type => 'push',
                     carnival_payload => {

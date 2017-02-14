@@ -162,14 +162,23 @@ sub insert {
     #-- find possible userid in persona or other contacts(?)
     my $crit = $self->service =~ /(twitter|facebook)/ ?
         { handle => $self->handle } : { email => $self->email };
-    my $known_persona = $self->result_source->schema->resultset('Persona')->search_rs($crit)->single();
+
+    # Fix Added: do not resolve null handles or emails 
+    my @ck = keys %{$crit};
+    my $criteria_key = shift @ck; 
+
+    # my $known_persona = $self->result_source->schema->resultset('Persona')->search_rs($crit)->single();
+    my $known_persona = (defined($crit->{$criteria_key})) ? $self->result_source->schema->resultset('Persona')->search_rs($crit)->single() : undef;
     if($known_persona) {
         $self->update({ user_id => $known_persona->user_id });
     }
     else {
-        my @contacts = $self->result_source->schema->resultset('Contact')->search_rs(
+        # my @contacts = $self->result_source->schema->resultset('Contact')->search_rs(
+        #     $crit, { group_by => 'user_id' }
+        # )->all();
+        my @contacts = (defined($crit->{$criteria_key})) ? $self->result_source->schema->resultset('Contact')->search_rs(
             $crit, { group_by => 'user_id' }
-        )->all();
+        )->all() : ();
         my $count = scalar(@contacts);
         if($count > 1) {
             die("Database inconsistent: multiple user_ids for same service handle");

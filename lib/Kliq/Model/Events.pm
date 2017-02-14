@@ -9,6 +9,8 @@ use Try::Tiny;
 use Data::Dumper;
 use JSON;
 use WWW::Mixpanel;
+use LWP::UserAgent;
+use URI;
 extends 'Kliq::Model::Base';
 
 sub table { 'Event' }
@@ -26,9 +28,36 @@ around 'create' => sub {
             resource => 'Event',
         }};
     }
+    my $live_url = _build_rtmp_url();
+    if ($live_url) {
+        $params->{rtmp_url} = $live_url; 
+    }
+    else {
+        return {error => {
+            field => 'rtmp_url',
+            code => 'unable_to_resolve_url',
+            resource => 'Event',
+        }};
+    }
     my $result = $self->$orig($params);
     track_event_request('New_Event_Created');
     return $result;
+};
+
+sub _build_rtmp_url {
+    my $load_balancer_endpoint = URI->new('http://receiver.tranzmt.it:3030/freeserver');
+    my $ua = LWP::UserAgent->new();
+    my $response = $ua->get($load_balancer_endpoint->canonical);
+
+    if($response->is_success()) {
+        my $content  = $response->decoded_content();
+        my $route    = from_json($content);
+        my $rtmp_url = URI->new('rtmp://' . $route->{'ip'} . ':1935/live');
+        return $rtmp_url->canonical;
+    }
+    else {
+        return undef;
+    }
 };
 
 around 'update' => sub {

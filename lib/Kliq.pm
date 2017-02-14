@@ -22,6 +22,7 @@ use Try::Tiny;
 use WWW::Mixpanel;
 use IPC::Cmd qw/run/;
 use Kliq::Model::ZencoderOutput;
+use LWP::UserAgent;
 
 set serializer => 'JSON';
 #set logger     => 'log_handler';
@@ -67,10 +68,17 @@ hook 'before' => sub {
 
     #-- set domain referer for postMessage
     
+    # this assumes http, but what if some idiot app uses a non-standard referrer like android-app://com.Slack, I'm looking at you slack
     if(request->referer) {
         my $ref = URI->new(request->referer);
-        session referer_domain 
-            => 'http://' . ($ref->port == 80 ? $ref->host : $ref->host_port);
+        # print STDERR Dumper( $ref );
+        if ($ref->isa('URI::_foreign')) { #handle non-http uris
+            session referer_domain => 'http://m.tranzmt.it';
+        }
+        else {
+            session referer_domain 
+                => 'http://' . ($ref->port == 80 ? $ref->host : $ref->host_port);
+        }
     }
     else {
         session referer_domain => 'http://m.tranzmt.it';
@@ -101,6 +109,13 @@ hook 'before' => sub {
     elsif(request->path =~ '^/v1/media') {
         return;
     }    
+    elsif(request->path =~ '^/v1/webhook') {    
+        # let chatbot api handle this
+        return;
+    }
+    elsif(request->path =~ '^/v1/rtmp_url') {    
+        return;
+    }
     elsif(!$user) {
         request->path_info('/error/unauthorized');
     }
@@ -233,6 +248,27 @@ get '/archives' => sub {
 
     content_type 'application/json';
     return to_json(\@archives);
+};
+
+get '/rtmp_url' => sub {
+    my $load_balancer_endpoint = URI->new('http://receiver.tranzmt.it:3030/freeserver');
+    my $ua = LWP::UserAgent->new();
+    my $response = $ua->get($load_balancer_endpoint->canonical);
+
+    if($response->is_success()) {
+        my $content  = $response->decoded_content();
+        my $route    = from_json($content);
+        my $rtmp_url = URI->new('rtmp://' . $route->{'ip'} . ':1935/live');
+        content_type 'application/json';
+        return to_json({
+            rtmp_url => $rtmp_url->canonical,
+        });
+    }
+    else {
+        var error => 'resource unavailable, please retry';
+        request->path_info('/error');
+    }
+
 };
 
 post '/notify_video_view' => sub {
