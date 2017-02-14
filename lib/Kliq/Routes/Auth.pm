@@ -212,7 +212,13 @@ get '/auth/yahoo/callback' => sub {
 #---- google, facebook ---------------------------------------------------------
 
 get '/auth/:site_id' => sub {
-    redirect client(params->{site_id})->authorize_url;
+    # handle newer versions since ->authorize_url is deprecated
+    if ($Net::OAuth2::Profile::WebServer::VERSION < '0.50') {
+        redirect client(params->{site_id})->authorize_url;
+    }
+    else {
+        redirect client(params->{site_id})->authorize;
+    }
 };
 
 get '/auth/:site_id/callback' => sub {
