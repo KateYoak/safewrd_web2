@@ -117,9 +117,17 @@ sub insert {
     #-- update userids for each contact this persona represents
     my $crit = $self->service =~ /(twitter|facebook)/ ?
         { handle => $self->handle } : { email => $self->email };
-    $self->result_source->schema->resultset('Contact')->search_rs($crit)->update({
-        user_id => $self->user_id 
-    });
+
+    # Fix Added: do not resolve null handles or emails 
+    my @ck = keys %{$crit};
+    my $criteria_key = shift @ck; 
+
+    my $known_contact = (defined($crit->{$criteria_key})) ? $self->result_source->schema->resultset('Contact')->search_rs($crit)->single() : undef;
+    if (defined($known_contact)) {
+        $known_contact->update({
+            user_id => $self->user_id,
+        });
+    }
 
     $guard->commit;
 
