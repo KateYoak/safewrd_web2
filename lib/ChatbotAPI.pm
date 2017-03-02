@@ -10,6 +10,8 @@ use Dancer::Plugin::Email;
 use Dancer::Plugin::REST;
 use Dancer::Plugin::Redis;
 use Data::Dumper;
+use REST::Client;
+use URI;
 
 set serializer => 'JSON';
 
@@ -79,7 +81,8 @@ post '/webhook' => sub {
 
     # check user and create user / session if it doesn't exist
 
-    if ( $result->{'action'} =~ /^(greet\.)?add\.friend$/i ) {
+    # if ( $result->{'action'} =~ /^(greet\.)?add\.friend$/i ) {
+    if ( $result->{'action'} eq 'add.friend' ) {
         my $friend_name = $result->{'parameters'}->{'friend-name'};
         my $context_prefix = 'add-friend';
         if ( $friend_name !~ /^(No)$/i ) {
@@ -107,8 +110,9 @@ post '/webhook' => sub {
 
             # count friends and prompt for next friend 
             my @contexts;
-            my $friend_count = int(scalar(@friends)) + 1;
-            if ( $friend_count > $MAX_SAFETYGROUP ) {
+            my $friend_count = int(scalar(@friends));
+            my $next_friend_count = int(scalar(@friends)) + 1;
+            if ( $next_friend_count > $MAX_SAFETYGROUP ) {
                 push @contexts, { 
                     name => 'yes-add-friend',
                     lifespan => 1,
@@ -120,7 +124,7 @@ post '/webhook' => sub {
             }
             else {
                 push @contexts, { 
-                    name => join( "-", $context_prefix, $friend_count ),
+                    name => join( "-", $context_prefix, $next_friend_count ),
                     lifespan => 1,
                 }; 
             }
@@ -134,7 +138,7 @@ post '/webhook' => sub {
             return _process_request( $request_params );
         }
         else {
-        
+            # do nothing 
         }
     }
     elsif ( $result->{'action'} eq 'create.safetygroup' ) {
@@ -197,7 +201,10 @@ post '/webhook' => sub {
             # interpolate url 
             if ($fulfillment->{'speech'} =~ /{{tranzmt-url}}/i) {
                 # generate url
-                my $url = 'http://trzmt.it/18372'; #TODO: URL generation
+                my $url = _resolve_url( {
+                    user_id => $user->id, 
+                    kliq_id => $kliq_group->id,
+                } ); 
                 $fulfillment->{'speech'} =~ s/{{tranzmt-url}}/$url/g;
             }
             else {
@@ -225,7 +232,8 @@ post '/webhook' => sub {
         };
         return _process_request( $request_params );
     }
-    elsif ( $result->{'action'} eq 'input.unknown' ) {
+    # elsif ( $result->{'action'} eq 'input.unknown' ) {
+    elsif ( $result->{'action'} =~ /^(greet\.add\.friend|input\.unknown)$/i ) {
         my $context_prefix = 'add-friend';
         my @contexts = ();
 
@@ -239,7 +247,8 @@ post '/webhook' => sub {
 
         my $message = '';
         # count friends and prompt for next friend 
-        my $friend_count = int(scalar(@friends)) + 1;
+        my $friend_count = int(scalar(@friends));
+        my $next_friend_count = int(scalar(@friends)) + 1;
         my $is_complete = 0;
         if ( $friend_count > $MAX_SAFETYGROUP ) {
 
@@ -283,7 +292,10 @@ post '/webhook' => sub {
                 else {
                     # everythings there! 
                     $is_complete = 1;
-                    my $url = 'http://trzmt.it/18372'; # TODO: url generation
+                    my $url = _resolve_url( {
+                        user_id => $user->id, 
+                        kliq_id => $kliq_group->id,
+                    } ); 
                     $message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '", all you need to do is download, install and share this URL privately to your ' . $friend_count . ' friends directly in FB Messenger, WeChat, Twitter, Telegram or even SMS and ONLY with your ' . $friend_count . ' friends. ' . $url;
                     @contexts = ();
                 }
@@ -291,16 +303,38 @@ post '/webhook' => sub {
             }
         }
         else {
-            if ($friend_count > 1) {
-                $message = "Looks like you've already added some friends. What's the name of friend #" . $friend_count . "?";
+            my $ORDINAL_MAP = {
+                1 => "first",
+                2 => "second",
+                3 => "third",
+                4 => "fourth",
+                5 => "fifth",
+            };
+            if ($friend_count > 1 && $friend_count < $MAX_SAFETYGROUP) {
+                $message = "Looks like you've already added some friends. What's the name of your " . $ORDINAL_MAP->{$next_friend_count} . " friend?";
+                push @contexts, { 
+                    name => join( "-", $context_prefix, $next_friend_count ),
+                    lifespan => 1,
+                }; 
+            }
+            elsif ($friend_count < 1) {
+                $message = "What's the name of the first friend you want to add to your group? (eg. Mike Brown, or Mike)";
+                push @contexts, { 
+                    name => join( "-", $context_prefix, $next_friend_count ),
+                    lifespan => 1,
+                }; 
             }
             else {
-                $message = "What's the name of friend #" . $friend_count . "?";
+                $message = "Looks like you already have the minimum number of friends, do you want to add anybody else to your group?";
+                push @contexts, { 
+                    name => 'yes-add-friend',
+                    lifespan => 1,
+                }; 
+                push @contexts, {
+                    name => 'no-create-safetygroup',
+                    lifespan => 1,
+                };
             }
-            push @contexts, { 
-                name => join( "-", $context_prefix, $friend_count ),
-                lifespan => 1,
-            }; 
         }
 
         # flow of control using contexts
@@ -354,6 +388,71 @@ sub _resolve_handle {
         var error => "Unable to resolve handle for " . $params->{'source'};
         request->path_info('/error');
     }
+}
+
+sub _resolve_url {
+    my $params = shift;
+
+    my $referrer_params;
+    if (scalar keys(%{$params}) > 0) {
+        # $referrer_params = 'user_id=12345,kliq_id=54321';
+        # join values by delimiter ','
+        $referrer_params = join( ',', map { join('=',$_,$params->{$_}) } keys %{$params} );
+    }
+    else {
+        var error => "Missing referrer parameters";
+        request->path_info('/error');
+    }
+
+    my $client = REST::Client->new();
+
+    $client->addHeader('Content-Type', 'application/json');
+    $client->addHeader('charset', 'UTF-8');
+    $client->addHeader('Accept', 'application/json');
+
+    # TODO: Put in Configuration file
+    my $branchio_url    = 'https://api.branch.io/v1/url';
+    my $branchio_key    = q/key_test_mfrDiacvwlh3JJTGhTTbvojnwzj6H2eH/;
+    my $branchio_secret = q/secret_test_KHAOHA4K6wMuuJfix2cQKFyEvCCIF9PW/;
+    # my $branchio_key    = q/key_live_aaxsnnkztel3KJHHmPQjrmnbBxf1M2p5/;
+    # my $branchio_secret = q/secret_live_ZCLNWTeLntTM3KGUTzsNDi0wFkZjrbLH/;
+    my $google_play_url = URI->new('https://play.google.com/store/apps/details');
+    # my $app_id          = 'fr.simon.marquis.installreferrer'; # TODO: Use real app ID
+    my $app_id          = 'com.flare.app';
+    # TODO: Put in Configuration file
+
+    my $url_params = {
+        id       => $app_id,
+        referrer => $referrer_params,
+    };
+    $google_play_url->query_form($url_params);
+
+    print STDERR $google_play_url->as_string . "\n";
+    my $payload = {
+        '$android_url' => $google_play_url->as_string,
+    };
+
+    my $request_params = {
+        branch_key => $branchio_key,
+        data       => $payload,
+    };
+
+    my $req = to_json($request_params);
+    my $endpoint_url = URI->new($branchio_url);
+    $client->POST($endpoint_url->canonical, $req);
+    if ($client->responseCode() =~ /^5\d{2}$/) {
+        var error => "Server Error: " . $client->responseCode();
+        request->path_info('/error');
+    }
+
+    my $response = from_json($client->responseContent());
+    if (exists $response->{'error'}) {
+        my $details = $response->{'error'};
+        var error => "Error Encountered, Code: " . $details->{'code'} .  ", Message: " . $details->{'message'};
+        request->path_info('/error');
+    }
+
+    return $response->{'url'};
 }
 
 1;
