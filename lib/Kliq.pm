@@ -343,6 +343,78 @@ post '/notify_video_view' => sub {
     }
 };
 
+post '/notify_contact_joined' => sub {
+    my $args = dejsonify(body_params());
+
+    if ($args->{kliq_owner_user_id} && $args->{kliq_contact_user_id}) {
+        my $owner_persona = schema->resultset('Persona')->search({
+            user_id => $args->{kliq_owner_user_id},
+            service => 'google'
+        })->single();
+        my $member_persona = schema->resultset('Persona')->search({
+            user_id => $args->{kliq_contact_user_id},
+            service => 'google'
+        })->single();
+
+        if ($owner_persona && $member_persona) {
+            # Send in-app messages
+            my $request_hash_owner = {
+                type => 'in-app',
+                carnival_payload => {
+                    message => {
+                        to => [{ name => 'user_id', criteria => [$args->{kliq_owner_user_id}] }],
+                        title => $member_persona->name . " joined your Safety Group",
+                        type => "text_message",
+                        text => $member_persona->name . " joined your Safety Group",
+                        notification => {
+                            payload => {
+                                action    => 'contact_joined_kliq_group',
+                                badge     => 1,
+                                sound     => "flare.wav",
+                                alert     => $member_persona->name . " has just joined your Safety Group.",
+                                kliq_owner_user_id => $args->{kliq_owner_user_id},
+                                kliq_contact_user_id => $args->{kliq_contact_user_id},
+                            },
+                        },
+                    },
+                },
+            };
+            redis->rpush(notifyPhone => to_json($request_hash_owner));
+
+            my $request_hash_member = {
+                type => 'in-app',
+                carnival_payload => {
+                    message => {
+                        to => [{ name => 'user_id', criteria => [$args->{kliq_contact_user_id}] }],
+                        title => "You are officially in " . $owner_persona->name . "'s emergency Safety Group",
+                        type => "text_message",
+                        text => "You are officially in " . $owner_persona->name . "'s emergency Safety Group",
+                        notification => {
+                            payload => {
+                                action    => 'contact_joined_kliq_group',
+                                badge     => 1,
+                                sound     => "flare.wav",
+                                alert     => "You are officially in " . $owner_persona->name . "'s emergency Safety Group, so if they are ever in trouble and they say their 'Safe word' you will be the first to know by getting an emergency live video stream.",
+                                kliq_owner_user_id => $args->{kliq_owner_user_id},
+                                kliq_contact_user_id => $args->{kliq_contact_user_id},
+                            },
+                        },
+                    },
+                },
+            };
+            redis->rpush(notifyPhone => to_json($request_hash_member));
+        }
+        else {
+            return status_bad_request("Invalid kliq_owner_user_id/kliq_contact_user_id");
+        }
+
+        status_ok({ success => 1 });
+    }
+    else {
+        return status_bad_request("Missing params kliq_owner_user_id/kliq_contact_user_id");
+    }
+};
+
 get '/upload' => sub {
     template "upload", { }, { layout => undef };
 };
