@@ -15,7 +15,7 @@ use URI;
 
 set serializer => 'JSON';
 
-my $DEBUG  = 0;
+my $DEBUG  = 1;
 my $SOURCE = 'onboarding-chatbot';
 my $MAX_SAFETYGROUP  = 5; # TODO: Config file
 # test
@@ -26,10 +26,8 @@ get '/webhook' => sub {
 post '/webhook' => sub {
     content_type 'application/json';
     my $body = request->body();
-    _debug( 'Request Object: ' . Dumper(request) );
-    # _debug( 'Schema Object: ' . Dumper(schema) );
     my $req = from_json($body);
-    _debug( 'Request Body (JSON):' . Dumper($req) );
+    _debug( 'API.ai JSON Request: ' . to_json( $req, { pretty => 1 }) );
 
     my $result           = $req->{'result'};
     my $id               = $req->{'id'}; 
@@ -42,7 +40,7 @@ post '/webhook' => sub {
 
     # capture user data
     _debug( 'Session Object: ' . Dumper(session) );
-    _debug( 'User Data: ' . Dumper( $original_request ) );
+    _debug( 'User Data: ' . to_json( $original_request, { pretty => 1 } ) );
     my $user;
     if (!session('user_id')) {
         # check persona, get user id using persona
@@ -51,7 +49,7 @@ post '/webhook' => sub {
             $service,
         );
         # create user if persona does not exist
-        # CAVEAT: Creates a user per persona, if you are on another service it will create a differen user
+        # CAVEAT: Creates a user per persona, if you are on another service it will create a different user
         if (!defined($persona)) {
             _debug( 'DEBUG: Creating a user for this persona' );
             eval {
@@ -86,7 +84,7 @@ post '/webhook' => sub {
         my $friend_name = $result->{'parameters'}->{'friend-name'};
         my $context_prefix = 'add-friend';
         if ( $friend_name !~ /^(No)$/i ) {
-            _debug( 'Params: ' . Dumper( $result->{'parameters'} ) );
+            _debug( 'Params: ' . to_json( $result->{'parameters'}, { pretty => 1 } ) );
 
             # store friend if there is a friend, else prompt user
             if ($friend_name) {
@@ -202,8 +200,8 @@ post '/webhook' => sub {
             if ($fulfillment->{'speech'} =~ /{{tranzmt-url}}/i) {
                 # generate url
                 my $url = _resolve_url( {
-                    user_id => $user->id, 
-                    kliq_id => $kliq_group->id,
+                    owner_id => $user->id, 
+                    kliq_id  => $kliq_group->id,
                 } ); 
                 $fulfillment->{'speech'} =~ s/{{tranzmt-url}}/$url/g;
             }
@@ -293,8 +291,8 @@ post '/webhook' => sub {
                     # everythings there! 
                     $is_complete = 1;
                     my $url = _resolve_url( {
-                        user_id => $user->id, 
-                        kliq_id => $kliq_group->id,
+                        owner_id => $user->id, 
+                        kliq_id  => $kliq_group->id,
                     } ); 
                     $message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '", all you need to do is download, install and share this URL privately to your ' . $friend_count . ' friends directly in FB Messenger, WeChat, Twitter, Telegram or even SMS and ONLY with your ' . $friend_count . ' friends. ' . $url;
                     @contexts = ();
@@ -351,9 +349,9 @@ post '/webhook' => sub {
 post '/webhook/echo' => sub {
     content_type 'application/json';
     my $body = request->body();
-    _debug( 'Request Body:' . Dumper($body) );
+    _debug( 'Request Body:' . to_json( $body, { pretty => 1 } ) );
     my $req = from_json($body);
-    _debug( 'Request Body (JSON):' . Dumper($req) );
+    _debug( 'Request Body (JSON):' . to_json( $req, { pretty => 1 } ) );
     return status_ok($body);
 };
 
@@ -368,7 +366,7 @@ sub _process_request {
         source      => $SOURCE,
     };
 
-    _debug( "Response: " . Dumper($response));
+    _debug( "Response Sent to API.ai: " . to_json( $response, { pretty => 1 } ));
     return to_json($response);
 }
 
@@ -395,7 +393,7 @@ sub _resolve_url {
 
     my $referrer_params;
     if (scalar keys(%{$params}) > 0) {
-        # $referrer_params = 'user_id=12345,kliq_id=54321';
+        # $referrer_params = 'owner_id=12345,kliq_id=54321';
         # join values by delimiter ','
         $referrer_params = join( ',', map { join('=',$_,$params->{$_}) } keys %{$params} );
     }
@@ -404,6 +402,7 @@ sub _resolve_url {
         request->path_info('/error');
     }
 
+    _debug( "Referrer Parameters: " . $referrer_params );
     my $client = REST::Client->new();
 
     $client->addHeader('Content-Type', 'application/json');
@@ -427,7 +426,7 @@ sub _resolve_url {
     };
     $google_play_url->query_form($url_params);
 
-    print STDERR $google_play_url->as_string . "\n";
+    _debug( "Google Play URL: " . $google_play_url->as_string);
     my $payload = {
         '$android_url' => $google_play_url->as_string,
     };
@@ -441,18 +440,91 @@ sub _resolve_url {
     my $endpoint_url = URI->new($branchio_url);
     $client->POST($endpoint_url->canonical, $req);
     if ($client->responseCode() =~ /^5\d{2}$/) {
-        var error => "Server Error: " . $client->responseCode();
+        var error => "Server / Endpoint URL Failure, Error: [" . $client->responseCode() . "]";
         request->path_info('/error');
     }
 
     my $response = from_json($client->responseContent());
     if (exists $response->{'error'}) {
         my $details = $response->{'error'};
-        var error => "Error Encountered, Code: " . $details->{'code'} .  ", Message: " . $details->{'message'};
+        var error => "Error Encountered, Code: [" . $details->{'code'} .  "], Message: [" . $details->{'message'} . "]";
         request->path_info('/error');
     }
 
     return $response->{'url'};
+}
+
+sub _resolve_user_details {
+    my $params = shift;
+
+    my $client = REST::Client->new();
+    $client->addHeader('Content-Type', 'application/json');
+    $client->addHeader('charset', 'UTF-8');
+    $client->addHeader('Accept', 'application/json');
+
+    if (!$params->{'service'}) {
+        var error => "_resolve_user_details(): missing parameter: service";
+        request->path_info('/error');
+    }
+    if (!$params->{'handle'}) {
+        var error => "_resolve_user_details(): missing parameter: handle";
+        request->path_info('/error');
+    }
+        
+    my $user_details;
+    if ( $params->{'service'} eq 'facebook' ) {
+        my $user_details = _get_facebook_user_details( $client, $params );
+    }
+    else {
+        var error => "Unsupported service " . $params->{'service'};
+        request->path_info('/error');
+    }
+    return $user_details;
+}
+
+sub _get_facebook_user_details {
+    my $client = shift;
+    my $params = shift;
+
+    # TODO: Put in Configuration file
+    my $graph_url    = join( '/', 'https://graph.facebook.com/v2.8', $params->{'handle'} );
+    # Non-expiring Facebook Page / Application token generated via FB Graph Explorer
+    # Guide here: https://www.rocketmarketinginc.com/blog/get-never-expiring-facebook-page-access-token/
+    my $access_token = 'EAAKLaAfiAtcBAJRNmCuNjD5Xc7kyPNklyG7ZCdziPTHcFsZAEoodGBiJz8xzixjaqdrDrbYTt3rMJ3I1993JmZCz3hu8rZClIWndC3TErZBDa2VeVXpyvNw4eg6zNogoiynRCZAiGsyk2KHk5KBfbAOtk44h7JghgOHHZBfnhZAghAZDZD';
+    # TODO: Put in Configuration file
+
+    my @fields       = qw/
+        first_name
+        last_name
+        profile_pic
+        locale
+        timezone
+        gender
+        is_payment_enabled
+    /;
+    my $url_params   = {
+        access_token => $access_token,
+        fields       => join(',', @fields),
+    };
+    my $endpoint_url = URI->new($graph_url);
+    $endpoint_url->query_form($url_params);
+    _debug( "Facebook Graph URL: " . $endpoint_url->as_string);
+
+    $client->GET($endpoint_url->canonical);
+    if ($client->responseCode() =~ /^5\d{2}$/) {
+        var error => "Server / Endpoint URL Failure, Error: [" . $client->responseCode() . "]";
+        request->path_info('/error');
+    }
+
+    my $response = from_json($client->responseContent());
+    if (exists $response->{'error'}) {
+        my $details = $response->{'error'};
+        var error => "Error Encountered, Code: [" . $details->{'code'} .  "], Message: [" . $details->{'message'} . "], FB Trace ID: [" . $details->{'fbtrace_id'} . "], Type: [" . $details->{'type'} . "]";
+        request->path_info('/error');
+    }
+
+    _debug( "Facebook Graph JSON Response: " . to_json( $response, { pretty => 1 } ) );
+    return $response;
 }
 
 1;
