@@ -12,13 +12,13 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 
 use Kliq::Schema;
-use Kliq::Worker::CloudFilesPusher;
 use Dancer qw/:script !pass/;
 
 my $connect_info = config->{plugins}->{DBIC}->{kliq};
 $connect_info->{password} = delete $connect_info->{pass};
 my $schema = Kliq::Schema->connect($connect_info) or die "Failed to connect";
 
+use_ok( 'Kliq::Worker::CloudFilesPusher' );
 my $w = Kliq::Worker::CloudFilesPusher->new(schema => $schema, config => config->{sites}->{rackspace});
 
 my @f = qw/
