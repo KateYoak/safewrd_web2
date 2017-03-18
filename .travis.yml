@@ -23,6 +23,7 @@ install:
   - cpanm --quiet --notest FFmpeg::Thumbnail
   - cpanm --quiet --notest WebService::Rackspace::CloudFiles 
   - cpanm --quiet --notest WebService::Rackspace::CloudFiles::Object 
+  - cpanm --quiet --notest WebService::Rackspace::CloudFiles::Object::Iterator 
   - mysql -u root -e 'CREATE DATABASE kliq21'
   - mysql -u root -e "GRANT ALL ON kliq21.* TO 'kliq_SSM'@'localhost' IDENTIFIED BY 'self-expression'; FLUSH PRIVILEGES"
   - mysql -u kliq_SSM -p'self-expression' < mysql_schema/kliq21_schema.sql
