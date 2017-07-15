@@ -24,15 +24,6 @@ post '/start_videochat' => sub {
     my $body = request->body();
     my $req = from_json($body);
 
-    my $event = schema->resultset('Event')->find($req->{event});
-    unless ($event) {
-        var error => "Server / Endpoint URL Failure, Error: [Invalid or missing event]";
-        request->path_info('/error');
-    }
-
-    my $user = $event->user;
-    my $kliq = $event->kliq;
-
     my ($sessionID, $error) = _create_session();
     unless ($sessionID) {
         var error => $error;
@@ -57,7 +48,7 @@ post '/start_videochat' => sub {
                         badge     => 1,
                         sound     => "flare.wav",
                         alert     => "Citizen Witness Emergency - incoming live video chat",
-                        location  => $event->location,
+                        location  => $req->{location},
                         session_id => $sessionID,
                         token => $tokenSub,
                         app_key => config->{sites}->{tokbox}->{key}
