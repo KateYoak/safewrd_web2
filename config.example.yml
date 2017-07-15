@@ -114,6 +114,9 @@ sites:
             bundle_id: 'com.test-android-app'
             apikey: '0c03105a9191b567e0e2440bdeac07d33f9d407e'    
             base_uri: 'https://api.carnivalmobile.com/v3'
+    tokbox:
+        key: 45309642
+        secret: f9a2e9035191088dffdfa4a678a4c383d55a505a
 
 plugins:
     Email:
