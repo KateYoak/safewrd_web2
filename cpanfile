@@ -25,6 +25,7 @@ requires 'Dancer::Logger::PSGI'       => '0.04';
 requires 'Dancer::Plugin::Auth::Twitter' => '0.02';
 requires 'Dancer::Plugin::DBIC'       => '0.1506';
 requires 'Dancer::Plugin::Email'      => '0.13';
+requires 'Dancer::Plugin::UUID';
 requires 'Dancer::Plugin::REST'       => '0.07';
 requires 'Dancer::Plugin::Redis'      => '0.2';
 requires 'Data::Validate::URI'        => '0.06';
@@ -72,6 +73,8 @@ requires 'WWW::Mixpanel'              => '0.07';
 requires 'WebService::Rackspace::CloudFiles';
 requires 'YAML::XS'                   => '0.38';
 requires 'namespace::autoclean'       => '0.13';
+requires 'REST::Client';
+requires 'JSON::WebToken';
 
 #----------------#
 # DH Script Deps #
