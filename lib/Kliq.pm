@@ -1014,10 +1014,7 @@ sub _generate_token {
     my $payload = substr($uri,1);
     my $sig = hmac_sha1_hex($payload, config->{sites}->{tokbox}->{secret});
 
-    my $response = {
-        token => "T1==" . encode_base64("partner_id=" . config->{sites}->{tokbox}->{key} . "&sig=$sig:$payload")
-    };
-    return $response;
+    return "T1==" . encode_base64("partner_id=" . config->{sites}->{tokbox}->{key} . "&sig=$sig:$payload";
 };
 
 sub _jwt {
