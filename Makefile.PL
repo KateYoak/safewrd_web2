@@ -70,11 +70,14 @@ requires 'Dancer::Plugin::DBIC'      => '0.1506';
 requires 'Dancer::Plugin::REST'      => '0.07';
 requires 'Dancer::Plugin::Redis'     => '0.2';
 requires 'Dancer::Plugin::Auth::Twitter' => '0.02';
+requires 'Dancer::Plugin::UUID'      => '0.004';
 requires 'Dancer::Logger::LogHandler' => '0.01';
 requires 'Dancer::Logger::PSGI'      => '0.04';
 requires 'Net::OAuth2'               => '0.07';
 requires 'Net::OAuth::Yahoo'         => '0.06';
 requires 'HTML::Parser'              => '3.69';
+requires 'REST::Client'              => '273';
+requires 'JSON::WebToken'            => '0.10';
 
 requires 'Plack'                          => '1.0002';
 requires 'Plack::Middleware::Session'     => '0.14';

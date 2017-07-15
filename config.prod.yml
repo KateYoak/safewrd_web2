@@ -126,7 +126,9 @@ sites:
                 bundle_id: 'com.flare.app'
                 apikey: 'f6435516980cbcc1c93e74378067073717dd5631'    
                 base_uri: 'https://api.carnivalmobile.com/v3'
-
+    tokbox:
+        key: 45309642
+        secret: f9a2e9035191088dffdfa4a678a4c383d55a505a
 plugins:
     Email:
         #debug: 1
