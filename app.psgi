@@ -3,7 +3,7 @@ use Dancer; # ':syntax';
 use Plack::Builder;
 use Plack::Middleware::Session;
 use Plack::Session::State::Cookie;
-#use Plack::Session::Store::Redis;
+use Plack::Session::Store::Redis;
 use Plack::Session::Store::File;
 use YAML;
 
