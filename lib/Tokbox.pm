@@ -85,7 +85,7 @@ sub _create_session {
     $client->addHeader('X-OPENTOK-AUTH', _jwt());
 
     my $data = {
-        'archiveMode'    => "manual",
+        'archiveMode'    => "always",
         'location'       => undef,
         'p2p.preference' => "disabled",
     };
