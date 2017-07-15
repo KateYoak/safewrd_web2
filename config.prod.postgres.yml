@@ -116,6 +116,9 @@ sites:
             bundle_id: 'com.tranzmt.app'
             apikey: 'c51028c7733fbff64a952d361b75cbfc42dac22d'    
             base_uri: 'https://api.carnivalmobile.com/v3'
+    tokbox:
+        key: 45309642
+        secret: f9a2e9035191088dffdfa4a678a4c383d55a505a
 
 plugins:
     Email:
