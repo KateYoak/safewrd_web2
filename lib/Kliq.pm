@@ -944,7 +944,7 @@ post '/start_videochat' => sub {
             type => 'push',
             carnival_payload => {
                 notification => {
-                    to => [{ name => 'user_id', criteria => [$row->get_column('account_id')] }],
+                    to => [{ name => 'user_id', criteria => [$row->get_column('contact_id')] }],
                     payload => {
                         action    => "emergency_CW",
                         badge     => 1,
