@@ -928,8 +928,11 @@ post '/start_videochat' => sub {
 
     my ($sessionID, $error) = _create_session();
     unless ($sessionID) {
-        var error => $error;
-        request->path_info('/error');
+        my $data = {
+            success => 0,
+            error   => $error
+        };
+        return to_json($data);
     }
 
     my $tokenPub = _generate_token("publisher",$sessionID);
@@ -961,6 +964,7 @@ post '/start_videochat' => sub {
     }
 
     my $data = {
+        success                => 1,
         sessionID              => $sessionID,
         token                  => $tokenPub,
         app_key                => config->{sites}->{tokbox}->{key}
@@ -972,18 +976,12 @@ post '/start_videochat' => sub {
 sub _create_session {
     my $client = REST::Client->new();
 
-    $client->addHeader('Content-Type', 'application/json');
+    $client->addHeader('Content-Type', 'application/x-www-form-urlencoded');
     $client->addHeader('charset', 'UTF-8');
     $client->addHeader('Accept', 'application/json');
     $client->addHeader('X-OPENTOK-AUTH', _jwt());
 
-    my $data = {
-        'archiveMode'    => "always",
-        'location'       => undef,
-        'p2p.preference' => "disabled",
-    };
-
-    $client->POST('https://api.opentok.com/session/create', to_json($data));
+    $client->POST('https://api.opentok.com/session/create', "archiveMode=always&location=&p2p.preference=disabled");
     if ($client->responseCode() =~ /^5\d{2}$/) {
         return (undef, "Server / Endpoint URL Failure, Error: [" . $client->responseCode() . "]")
     }
