@@ -942,12 +942,13 @@ post '/start_videochat' => sub {
         kliq_id => $req->{kliq_group_id}
     });
     while (my $row = $users->next) {
-        my $tokenSub = _generate_token("subscriber",$sessionID);
+        my $contactID = $row->get_column('contact_id');
+        my $tokenSub = _generate_token("subscriber",$sessionID,$contactID);
         redis->rpush(notifyPhone => to_json({
             type => 'push',
             carnival_payload => {
                 notification => {
-                    to => [{ name => 'user_id', criteria => [$row->get_column('contact_id')] }],
+                    to => [{ name => 'user_id', criteria => [$contactID] }],
                     payload => {
                         action    => "emergency_CW",
                         badge     => 1,
@@ -1001,13 +1002,14 @@ sub _create_session {
 sub _generate_token {
     my $role = shift;
     my $sessionID = shift;
+    my $contactID = shift;
 
     my $data = {
         session_id             => $sessionID,
         create_time            => time,
         expire_time            => time + 24*60*60,
         role                   => $role,
-        nonce                  => uuid,
+        nonce                  => $contactID . "_" . time . "_". int(rand(999)),
     };
     print Dumper($data);
 
