@@ -1001,21 +1001,25 @@ sub _create_session {
 sub _generate_token {
     my $role = shift;
     my $sessionID = shift;
+
     my $data = {
-        sessionID              => $sessionID,
-        createTime             => time,
-        expireTime             => time + 24*60*60,
+        session_id             => $sessionID,
+        create_time            => time,
+        expire_time            => time + 24*60*60,
         role                   => $role,
         nonce                  => uuid,
     };
+    print Dumper($data);
 
     my $uri = URI->new();
     $uri->query_form($data);
     my $payload = substr($uri,1);
     my $sig = hmac_sha1_hex($payload, config->{sites}->{tokbox}->{secret});
 
-    return "T1==" . encode_base64("partner_id=" . config->{sites}->{tokbox}->{key} . "&sig=$sig:$payload");
-};
+    my $token = "T1==" . encode_base64("partner_id=" . config->{sites}->{tokbox}->{key} . "&sig=$sig:$payload");
+    $token =~s/\n//g;
+    return $token;
+}
 
 sub _jwt {
     return JSON::WebToken->encode({
