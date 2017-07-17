@@ -943,7 +943,7 @@ post '/start_videochat' => sub {
     });
     while (my $row = $users->next) {
         my $contactID = $row->get_column('contact_id');
-        my $tokenSub = _generate_token("subscriber",$sessionID,$contactID);
+        my $tokenSub = _generate_token("publisher",$sessionID,$contactID);
         my $contact = schema->resultset('Contact')->find($contactID);
         redis->rpush(notifyPhone => to_json({
             type => 'push',
