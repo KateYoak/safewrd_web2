@@ -944,11 +944,12 @@ post '/start_videochat' => sub {
     while (my $row = $users->next) {
         my $contactID = $row->get_column('contact_id');
         my $tokenSub = _generate_token("subscriber",$sessionID,$contactID);
+        my $contact = schema->resultset('Contact')->find($contactID);
         redis->rpush(notifyPhone => to_json({
             type => 'push',
             carnival_payload => {
                 notification => {
-                    to => [{ name => 'user_id', criteria => [$contactID] }],
+                    to => [{ name => 'user_id', criteria => [$contact->user_id] }],
                     payload => {
                         action    => "emergency_CW",
                         badge     => 1,
