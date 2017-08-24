@@ -37,7 +37,7 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->uuid_columns('id');
 
-__PACKAGE__->add_unique_constraint("passphrase", ["passphrase"]);
+__PACKAGE__->add_unique_constraint("passphrase", ["user_id","passphrase"]);
 
 __PACKAGE__->belongs_to(
     user => 'Kliq::Schema::Result::User', 'user_id'
