@@ -975,6 +975,77 @@ post '/start_videochat' => sub {
     return to_json($data);
 };
 
+post '/passphrase' => sub {
+    content_type 'application/json';
+    my $body = request->body();
+    my $req = from_json($body);
+    my $res = {};
+
+    my $user = schema->resultset('User')->find({ id => session('user_id') });
+    unless($user) {
+        var error => "Invalid user " . session('user_id') . " (stale cookie?)";
+        request->path_info('/error');
+        return;
+    }
+
+    my $passphrases = schema->resultset('PassPhrase')->search(
+    {
+        passphrase => $req->{passphrase}
+    });
+
+    my $row = $passphrases->next;
+    unless ($row) {
+        my $client = REST::Client->new();
+        my $data = {
+            sessionId => $user->id,
+            entities => [
+                {
+                    name => "General",
+                    entries => [
+                        {
+                            value => $req->{passphrase},
+                            synonyms => [
+                                $req->{passphrase}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+        $client->addHeader('Content-Type', 'application/json');
+        $client->addHeader('charset', 'UTF-8');
+        $client->addHeader('Accept', 'application/json');
+        $client->addHeader('Authorization', 'Bearer ca6abe1e16bd4101a50ed02736c74948');
+
+        $client->POST('https://api.api.ai/v1/userEntities/', to_json($data));
+
+        if ($client->responseCode() =~ /^5\d{2}$/) {
+            $res->{success} = JSON::false;
+            $res->{message} = "Server / Endpoint URL Failure, Error: [" . $client->responseCode() . "]";
+        }
+
+        if ($client->responseCode() == 403) {
+            $res->{success} = JSON::false;
+            $res->{message} = "Server / Endpoint URL Failure, Error: [Auth failed]";
+        }
+
+        my $response = from_json($client->responseContent());
+        if ($response->{status}->{errorType} == "success") {
+            $res->{success} = JSON::true;
+        } else {
+            $res->{success} = JSON::false;
+            $res->{message} = $response->{status}->{errorDetails};
+        }
+
+        my $passphrase = schema->resultset('PassPhrase')->create({
+            user_id  => $user->id,
+            passphrase =>  $req->{passphrase},
+        });        
+    }
+
+    return to_json($res);
+};
+
 sub _create_session {
     my $client = REST::Client->new();
 
