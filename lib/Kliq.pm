@@ -996,28 +996,20 @@ post '/passphrase' => sub {
     my $row = $passphrases->next;
     unless ($row) {
         my $client = REST::Client->new();
-        my $data = {
-            sessionId => $user->id,
-            entities => [
-                {
-                    name => "General",
-                    entries => [
-                        {
-                            value => $req->{passphrase},
-                            synonyms => [
-                                $req->{passphrase}
-                            ]
-                        }
-                    ]
-                }
-            ]
-        };
+        my $data = [
+            {
+                value => $req->{passphrase},
+                synonyms => [
+                    $req->{passphrase}
+                ]
+            }
+        ];
         $client->addHeader('Content-Type', 'application/json');
         $client->addHeader('charset', 'UTF-8');
         $client->addHeader('Accept', 'application/json');
         $client->addHeader('Authorization', 'Bearer ca6abe1e16bd4101a50ed02736c74948');
 
-        $client->POST('https://api.api.ai/v1/userEntities/', to_json($data));
+        $client->POST('https://api.api.ai/v1/entities/f065b033-cf61-4668-94ce-d7a332eb66ac/entries', to_json($data));
 
         if ($client->responseCode() =~ /^5\d{2}$/) {
             $res->{success} = JSON::false;
@@ -1038,8 +1030,7 @@ post '/passphrase' => sub {
         }
 
         my $passphrase = schema->resultset('PassPhrase')->create({
-            user_id  => $user->id,
-            passphrase =>  $req->{passphrase},
+            passphrase =>  $req->{passphrase}
         });        
     }
 
