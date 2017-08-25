@@ -112,10 +112,6 @@ __PACKAGE__->has_many(
     );
 
 __PACKAGE__->has_many(
-    passphrases => 'Kliq::Schema::Result::PassPhrase', 'user_id'
-    );
-
-__PACKAGE__->has_many(
     kliqs => 'Kliq::Schema::Result::Kliq', 'user_id'
     );
 

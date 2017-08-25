@@ -14,12 +14,6 @@ __PACKAGE__->add_columns(
         size => 36,
         is_nullable => 0,
     },
-    user_id => { 
-        data_type => 'CHAR',
-        size => 36,
-        is_nullable => 0,
-        is_foreign_key => 1,
-    },
     passphrase => {
         data_type => "varchar", 
         is_nullable => 0, 
@@ -37,12 +31,7 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->uuid_columns('id');
 
-__PACKAGE__->add_unique_constraint("passphrase", ["user_id","passphrase"]);
-
-__PACKAGE__->belongs_to(
-    user => 'Kliq::Schema::Result::User', 'user_id'
-    );
-
+__PACKAGE__->add_unique_constraint("passphrase", ["passphrase"]);
 
 1;
 __END__
