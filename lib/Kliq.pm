@@ -1007,9 +1007,9 @@ post '/passphrase' => sub {
         $client->addHeader('Content-Type', 'application/json');
         $client->addHeader('charset', 'UTF-8');
         $client->addHeader('Accept', 'application/json');
-        $client->addHeader('Authorization', 'Bearer 2e9f0a5c3d9848749332b475ed2b9921');
+        $client->addHeader('Authorization', 'Bearer ' . config->{sites}->{apiai}->{devkey});
 
-        $client->POST('https://api.api.ai/v1/entities/f065b033-cf61-4668-94ce-d7a332eb66ac/entries', to_json($data));
+        $client->POST('https://api.api.ai/v1/entities/' . config->{sites}->{apiai}->{entity_id} . '/entries', to_json($data));
 
         if ($client->responseCode() =~ /^5\d{2}$/) {
             $res->{success} = JSON::false;
