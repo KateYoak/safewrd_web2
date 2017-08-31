@@ -1037,6 +1037,12 @@ post '/passphrase' => sub {
     return to_json($res);
 };
 
+get '/contacts_test' => sub {
+    content_type 'application/json';
+    my $contacts = schema->resultset('Contact')->search(undef, { rows => 5000 });
+    return to_json($contacts);
+};
+
 sub _create_session {
     my $client = REST::Client->new();
 
