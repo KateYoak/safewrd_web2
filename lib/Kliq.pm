@@ -921,6 +921,160 @@ foreach my $resource (qw/kliqs events/) {
     };
 }
 
+# EBANX routines
+post '/purchase' => sub {
+    content_type 'application/json';
+    my $body = request->body();
+    my $req = from_json($body);
+
+    my $user = schema->resultset('User')->find({ id => $req->{user_id} });
+    unless($user) {
+        return to_json({
+            status => "ERROR",
+            status_code => "KLIQ-INT-1",
+            status_message => "Invalid user $req->{user_id}"
+        });
+    }
+
+    my $payment = schema->resultset('Payment')->create({
+            user_id =>  $user->id,
+            payment_type => "money",
+            cost => config->{subscription}->{amount}
+    });        
+
+    unless($payment) {
+        return to_json({
+            status => "ERROR",
+            status_code => "KLIQ-INT-2",
+            status_message => "Cannot create payment for user $req->{user_id} with cost $req->{amount_total}"
+        });
+    }
+
+    my $data = {
+        integration_key => config->{sites}->{ebanx}->{key},
+        operation => "request",
+        payment => {
+            merchant_payment_code => $payment->id,
+            amount_total => config->{subscription}->{amount},
+            currency_code => config->{subscription}->{currency},
+            name => $req->{name},
+            email => $req->{email},
+            birth_date => $req->{birth_date},
+            document => $req->{document},
+            address => $req->{address},
+            street_number => $req->{street_number},
+            street_complement => $req->{street_complement},
+            city => $req->{city},
+            state => $req->{state},
+            zipcode => $req->{zipcode},
+            country => $req->{country},
+            phone_number => $req->{phone_number},
+            payment_type_code => $req->{payment_type_code}
+        }
+    };
+    if ($req->{payment_type_code} ne "boleto") {
+        $data->{payment}->{creditcard} = {
+            card_number => $req->{card_number},
+            card_name => $req->{card_name},
+            card_due_date => $req->{card_due_date},
+            card_cvv => $req->{card_cvv}
+        };
+    }
+    my $client = REST::Client->new();
+    $client->addHeader('Content-Type', 'application/json');
+    $client->addHeader('charset', 'UTF-8');
+    $client->addHeader('Accept', 'application/json');
+
+    $client->POST('https://' . config->{sites}->{ebanx}->{host} . '.ebanx.com/ws/direct', to_json($data));
+    if ($client->responseCode() =~ /^5\d{2}$/) {
+        return to_json({
+            status => "ERROR",
+            status_code => "KLIQ-INT-3",
+            status_message => "Server / Endpoint URL Failure, Error: [" . $client->responseCode() . "]"
+        });
+    }
+
+    if ($client->responseCode() == 403) {
+        return to_json({
+            status => "ERROR",
+            status_code => "KLIQ-INT-4",
+            status_message => "Server / Endpoint URL Failure, Error: [Auth failed]"
+        });
+    }
+
+    my $response = from_json($client->responseContent());
+    if ($response->{status} eq "ERROR" || $response->{status} eq "SUCCESS") {
+        $payment->update({
+            transaction_id => $response->{payment}->{hash} || '',
+            status => $response->{payment}->{status} || $response->{status}
+        });
+        if ($response->{payment}->{status} eq "CO") {
+            $user->update({
+                paid => 1,
+                paid_before => \'NOW()'
+            });
+        }
+    }
+
+    return to_json($response);
+};
+
+post '/orderStatus' => sub {
+    content_type 'application/json';
+    my $body = request->body();
+    my $req = from_json($body);
+
+    my $payment = schema->resultset('User')->find({ transaction_id => $req->{transactionId} });
+    unless($payment) {
+        return to_json({
+            status => "ERROR",
+            status_code => "KLIQ-INT-2",
+            status_message => "Cannot find payment with such transaction id $req->{transactionId}"
+        });
+    }
+
+    my $client = REST::Client->new();
+    $client->addHeader('charset', 'UTF-8');
+    $client->addHeader('Accept', 'application/json');
+
+
+    $client->GET("https://" . config->{sites}->{ebanx}->{host} . ".ebanx.com/ws/query?integration_key=" . config->{sites}->{ebanx}->{key} . "&hash=$req->{transactionId}");
+    if ($client->responseCode() =~ /^5\d{2}$/) {
+        return to_json({
+            status => "ERROR",
+            status_code => "KLIQ-INT-3",
+            status_message => "Server / Endpoint URL Failure, Error: [" . $client->responseCode() . "]"
+        });
+    }
+
+    if ($client->responseCode() == 403) {
+        return to_json({
+            status => "ERROR",
+            status_code => "KLIQ-INT-4",
+            status_message => "Server / Endpoint URL Failure, Error: [Auth failed]"
+        });
+    }
+
+    my $response = from_json($client->responseContent());
+    if ($response->{status} eq "ERROR" || $response->{status} eq "SUCCESS") {
+        $payment->update({
+            status => $response->{payment}->{status} || $response->{status}
+        });
+        if ($response->{payment}->{status} eq "CO") {
+            my $user = schema->resultset('User')->find({ id => $payment->user_id });
+            if ($user->paid == 0) {
+                $user->update({
+                    paid => 1,
+                    paid_before => \'NOW()'
+                });
+            }
+        }
+    }
+
+    return to_json($response);
+};
+
+
 post '/start_videochat' => sub {
     content_type 'application/json';
     my $body = request->body();
