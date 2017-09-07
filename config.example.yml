@@ -122,7 +122,7 @@ sites:
         entity_id: f065b033-cf61-4668-94ce-d7a332eb66ac
     ebanx:
         host: sandbox
-        key: XXXXXXXXXXXX
+        key: test_ik_QhUfE-dVv92fxk61TDm1Bg
 
 subscription:
     cost: 3.99
