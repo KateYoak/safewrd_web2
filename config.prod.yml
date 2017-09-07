@@ -132,6 +132,14 @@ sites:
     apiai:
         devkey: 2e9f0a5c3d9848749332b475ed2b9921
         entity_id: f065b033-cf61-4668-94ce-d7a332eb66ac
+    ebanx:
+        host: sandbox
+        key: test_ik_QhUfE-dVv92fxk61TDm1Bg
+
+subscription:
+    cost: 3.99
+    currency: USD
+
 plugins:
     Email:
         #debug: 1

@@ -90,6 +90,17 @@ __PACKAGE__->add_columns(
         is_nullable => 1,
         is_serializable => 0
     },
+    paid => {
+        data_type => "tinyint",
+        size => 1,
+        default_value => 0,
+        is_nullable => 0,
+    },
+    paid_before => {
+        data_type => "timestamp",
+        datetime_undef_if_invalid => 1,
+        is_nullable => 0
+    },
     created => {
         data_type => "timestamp",
         datetime_undef_if_invalid => 1,
@@ -113,6 +124,10 @@ __PACKAGE__->has_many(
 
 __PACKAGE__->has_many(
     kliqs => 'Kliq::Schema::Result::Kliq', 'user_id'
+    );
+
+__PACKAGE__->has_many(
+    payments => 'Kliq::Schema::Result::Payment', 'user_id'
     );
 
 __PACKAGE__->has_many(
