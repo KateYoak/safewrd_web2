@@ -13,6 +13,7 @@ use WWW::LinkedIn;
 sub userinfo {
     my ($self, $data, $config) = @_;
     
+    $data->{service} = lc($data->{service});
     my $method = '_' . $data->{service} . '_ui';
     return $self->$method($data, $config);
 }
