@@ -12,6 +12,7 @@ set session => 'Kliq';
 
 load_app 'Kliq'; #, prefix => '/api';
 load_app 'Kliq::Routes::Auth';
+load_app 'Kliq::Routes::Public';
 load_app 'ChatbotAPI';
 
 ## reset asset_basepath for local testing
