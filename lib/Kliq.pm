@@ -1024,7 +1024,7 @@ post '/orderStatus' => sub {
     my $body = request->body();
     my $req = from_json($body);
 
-    my $payment = schema->resultset('User')->find({ transaction_id => $req->{transactionId} });
+    my $payment = schema->resultset('Payment')->find({ transaction_id => $req->{transactionId} });
     unless($payment) {
         return to_json({
             status => "ERROR",
