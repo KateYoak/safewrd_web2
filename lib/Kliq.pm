@@ -118,6 +118,10 @@ hook 'before' => sub {
         # let chatbot api handle this
         return;
     }
+    elsif(request->path =~ '^/v1/pub/') {
+        # let public api accept requests
+        return;
+    }
     elsif(request->path =~ '^/v1/rtmp_url') {    
         return;
     }
