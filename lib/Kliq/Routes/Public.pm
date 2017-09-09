@@ -12,7 +12,7 @@ use Try::Tiny;
 
 #---- EBANX ------------------------------------------------------------------
 
-post '/webhook/ebanx' => sub {
+post '/pub/ebanx/webhook' => sub {
     my $req = request->params;
 
     if ($req->{hash_codes}) {
