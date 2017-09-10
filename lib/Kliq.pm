@@ -1239,6 +1239,7 @@ post '/webhook/ebanx' => sub {
             }
         }
     } else {
+        return status_ok({ message => "OK" });
         return status_bad_request("EBANX sent no hashes");
     }
     return status_ok({ message => "OK" });
