@@ -1197,6 +1197,10 @@ get '/contacts_test' => sub {
     return to_json($contacts);
 };
 
+get '/webhook/ebanx' => sub {
+    return status_ok({ message => "OK" });
+};
+
 post '/webhook/ebanx' => sub {
     my $req = request->params;
 
