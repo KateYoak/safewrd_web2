@@ -927,12 +927,12 @@ post '/purchase' => sub {
     my $body = request->body();
     my $req = from_json($body);
 
-    my $user = schema->resultset('User')->find({ id => $req->{user_id} });
+    my $user = schema->resultset('User')->find({ id => session('user_id') });
     unless($user) {
         return to_json({
             status => "ERROR",
             status_code => "KLIQ-INT-1",
-            status_message => "Invalid user $req->{user_id}"
+            status_message => "Invalid user, user with such ID is not found"
         });
     }
 
@@ -946,7 +946,7 @@ post '/purchase' => sub {
         return to_json({
             status => "ERROR",
             status_code => "KLIQ-INT-2",
-            status_message => "Cannot create payment for user $req->{user_id} with cost $req->{amount_total}"
+            status_message => "Cannot create payment for user " . $user->id . " with cost $req->{amount_total}"
         });
     }
 
@@ -1074,6 +1074,59 @@ post '/orderStatus' => sub {
     return to_json($response);
 };
 
+# google payments
+post '/checkSubscription' => sub {
+    content_type 'application/json';
+    my $body = request->body();
+    my $req = from_json($body);
+
+    my $servicetoken = schema->resultset('ServiceToken')->find({ service => "google", clientid => config->{sites}->{google}->{dev}->{clientid} });
+    if ($servicetoken) {
+        if ($servicetoken->expire < time.now()) {
+            my $client = REST::Client->new();
+            $client->addHeader('Content-Type', 'application/x-www-form-urlencoded');
+            $client->addHeader('charset', 'UTF-8');
+            $client->addHeader('Accept', 'application/json');
+
+            $client->POST('https://accounts.google.com/o/oauth2/token', "grant_type=refresh_token&refresh_token=" . $servicetoken->refresh_token . "&client_id=" . config->{sites}->{google}->{dev}->{clientid} . "&client_secret=" . config->{sites}->{google}->{dev}->{secret});
+            if ($client->responseCode() =~ /^5\d{2}$/) {
+                return status_bad_request("Google returned 500 error on update");
+            }
+
+            if ($client->responseCode() == 403) {
+                return status_bad_request("Google returned 403 error on update");
+            }
+
+            my $response = from_json($client->responseContent());
+            if ($response->{access_token}) {
+                $servicetoken->update({
+                    accesstoken => $response->{access_token},
+                    expire => \"DATE_ADD(NOW(),INTERVAL $response->{expires_id} SECOND)"
+                });
+            }
+        }
+        my $client = REST::Client->new();
+        $client->addHeader('charset', 'UTF-8');
+        $client->addHeader('Accept', 'application/json');
+        $client->GET("https://www.googleapis.com/androidpublisher/v2/applications/" . config->{sites}->{google}->{dev}->{packagename} . "/purchases/subscriptions/" . config->{sites}->{google}->{dev}->{subscriptionid} . "/tokens/" . $req->{token}, "access_token=" . $servicetoken->access_token);
+        if ($client->responseCode() =~ /^5\d{2}$/) {
+            return status_bad_request("Google returned 500 error on update");
+        }
+
+        if ($client->responseCode() == 403) {
+            return status_bad_request("Google returned 403 error on update");
+        }
+
+        my $response = from_json($client->responseContent());
+        return to_json($response);
+    } else {
+        return to_json({
+            status => "ERROR",
+            status_code => "KLIQ-INT-1",
+            status_message => "No service token found in DB for clientid"
+        });
+    }
+};
 
 post '/start_videochat' => sub {
     content_type 'application/json';
@@ -1243,6 +1296,51 @@ post '/webhook/ebanx' => sub {
         return status_bad_request("EBANX sent no hashes");
     }
     return status_ok({ message => "OK" });
+};
+
+get '/webhook/googleauth' => sub {
+    my $req = request->params;
+
+    if ($req->{code}) {
+        my $client = REST::Client->new();
+        $client->addHeader('Content-Type', 'application/x-www-form-urlencoded');
+        $client->addHeader('charset', 'UTF-8');
+        $client->addHeader('Accept', 'application/json');
+
+        $client->POST('https://accounts.google.com/o/oauth2/token', "grant_type=authorization_code&code=$req->{code}&client_id=" . config->{sites}->{google}->{dev}->{clientid} . "&client_secret=" . config->{sites}->{google}->{dev}->{secret} . "&redirect_uri=");
+        if ($client->responseCode() =~ /^5\d{2}$/) {
+            return status_bad_request("Google returned 500 error");
+        }
+
+        if ($client->responseCode() == 403) {
+            return status_bad_request("Google returned 403 error");
+        }
+
+        my $response = from_json($client->responseContent());
+        if ($response->{access_token} && $response->{update_token}) {
+            my $servicetoken = schema->resultset('ServiceToken')->find({ service => "google", clientid => config->{sites}->{google}->{dev}->{clientid} });
+            if ($servicetoken) {
+                $servicetoken->update({
+                    accesstoken => $response->{access_token},
+                    updatetoken => $response->{update_token},
+                    expire => \"DATE_ADD(NOW(),INTERVAL $response->{expires_id} SECOND)"
+                });
+            } else {
+                my $passphrase = schema->resultset('ServiceToken')->create({
+                    service => "google",
+                    clientid => config->{sites}->{google}->{dev}->{clientid},
+                    accesstoken => $response->{access_token},
+                    updatetoken => $response->{update_token},
+                    expire => \"DATE_ADD(NOW(),INTERVAL $response->{expires_id} SECOND)"
+                });
+            }
+            return status_ok({ message => "Tokens has been set" });
+        } else {
+            return status_bad_request("Google didnt return tokens");
+        }
+    } else {
+        return status_bad_request("Google sent no code");
+    }
 };
 
 sub _create_session {
