@@ -51,6 +51,7 @@ sub work {
                 rtmp_url  => $event->rtmp_url,
                 event_status => $event->event_status,
                 contact_id => $contact->id,
+                is_emergency => $kliq->is_emergency,
             }));
         }
         else {
