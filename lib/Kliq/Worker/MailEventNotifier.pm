@@ -25,15 +25,22 @@ sub work {
     }
 
     try { 
+        my $app_id   = 'com.tranzmt.app';
+        my $app_name = 'Tranzmt.it';
+        if ($data->{is_emergency}) {
+            $app_id   = 'com.flare.app';
+            $app_name = 'Safewrd';
+        }
+
         my $store_url = q{https://play.google.com/store/apps/details}
-            . q{?id=com.tranzmt.app&referrer=}
+            . q{?id=} . $app_id . q{&referrer=}
             . q{contactId%3D}.$data->{contact_id}.q{%26eventId%3D}.$data->{event_id};
 
         my $stream_url = join('/', $data->{rtmp_url}, $data->{event_id});
 
         my $body_intro = $evst eq 'confirmed'
-            ? $data->{sender} . qq{ on Tranzmt has scheduled a live event and you’re invited.\n\n}
-            : $data->{sender} . qq{'s live event has just started streaming on Tranzmt.it now.\n\n}
+            ? $data->{sender} . qq{ on } . $app_name . qq{ has scheduled a live event and you’re invited.\n\n}
+            : $data->{sender} . qq{'s live event has just started streaming on } . $app_name . qq{ now.\n\n}
             ;
 
         my $common_body_top =
@@ -49,7 +56,7 @@ sub work {
             q{}
             . $common_body_top
             . ($evst eq 'published' ? q{Live Stream at } . $stream_url . qq{\n\n} : '')
-            . q{Get the Kliq App at }.$store_url.qq{\n\n}
+            . q{Get the } . $app_name . q{ App at }.$store_url.qq{\n\n}
             ;
 
         my $htmltext_body =
@@ -57,7 +64,7 @@ sub work {
             . qq{<pre>\n}
             . $common_body_top
             . ($evst eq 'published' ? q{Live Stream at <a href="}.$stream_url.q{">}.$stream_url.qq{</a>\n\n} : '')
-            . q{Get the Kliq App at <a href="}.$store_url.q{">}.$store_url.qq{</a>\n\n}
+            . q{Get the } . $app_name . q{ App at <a href="}.$store_url.q{">}.$store_url.qq{</a>\n\n}
             . qq{</pre>\n}
             . qq{</body></html>\n}
             ;
@@ -77,7 +84,7 @@ sub work {
                },
                #live_on_error => 1,
             },
-            from => ['live@tranzmt.it', 'TRANZMT.IT'],
+            from => ['live@tranzmt.it', $app_name],
             to => $data->{email},
             # reply => 'info@tranzmt.it',
             subject => $data->{sender} . ' shared a live event stream with you',
