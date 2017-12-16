@@ -13,6 +13,7 @@ use Data::Dumper;
 use REST::Client;
 use URI;
 
+set logger     => 'log_handler';
 set serializer => 'JSON';
 
 my $DEBUG  = 1;
@@ -20,7 +21,9 @@ my $SOURCE = 'onboarding-chatbot';
 my $MAX_SAFETYGROUP  = 5; # TODO: Config file
 # test
 get '/webhook' => sub {
-    return "Hello World";
+    _debug( 'GET on /webhook' );
+
+    return "Hello World!";
 };
 
 post '/webhook' => sub {
@@ -36,41 +39,43 @@ post '/webhook' => sub {
     my $status           = $req->{'status'};
     my $original_request = $req->{'originalRequest'}; # data from client UI
     my $service          = $original_request->{'source'} || 'manual';
-    my $handle           = ($service eq 'manual') ? join( '-', 'dev-api-ai', $api_session_id ) : _resolve_handle( $original_request );
+    #my $handle           = ($service eq 'manual') ? join( '-', 'dev-api-ai', $api_session_id ) : _resolve_handle( $original_request );
+    my $handle           = _resolve_handle( $original_request );
+
 
     # capture user data
-    _debug( 'Session Object: ' . Dumper(session) );
     _debug( 'User Data: ' . to_json( $original_request, { pretty => 1 } ) );
+
     my $user;
-    if (!session('user_id')) {
-        # check persona, get user id using persona
-        my $persona = Kliq::model('tokens')->get_persona( 
-            $handle,
-            $service,
-        );
-        # create user if persona does not exist
-        # CAVEAT: Creates a user per persona, if you are on another service it will create a different user
-        if (!defined($persona)) {
-            _debug( 'DEBUG: Creating a user for this persona' );
-            eval {
-                $user = Kliq::model('tokens')->create_user();
-            };
-            if ($@) {
-                var error => "Unable to create user " . $@;
-                request->path_info('/error');
-            }
-            _debug( 'Service: ' . $service );
-            my $info = {
-                service => $service,
-                user_id => $user->id,
-                handle  => $handle,
-            }; 
-            $persona = Kliq::model('tokens')->create_persona($info, { service => $service }, $user->id);
+    # check persona, get user id using persona
+    my $persona = Kliq::model('tokens')->get_persona( 
+        $handle,
+        $service,
+    );
+    # create user if persona does not exist
+    # CAVEAT: Creates a user per persona, if you are on another service it will create a different user
+    if (!defined($persona)) {
+        _debug( 'DEBUG: Creating a user for this persona' );
+        eval {
+            $user = Kliq::model('tokens')->create_user();
+        };
+        if ($@) {
+            var error => "Unable to create user " . $@;
+            request->path_info('/error');
         }
-        _debug( 'Persona ID: ' . $persona->id );
-        session user_id => $persona->user_id;
+        _debug( 'Service: ' . $service );
+        my $info = {
+            service => $service,
+            user_id => $user->id,
+            handle  => $handle,
+        }; 
+        $persona = Kliq::model('tokens')->create_persona($info, { service => $service }, $user->id);
     }
 
+    _debug( 'Persona ID: ' . $persona->id );
+    session user_id => $persona->user_id;
+
+    _debug( 'Session Object: ' . Dumper(session) );
     _debug( 'Session User ID: ' . session->{'user_id'} );
 
     if (!defined($user)) {
@@ -79,7 +84,7 @@ post '/webhook' => sub {
 
     # check user and create user / session if it doesn't exist
 
-    # if ( $result->{'action'} =~ /^(greet\.)?add\.friend$/i ) {
+    #if ( $result->{'action'} =~ /^(greet\.)?add\.friend$/i ) {
     if ( $result->{'action'} eq 'add.friend' ) {
         my $friend_name = $result->{'parameters'}->{'friend-name'};
         my $context_prefix = 'add-friend';
@@ -209,6 +214,22 @@ post '/webhook' => sub {
                 $fulfillment->{'speech'} =~ s/{{tranzmt-url}}//g;
             }
 
+            # interpolate url 
+            if ($fulfillment->{'speech'} =~ /{{pin}}/i) {
+                # generate pin
+                my $pin = int(rand(100));
+                $pin = '0' . $pin if $pin < 10;
+
+                $kliq_group->update({
+                    verification_pin => $pin,
+                });
+
+                $fulfillment->{'speech'} =~ s/{{pin}}/$pin/g;
+            }
+            else {
+                $fulfillment->{'speech'} =~ s/{{pin}}//g;
+            }
+
             my $request_params = {
                 speech   => $fulfillment->{'speech'},
                 # contextOut  => [ 
@@ -294,10 +315,13 @@ post '/webhook' => sub {
                         owner_id => $user->id, 
                         kliq_id  => $kliq_group->id,
                     } ); 
-                    $message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '", all you need to do is download, install and share this URL privately to your ' . $friend_count . ' friends directly in FB Messenger, WeChat, Twitter, Telegram or even SMS and ONLY with your ' . $friend_count . ' friends. ' . $url;
+
+                    my $pin = int(rand(100));
+                    $pin = '0' . $pin if $pin < 10;
+
+                    $message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '", all you need to do is download, install and share this URL privately to your ' . $friend_count . ' friends directly in FB Messenger, WeChat, Twitter, Telegram or even SMS and ONLY with your ' . $friend_count . ' friends. ' . $url . ' - Your personal one time pin is ' . $pin . ' and must not be shared with anyone. Insert it only once when asked after you click on the link.';
                     @contexts = ();
                 }
-
             }
         }
         else {
@@ -343,7 +367,6 @@ post '/webhook' => sub {
         };
         return _process_request( $request_params );
     }
-
 };
 
 post '/webhook/echo' => sub {
@@ -373,14 +396,24 @@ sub _process_request {
 sub _debug {
     if ($DEBUG) {
         my $debug = shift;
-        print STDERR $debug . "\n";
+        warn $debug . "\n";
+        error($debug . "\n");
     }
 }
 
 sub _resolve_handle {
     my $params = shift;
+
+    _debug('**** in _resolve_handle(). source - ' . $params->{source});
+    _debug('**** sender - ' . $params->{'data'}->{'sender'}->{'id'});
     if ( $params->{'source'} eq 'facebook' ) {
         return $params->{'data'}->{'sender'}->{'id'};
+    }
+    elsif ( $params->{'source'} eq 'twitter' ) {
+        return $params->{'data'}->{'direct_message'}->{'sender_id_str'};
+    }
+    elsif ( $params->{'source'} eq 'google' ) {
+        return $params->{'data'}->{'user'}->{'user_id'};
     }
     else {
         var error => "Unable to resolve handle for " . $params->{'source'};
@@ -411,10 +444,10 @@ sub _resolve_url {
 
     # TODO: Put in Configuration file
     my $branchio_url    = 'https://api.branch.io/v1/url';
-    my $branchio_key    = q/key_test_mfrDiacvwlh3JJTGhTTbvojnwzj6H2eH/;
-    my $branchio_secret = q/secret_test_KHAOHA4K6wMuuJfix2cQKFyEvCCIF9PW/;
-    # my $branchio_key    = q/key_live_aaxsnnkztel3KJHHmPQjrmnbBxf1M2p5/;
-    # my $branchio_secret = q/secret_live_ZCLNWTeLntTM3KGUTzsNDi0wFkZjrbLH/;
+    #my $branchio_key    = q/key_test_mfrDiacvwlh3JJTGhTTbvojnwzj6H2eH/;
+    #my $branchio_secret = q/secret_test_KHAOHA4K6wMuuJfix2cQKFyEvCCIF9PW/;
+    my $branchio_key    = q/key_live_aaxsnnkztel3KJHHmPQjrmnbBxf1M2p5/;
+    my $branchio_secret = q/secret_live_ZCLNWTeLntTM3KGUTzsNDi0wFkZjrbLH/;
     my $google_play_url = URI->new('https://play.google.com/store/apps/details');
     # my $app_id          = 'fr.simon.marquis.installreferrer'; # TODO: Use real app ID
     my $app_id          = 'com.flare.app';
