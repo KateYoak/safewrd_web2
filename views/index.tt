@@ -6,7 +6,7 @@ div { margin:4px; padding:6px; }
 pre { background-color:#EFEFEF; }
 .highlight { background:yellow; }
 </style>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script type="text/javascript">
 
 window.addEventListener('message', function (event) {
@@ -17,7 +17,7 @@ window.addEventListener('message', function (event) {
 );
 
 function openWin(svc) {
-    window.open("http://api.tranzmt.it/v1/auth/" + svc); //,"_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, width=400, height=400");
+    window.open("https://api.tranzmt.it/v1/auth/" + svc); //,"_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, width=400, height=400");
 }
 
 $(document).ready(function(){
