@@ -145,6 +145,12 @@ sub create_persona {
 sub merge_user {
     my ($self, $uid, $tid) = @_; # newuser, uid-to-change
 
+    my $is_old_user_available = $self->schema->resultset('User')->find($tid);
+    return if !$is_old_user_available;
+
+    my $is_new_user_available = $self->schema->resultset('User')->find($uid);
+    return if !$is_new_user_available;
+
     #-- move all entities to the new user
     foreach my $table(qw/
         OauthToken Contact Kliq Upload Share Comment Persona CmsMedia
@@ -158,7 +164,6 @@ sub merge_user {
                 # duplicate record, delete with user
             };
         }
-
     }
     #$self->schema->resultset('Contact')->search({ owner_id => $tid })->update({ owner_id => $uid });
     my $rs = $self->schema->resultset('Contact')->search({ owner_id => $tid });
