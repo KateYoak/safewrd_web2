@@ -26,11 +26,13 @@ use URI;
 use Try::Tiny;
 use WWW::Mixpanel;
 use IPC::Cmd qw/run/;
+
 use Kliq::Model::ZencoderOutput;
+
 use LWP::UserAgent;
 
 set serializer => 'JSON';
-#set logger     => 'log_handler';
+set logger     => 'log_handler';
 
 our $VERSION = '0.001';
 our $DEBUG = 0;
@@ -91,6 +93,9 @@ hook 'before' => sub {
 
     ## development & testing
     if(request->path =~ '^/(v1/upload|v1/zencoded|v1/cors|v1)?$') {
+        return;
+    }
+    elsif(request->path =~ '^/v1/verify_kliq_owner$') {
         return;
     }
     elsif(request->path =~ '^/v1/download$') {
@@ -179,6 +184,39 @@ get '/contact_id' => sub {
 
     content_type 'application/json';
     return to_json({ contact_id => $contact->id });
+};
+
+post '/merge_users' => sub {
+    #my $from_user_id = params->{from_user_id};
+    #my $to_user_id = params->{to_user_id};
+
+    my $args = dejsonify(body_params());
+    my $from_user_id = $args->{from_user_id};
+    my $to_user_id   = $args->{to_user_id};
+ 
+    my $response = model('tokens')->merge_user($to_user_id, $from_user_id);
+    if ($response) { 
+        content_type 'application/json';
+        return to_json({ success => 1, user_id => $response });
+    }
+    else {
+        content_type 'application/json';
+        return to_json({ success => 0, error => 'Bad user_id' });
+    }
+};
+
+get '/verify_kliq_owner' => sub {
+    my $verify_pin = schema->resultset('Kliq')->search({
+        id      => params->{kliq_id},
+        user_id => params->{user_id},
+        verification_pin => params->{verification_pin},
+    })->single();
+
+    my $verified = 0;
+    $verified = 1 if $verify_pin;
+
+    content_type 'application/json';
+    return to_json({ verified => $verified });
 };
 
 get '/contacts_summary' => sub {
