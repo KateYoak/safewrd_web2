@@ -25,11 +25,11 @@ sub work {
     }
 
     try { 
-        my $app_id   = 'com.tranzmt.app';
-        my $app_name = 'Tranzmt.it';
-        if ($data->{is_emergency}) {
-            $app_id   = 'com.flare.app';
-            $app_name = 'Safewrd';
+        my $app_id   = 'com.flare.app';
+        my $app_name = 'Safewrd';
+        if (!$data->{is_emergency}) {
+            $app_id   = 'com.tranzmt.app';
+            $app_name = 'Tranzmt.it';
         }
 
         my $store_url = q{https://play.google.com/store/apps/details}
