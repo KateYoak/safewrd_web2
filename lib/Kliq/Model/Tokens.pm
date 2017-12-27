@@ -56,7 +56,7 @@ sub user_persona {
     if( $data->{service} eq 'facebook'){
       my $fb_id = $info->{handle};
       # is it an app-scoped fb_id?
-      if(my $surrogate_id = fb_surrogate_id_from_picture( $info->{handle})){
+      if(my $surrogate_id = fb_surrogate_id_from_picture( $info->{handle}, from_app => 1)){
 	# does this persona came from a previous chat and we used a surrogate ID?
         if($re_persona = $self->get_persona($surrogate_id, $data->{service})){
 	  # then replace the previous surrogate ID with this app-scoped ID
