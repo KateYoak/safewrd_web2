@@ -12,6 +12,7 @@ use Dancer::Plugin::Redis;
 use Data::Dumper;
 use REST::Client;
 use URI;
+use Kliq::Util qw(fb_surrogate_id_from_picture);
 
 set logger     => 'log_handler';
 set serializer => 'JSON';
@@ -19,6 +20,8 @@ set serializer => 'JSON';
 my $DEBUG  = 1;
 my $SOURCE = 'onboarding-chatbot';
 my $MAX_SAFETYGROUP  = 5; # TODO: Config file
+my $rest_client = REST::Client->new;
+
 # test
 get '/webhook' => sub {
     _debug( 'GET on /webhook' );
@@ -407,7 +410,7 @@ sub _resolve_handle {
     _debug('**** in _resolve_handle(). source - ' . $params->{source});
     _debug('**** sender - ' . $params->{'data'}->{'sender'}->{'id'});
     if ( $params->{'source'} eq 'facebook' ) {
-        return $params->{'data'}->{'sender'}->{'id'};
+      return fb_surrogate_id_from_picture($params->{'data'}->{'sender'}->{'id'}) || $params->{'data'}->{'sender'}->{'id'}
     }
     elsif ( $params->{'source'} eq 'twitter' ) {
         return $params->{'data'}->{'direct_message'}->{'sender_id_str'};
