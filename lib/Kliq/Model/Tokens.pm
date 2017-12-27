@@ -10,6 +10,8 @@ use Data::Dumper;
 extends 'Kliq::Model::Base';
 with 'Kliq::Model::Role::UserInfo';
 
+use Kliq::Util qw(fb_surrogate_id_from_picture);
+
 sub table { 'OauthToken' }
 #sub path { 'tokens' }
 sub method { 'tokens' }
@@ -49,8 +51,22 @@ sub handle_token {
 
 sub user_persona {
     my ($self, $info, $data, $uid) = @_;
-    
-    my $re_persona = $self->get_persona($info->{handle}, $data->{service});
+
+    my $re_persona;
+    if( $data->{service} eq 'facebook'){
+      my $fb_id = $info->{handle};
+      # is it an app-scoped fb_id?
+      if(my $surrogate_id = fb_surrogate_id_from_picture( $info->{handle})){
+	# does this persona came from a previous chat and we used a surrogate ID?
+        if($re_persona = $self->get_persona($surrogate_id, $data->{service})){
+	  # then replace the previous surrogate ID with this app-scoped ID
+	  $re_persona->update({ handle => $info->{handle}});
+	}
+      }
+    }
+    else {
+      $re_persona = $self->get_persona($info->{handle}, $data->{service});
+    }
     my $re_token   = $self->get_token($data->{token}, $data->{service});
 
     if($re_token && $re_persona) {
