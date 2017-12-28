@@ -64,9 +64,9 @@ sub user_persona {
 	}
       }
     }
-    else {
-      $re_persona = $self->get_persona($info->{handle}, $data->{service});
-    }
+    
+    $re_persona = $self->get_persona($info->{handle}, $data->{service}) unless $re_persona;
+
     my $re_token   = $self->get_token($data->{token}, $data->{service});
 
     if($re_token && $re_persona) {

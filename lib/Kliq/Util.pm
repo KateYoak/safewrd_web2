@@ -36,11 +36,11 @@ sub fb_surrogate_id_from_picture {
         ->{profile_pic};
     } or warn $@, return;
   }
-
   return if $pic_url !~ /\.jpg/;
 
   my ($surrogate_id) = $pic_url =~ /\/([^\/]+?)\.jpg/g;
-
+  $surrogate_id =~ s/^\d+_//;
+  $surrogate_id =~ s/_\w$//;  
   return $surrogate_id;
 }
 
