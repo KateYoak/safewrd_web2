@@ -56,12 +56,6 @@ post '/webhook' => sub {
         $service,
       );
     
-    if($persona && ($service eq 'facebook')){
-      if(my $surrogate_id = fb_surrogate_id_from_picture($handle)){
-	$persona->update({ handle => $surrogate_id}) if $surrogate_id ne $handle;
-      }
-    }
-
     # create user if persona does not exist
     # CAVEAT: Creates a user per persona, if you are on another service it will create a different user
     if (!defined($persona)) {
@@ -417,7 +411,7 @@ sub _resolve_handle {
     _debug('**** in _resolve_handle(). source - ' . $params->{source});
     _debug('**** sender - ' . $params->{'data'}->{'sender'}->{'id'});
     if ( $params->{'source'} eq 'facebook' ) {
-        return $params->{'data'}->{'sender'}->{'id'}
+        return fb_surrogate_id_from_picture($params->{'data'}->{'sender'}->{'id'}) || $params->{'data'}->{'sender'}->{'id'};
     }
     elsif ( $params->{'source'} eq 'twitter' ) {
         return $params->{'data'}->{'direct_message'}->{'sender_id_str'};
