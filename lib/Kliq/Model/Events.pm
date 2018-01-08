@@ -70,7 +70,7 @@ sub _call_drone {
   my ($self) = @_;
   my $ua = LWP::UserAgent->new();
   my ($lat, $lng) = map { s/^\s+|\s+$//g; $_ } split(/,/, $self->location);
-  my $response = $ua->post(
+  $ua->post(
     'http://localhost:8899',
     Content_Type => 'application/json',
     Content      => JSON::encode_json(
