@@ -56,11 +56,12 @@ sub nearest_drone {
 
   my ($lat, $lng) = @_;
   return $self->result_source->schema->resultset('Drone')->search(
-    undef,
+    {location => {'!=' => undef}},
     {
-      rows     => 1,
-      order_by => \[
-        'ST_Distance_Sphere(location , ST_GeomFromText(?, 4326)) DESC',
+      rows       => 1,
+      '+columns' => [{lat => \'ST_Y(location)'}, {lng => \'ST_X(location)'},],
+      order_by   => \[
+        'ST_Distance_Sphere(location , ST_GeomFromText(?, 4326)) ASC',
         [_q => "POINT($lng $lat)"]
       ]
     }
