@@ -120,7 +120,7 @@ around 'update' => sub {
     or $event_status eq 'test')
   {
     $self->_call_drone
-      if $event->kliq->is_emergency && $self->kliq->drone_enabled;
+      if $result->kliq->is_emergency && $result->kliq->drone_enabled;
     $self->redis->rpush(notifyEvent => to_json({event => $id}));
   }
   track_event_request('Event_' . ucfirst($event_status));
