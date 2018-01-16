@@ -36,7 +36,14 @@ __PACKAGE__->add_columns(
         size => 1,
         default_value => 0,
         is_nullable => 0,
+      },
+    drone_enabled => {
+        data_type => "tinyint",
+        size => 1,
+        default_value => 0,
+        is_nullable => 0,
     },
+    
     safeword => {
         data_type => "varchar",
         is_nullable => 1,
