@@ -128,7 +128,7 @@ around 'update' => sub {
   {
     my $event = $self->get_row($id);
     $self->_call_drone($event)
-      if $event->kliq->is_emergency && $event->kliq->drone_enabled;
+      if $event->kliq->is_emergency && $event->drone_enabled;
     $self->redis->rpush(notifyEvent => to_json({event => $id}));
   }
   track_event_request('Event_' . ucfirst($event_status));

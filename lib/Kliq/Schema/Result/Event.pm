@@ -38,7 +38,10 @@ __PACKAGE__->add_columns(
     datetime_undef_if_invalid => 1,
     default_value             => \"current_timestamp",
     is_nullable               => 0
-  }
+  },
+  drone_enabled =>
+    {data_type => "tinyint", size => 1, default_value => 0, is_nullable => 0,},
+
 );
 
 __PACKAGE__->set_primary_key('id');
