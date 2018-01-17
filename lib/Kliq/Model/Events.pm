@@ -78,7 +78,7 @@ sub _call_drone {
       {
         access_token     => $drone->access_token,
         vehicle_id       => $drone->vehicle_id,
-        mission_wait     => 5,
+        mission_wait     => 15,
         mission_location => {lat => $lat + 0, lng => $lng + 0,},
         home_location    => {
           lat => $drone->get_column('lat') + 0,
@@ -87,7 +87,7 @@ sub _call_drone {
         "alt"       => 5,
         "wait_time" => 10,
 
-#	  stream_url  => $self->rtmp_url
+	stream_url  => $event->rtmp_url
 
         # token => $smart_contract_token
       }
@@ -128,7 +128,7 @@ around 'update' => sub {
   {
     my $event = $self->get_row($id);
     $self->_call_drone($event)
-      if $event->kliq->is_emergency && $event->kliq->drone_enabled;
+      if $event->kliq->is_emergency && $event->drone_enabled;
     $self->redis->rpush(notifyEvent => to_json({event => $id}));
   }
   track_event_request('Event_' . ucfirst($event_status));
