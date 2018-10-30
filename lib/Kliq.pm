@@ -43,6 +43,7 @@ my $MT = MIME::Types->new;
 #------ init -------------------------------------------------------------------
 
 hook 'before' => sub {
+    #$DB::single = 2;
 
     # Modify name of process
     $0 = join(' ', 'kliq worker', request->method, request->path);
@@ -184,6 +185,39 @@ get '/contact_id' => sub {
 
     content_type 'application/json';
     return to_json({ contact_id => $contact->id });
+};
+
+post '/update_swrve_user_id' => sub {
+    my $args = dejsonify(body_params());
+    my $user_id       = $args->{user_id} || session('user_id');
+    my $swrve_user_id = $args->{swrve_user_id};
+
+    my $success = 0;
+    my $error = '';
+    if ($user_id && $swrve_user_id) { 
+        my $user = schema->resultset('User')->find({ id => $user_id });
+        if ($user) {
+            $user->update({
+                swrve_user_id => $swrve_user_id
+            });
+            $success = 1;
+        }
+        else {
+            $error = 'Could not find user with that user_id';
+        }
+    }
+    else {
+        $error = 'Missing user_id/swrve_user_id';
+    }
+
+    if ($success) { 
+        content_type 'application/json';
+        return to_json({ success => 1 });
+    }
+    else {
+        content_type 'application/json';
+        return to_json({ success => 0, error => $error });
+    }
 };
 
 post '/merge_users' => sub {
@@ -331,46 +365,32 @@ post '/notify_video_view' => sub {
             # Send in-app messages
             my $request_hash_owner = {
                 type => 'in-app',
-                carnival_payload => {
-                    message => {
-                        to => [{ name => 'user_id', criteria => [$args->{stream_owner_user_id}] }],
-                        title => $viewer_persona->name . " watched your Video Test",
-                        type => "text_message",
-                        text => $viewer_persona->name . " watched your Video Test",
-                        notification => {
-                            payload => {
-                                action    => 'test_video_viewed',
-                                badge     => 1,
-                                sound     => "flare.wav",
-                                alert     => $viewer_persona->name . " have just confirmed they watched your emergency Flare video test.",
-                                stream_owner_user_id => $args->{stream_owner_user_id},
-                                stream_viewer_user_id => $args->{stream_viewer_user_id},
-                            },
-                        },
-                    },
+                payload => {
+                    user_id               => $args->{stream_owner_user_id},
+                    notification_title    => $viewer_persona->name . " watched your Video Test",
+                    message               => $viewer_persona->name . " have just confirmed they watched your emergency Flare video test.",
+                    type                  => "text_message",
+                    action                => 'test_video_viewed',
+                    badge                 => 1,
+                    sound                 => "flare.wav",
+                    stream_owner_user_id  => $args->{stream_owner_user_id},
+                    stream_viewer_user_id => $args->{stream_viewer_user_id},
                 },
             };
             redis->rpush(notifyPhone => to_json($request_hash_owner));
 
             my $request_hash_viewer = {
                 type => 'in-app',
-                carnival_payload => {
-                    message => {
-                        to => [{ name => 'user_id', criteria => [$args->{stream_viewer_user_id}] }],
-                        title => "You are officially in " . $owner_persona->name . "'s emergency Flare group",
-                        type => "text_message",
-                        text => "You are officially in " . $owner_persona->name . " emergency Flare group",
-                        notification => {
-                            payload => {
-                                action    => 'test_video_viewed',
-                                badge     => 1,
-                                sound     => "flare.wav",
-                                alert     => "You are officially in " . $owner_persona->name . "'s emergency Flare group, so if they are ever in trouble and they say their 'Safe word' you will be the first to know by getting an emergency live video stream.",
-                                stream_owner_user_id => $args->{stream_owner_user_id},
-                                stream_viewer_user_id => $args->{stream_viewer_user_id},
-                            },
-                        },
-                    },
+                payload => {
+                    user_id               => $args->{stream_viewer_user_id},
+                    notification_title    => "You are officially in " . $owner_persona->name . "'s emergency Flare group",
+                    message               => "You are officially in " . $owner_persona->name . "'s emergency Flare group, so if they are ever in trouble and they say their 'Safe word' you will be the first to know by getting an emergency live video stream.",
+                    type                  => "text_message",
+                    action                => 'test_video_viewed',
+                    badge                 => 1,
+                    sound                 => "flare.wav",
+                    stream_owner_user_id  => $args->{stream_owner_user_id},
+                    stream_viewer_user_id => $args->{stream_viewer_user_id},
                 },
             };
             redis->rpush(notifyPhone => to_json($request_hash_viewer));
@@ -403,46 +423,32 @@ post '/notify_contact_joined' => sub {
             # Send in-app messages
             my $request_hash_owner = {
                 type => 'in-app',
-                carnival_payload => {
-                    message => {
-                        to => [{ name => 'user_id', criteria => [$args->{kliq_owner_user_id}] }],
-                        title => $member_persona->name . " joined your Safety Group",
-                        type => "text_message",
-                        text => $member_persona->name . " joined your Safety Group",
-                        notification => {
-                            payload => {
-                                action    => 'contact_joined_kliq_group',
-                                badge     => 1,
-                                sound     => "flare.wav",
-                                alert     => $member_persona->name . " has just joined your Safety Group.",
-                                kliq_owner_user_id => $args->{kliq_owner_user_id},
-                                kliq_contact_user_id => $args->{kliq_contact_user_id},
-                            },
-                        },
-                    },
+                payload => {
+                    user_id               => $args->{kliq_owner_user_id},
+                    notification_title    => $member_persona->name . " joined your Safety Group",
+                    message               => $member_persona->name . " has just joined your Safety Group.",
+                    type                  => "text_message",
+                    action                => 'contact_joined_kliq_group',
+                    badge                 => 1,
+                    sound                 => "flare.wav",
+                    kliq_owner_user_id    => $args->{kliq_owner_user_id},
+                    kliq_contact_user_id  => $args->{kliq_contact_user_id},
                 },
             };
             redis->rpush(notifyPhone => to_json($request_hash_owner));
 
             my $request_hash_member = {
                 type => 'in-app',
-                carnival_payload => {
-                    message => {
-                        to => [{ name => 'user_id', criteria => [$args->{kliq_contact_user_id}] }],
-                        title => "You are officially in " . $owner_persona->name . "'s emergency Safety Group",
-                        type => "text_message",
-                        text => "You are officially in " . $owner_persona->name . "'s emergency Safety Group",
-                        notification => {
-                            payload => {
-                                action    => 'contact_joined_kliq_group',
-                                badge     => 1,
-                                sound     => "flare.wav",
-                                alert     => "You are officially in " . $owner_persona->name . "'s emergency Safety Group, so if they are ever in trouble and they say their 'Safe word' you will be the first to know by getting an emergency live video stream.",
-                                kliq_owner_user_id => $args->{kliq_owner_user_id},
-                                kliq_contact_user_id => $args->{kliq_contact_user_id},
-                            },
-                        },
-                    },
+                payload => {
+                    user_id               => $args->{kliq_contact_user_id},
+                    notification_title    => "You are officially in " . $owner_persona->name . "'s emergency Safety Group",
+                    message               => "You are officially in " . $owner_persona->name . "'s emergency Safety Group, so if they are ever in t     rouble and they say their 'Safe word' you will be the first to know by getting an emergency live video stream.",
+                    type                  => "text_message",
+                    action                => 'contact_joined_kliq_group',
+                    badge                 => 1,
+                    sound                 => "flare.wav",
+                    kliq_owner_user_id    => $args->{kliq_owner_user_id},
+                    kliq_contact_user_id  => $args->{kliq_contact_user_id},
                 },
             };
             redis->rpush(notifyPhone => to_json($request_hash_member));
@@ -494,6 +500,7 @@ get '/error' => sub {
 };
 
 get '/error/unauthorized' => sub {
+    #print STDERR Dumper { params };
     return status_unauthorized("Not authorized");
 };
 
@@ -1192,20 +1199,18 @@ post '/start_videochat' => sub {
         my $contact = schema->resultset('Contact')->find($contactID);
         redis->rpush(notifyPhone => to_json({
             type => 'push',
-            carnival_payload => {
-                notification => {
-                    to => [{ name => 'user_id', criteria => [$contact->user_id] }],
-                    payload => {
-                        action    => "emergency_CW",
-                        badge     => 1,
-                        sound     => "flare.wav",
-                        alert     => "Citizen Witness Emergency - incoming live video chat",
-                        location  => $req->{location},
-                        session_id => $sessionID,
-                        token => $tokenSub,
-                        app_key => config->{sites}->{tokbox}->{key}
-                    },
-                },
+            payload => {
+                user_id               => $contact->user_id,
+                notification_title    => "Citizen Witness Emergency - incoming live video chat",
+                message               => "Citizen Witness Emergency - incoming live video chat",
+                type                  => "text_message",
+                action                => 'emergency_CW',
+                badge                 => 1,
+                sound                 => "flare.wav",
+                location  => $req->{location},
+                session_id => $sessionID,
+                token => $tokenSub,
+                app_key => config->{sites}->{tokbox}->{key} 
             },
         }));
     }
