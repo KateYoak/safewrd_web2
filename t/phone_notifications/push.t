@@ -14,16 +14,12 @@ my $r = new Redis;
 # Send test push notification to Sachin's device
 my $request_hash = {
     type => 'push',
-    carnival_payload => {
-        notification => {
-            to => [{ name => 'user_id', criteria => ["8EC697DA-C653-11E5-B109-ECD18AB44419"] }],
-            payload => {
-                action    => 'test_action',
-                badge     => 1,
-                sound     => "Default.caf",
-                alert     => "Notification from Perl Worker",
-            },
-        },
+    payload => {
+        user_id            => "B0AFF068-EBD0-11E7-9A43-D1014BD6D9BE",
+        action             => 'emergency_flare',
+        sound              => "flare.wav",
+        message            => "Notification from Perl Worker",
+        notification_title => "Notification from Perl Worker",
     },
 };
 
