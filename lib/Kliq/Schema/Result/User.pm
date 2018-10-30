@@ -101,6 +101,11 @@ __PACKAGE__->add_columns(
         datetime_undef_if_invalid => 1,
         is_nullable => 0
     },
+    swrve_user_id => {
+        data_type => "varchar",
+        is_nullable => 1,
+        size => 255
+    },
     created => {
         data_type => "timestamp",
         datetime_undef_if_invalid => 1,
