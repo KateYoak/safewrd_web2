@@ -106,17 +106,15 @@ sub flare {
         if ($pair) {
             $self->redis->rpush(notifyPhone => to_json({
                 type => 'push',
-                carnival_payload => {
-                    notification => {
-                        to => [{ name => 'user_id', criteria => [$pair->child_user_id] }],
-                        payload => {
-                            action    => 'parent_pair_flare',
-                            badge     => 1,
-                            sound     => 'Default.caf',
-                            alert     => 'Parent Pair Flare',
-                            kliq_id   => $pair->kliq_id,
-                        },
-                    },
+                payload => {
+                    user_id               => $pair->child_user_id,
+                    notification_title    => "Parent Pair Flare",
+                    message               => "Parent Pair Flare",
+                    type                  => "text_message",
+                    action                => 'parent_pair_flare',
+                    badge                 => 1,
+                    sound                 => "flare.wav",
+                    kliq_id               => $pair->kliq_id,
                 },
             }));
 
