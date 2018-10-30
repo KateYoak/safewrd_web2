@@ -120,24 +120,17 @@ sub user_persona {
                 my $contact_name = $contact->name || $contact->email;
                 $self->redis->rpush(notifyPhone => to_json({
                     type => 'in-app',
-                    carnival_payload => {
-                        message => {
-                            to    => [{ name => 'user_id', criteria => [$contact->owner_id] }],
-                            type  => "text_message",
-                            title => "Your friend $contact_name joined Tranzmt",
-                            text  => "Your friend $contact_name joined Tranzmt",
-                            notification => {
-                                payload => {
-                                    action    => 'contact_on_tranzmt',
-                                    badge     => 1,
-                                    sound     => "Default.caf",
-                                    alert     => "Your friend $contact_name joined Tranzmt",
-                                    contact_id => $contact->id,
-                                },
-                            },
-                        },
+                    payload => {
+                        user_id               => $contact->owner_id,
+                        notification_title    => "Your friend $contact_name joined Tranzmt",
+                        message               => "Your friend $contact_name joined Tranzmt",
+                        type                  => "text_message",
+                        action                => "contact_on_tranzmt",
+                        badge                 => 1,
+                        sound                 => "Default.caf",
+                        contact_id            => $contact->id,
                     },
-                }));
+               }));
             }
         }
     }
