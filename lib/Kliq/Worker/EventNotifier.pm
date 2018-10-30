@@ -84,19 +84,18 @@ sub work {
                 my $stream_url = join('/', $event->rtmp_url, $event->id);
                 $self->redis->rpush(notifyPhone => to_json({
                     type => 'push',
-                    carnival_payload => {
-                        notification => {
-                            to => [{ name => 'user_id', criteria => [$contact->user_id] }],
-                            payload => {
-                                action    => $action,
-                                badge     => 1,
-                                sound     => $alert_sound,
-                                alert     => $alert_message,
-                                location  => $event->location,
-                                live_stream_url => $stream_url,
-                                stream_owner_user_id => $kliq->user_id,
-                            },
-                        },
+                    payload => {
+                        user_id               => $contact->user_id,
+                        notification_title    => $alert_message,
+                        message               => $alert_message,
+                        type                  => "text_message",
+                        action                => $action,
+                        badge                 => 1,
+                        sound                 => $alert_sound,
+                        location              => $event->location,
+                        live_stream_url       => $stream_url,
+                        stream_owner_user_id  => $kliq->user_id,
+                        kliq_id               => $kliq->id,
                     },
                 }));
             }

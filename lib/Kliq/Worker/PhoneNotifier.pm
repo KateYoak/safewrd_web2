@@ -31,46 +31,56 @@ sub work {
     $self->logger->info("Starting PhoneNotifier: " . Dumper($request_hash));
 
     try {
-        # Check for mandatory params (carnival_payload, type)
+        # Check for mandatory params (payload, type)
         die "Skipping notification. Failed data check" if (!$request_hash);
         die "Missing 'type' param in request" if (!$request_hash->{type});
-        die "Missing 'carnival_payload' param in request" if (!$request_hash->{carnival_payload});
+        die "Missing 'payload' param in request" if (!$request_hash->{payload});
 
-        for my $app ('tranzmt', 'flare') {
-            my $action = $request_hash->{carnival_payload}->{notification}->{payload}->{action};
+#        for my $app ('tranzmt', 'flare') {
+        for my $app ('tranzmt') {
+            my $action = $request_hash->{payload}->{action};
             if ($app eq 'flare' && $action eq 'live_event') {
                 # Do not send live event notifications to Flare app
                 next;
             }
 
-            for my $os ('ios', 'android') {
-                my $username = $config->{$app}->{$os}->{bundle_id};
-                my $password = $config->{$app}->{$os}->{apikey};
-                my $carnival_base_uri = $config->{$app}->{$os}->{base_uri};
+            #my $end_point = "/push";
+            #if ($request_hash->{type} eq 'in-app') {
+            #    $end_point = "/push";
+            #}
 
-                my $ua  = LWP::UserAgent->new;
-                my $end_point = "/notifications";
-                if ($request_hash->{type} eq 'in-app') {
-                    $end_point = "/messages";
-                }
-                my $uri = URI->new($carnival_base_uri . $end_point);
+            my $form_params = [];
+            my $url = "https://service.swrve.com/push";
+            my $user = $self->schema->resultset('User')->find($request_hash->{payload}->{user_id}) or die("Invalid user " . $request_hash->{payload}->{user_id});
+            $request_hash->{payload}->{user} = $user->swrve_user_id;
+            $request_hash->{payload}->{push_key} = "254f755f-6227-4664-b8d6-1288c1d97e16";
 
-                my $request_json = encode_json($request_hash->{carnival_payload});
-                my $request = POST($uri, "Content-type" => "application/json", Accept => "application/json", Content => $request_json);
-                $request->authorization_basic($username, $password);
-
-                $self->logger->info("Processing pull request for: " . $os);
-                $self->logger->debug("Raw request: " . Dumper($request)); 
-                my $response = $ua->request($request);
-                if ($response->is_success) {
-                    my $response_json = decode_json($response->content);
-                    $self->logger->debug("Raw response: " . Dumper($response_json));
-                    $self->logger->info("Notification sent - Success");
+            for my $key (keys %{$request_hash->{payload}}) {
+                if (grep { $key eq $_ } ('push_key', 'user', 'sound', 'message', 'notification_title')) {
+                    push(@{$form_params}, $key => $request_hash->{payload}->{$key});
                 }
                 else {
-                    # Something went wrong.
-                    $self->logger->error("Error: " . $response->status_line);
+                    push(@{$form_params}, 'custom' => "$key=$request_hash->{payload}->{$key}");
                 }
+            }
+
+            $self->logger->debug("Request payload: " . Dumper($request_hash)); 
+            
+            my $ua  = LWP::UserAgent->new;
+            my $response = $ua->post($url, $request_hash->{payload});
+            my $request  = POST( $url, $form_params );
+
+$self->logger->debug("Request: " . Dumper($request)); 
+ 
+            my $response = $ua->request($request);
+            if ($response->is_success) {
+                $self->logger->debug("Raw response: " . $response->content);
+                $self->logger->info("Notification sent - Success");
+            }
+            else {
+                # Something went wrong.
+                $self->logger->debug("Raw response: " . $response->content);
+                $self->logger->error("Error: " . $response->status_line);
             }
         }
     } catch {

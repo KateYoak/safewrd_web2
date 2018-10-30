@@ -40,20 +40,18 @@ post '/start_videochat' => sub {
         my $tokenSub = _generate_token("subscriber",$sessionID);
         redis->rpush(notifyPhone => to_json({
             type => 'push',
-            carnival_payload => {
-                notification => {
-                    to => [{ name => 'user_id', criteria => [$row->get_column('account_id')] }],
-                    payload => {
-                        action    => "emergency_CW",
-                        badge     => 1,
-                        sound     => "flare.wav",
-                        alert     => "Citizen Witness Emergency - incoming live video chat",
-                        location  => $req->{location},
-                        session_id => $sessionID,
-                        token => $tokenSub,
-                        app_key => config->{sites}->{tokbox}->{key}
-                    },
-                },
+            payload => {
+                swrve_user_id         => $row->get_column('account_id'),
+                notification_title    => "Citizen Witness Emergency - incoming live video chat",
+                message               => "Citizen Witness Emergency - incoming live video chat",
+                type                  => "text_message",
+                action                => "emergency_CW",
+                badge                 => 1,
+                sound                 => "flare.wav",
+                location              => $req->{location},
+                session_id            => $sessionID,
+                token                 => $tokenSub,
+                app_key               => config->{sites}->{tokbox}->{key}
             },
         }));
     }
