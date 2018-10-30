@@ -177,7 +177,7 @@ sub insert {
         #     $crit, { group_by => 'user_id' }
         # )->all();
         my @contacts = (defined($crit->{$criteria_key})) ? $self->result_source->schema->resultset('Contact')->search_rs(
-            $crit, { group_by => 'user_id' }
+            $crit
         )->all() : ();
         my $count = scalar(@contacts);
         if($count > 1) {
