@@ -12,6 +12,8 @@ use Dancer::Plugin::Redis;
 use Data::Dumper;
 use REST::Client;
 use URI;
+use WWW::Google::Translate;
+
 use Kliq::Util qw(fb_surrogate_id_from_picture);
 
 set logger     => 'log_handler';
@@ -45,7 +47,6 @@ post '/webhook' => sub {
     #my $handle           = ($service eq 'manual') ? join( '-', 'dev-api-ai', $api_session_id ) : _resolve_handle( $original_request );
     my $handle           = _resolve_handle( $original_request );
 
-
     # capture user data
     _debug( 'User Data: ' . to_json( $original_request, { pretty => 1 } ) );
 
@@ -61,12 +62,19 @@ post '/webhook' => sub {
     if (!defined($persona)) {
         _debug( 'DEBUG: Creating a user for this persona' );
         eval {
-            $user = Kliq::model('tokens')->create_user();
+            my $message = $original_request->{data}->{message}->{text};
+            $message = $original_request->{data}->{inputs}->[0]->{arguments}->[0]->{text_value} if $service eq 'google';
+
+            my $lang = _detect_lang($message);
+            _debug( 'User lang detected: ' . $lang );
+
+            $user = Kliq::model('tokens')->create_user($lang);
         };
         if ($@) {
             var error => "Unable to create user " . $@;
             request->path_info('/error');
         }
+
         _debug( 'Service: ' . $service );
         my $info = {
             service => $service,
@@ -81,10 +89,13 @@ post '/webhook' => sub {
 
     _debug( 'Session Object: ' . Dumper(session) );
     _debug( 'Session User ID: ' . session->{'user_id'} );
-
+    
     if (!defined($user)) {
         $user = schema->resultset('User')->find(session('user_id')); 
     }
+
+    _debug( 'User ID: ' . $user->id );
+    _debug( 'User lang: ' . $user->lang );
 
     # check user and create user / session if it doesn't exist
 
@@ -140,7 +151,8 @@ post '/webhook' => sub {
             my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
             my $request_params = {
                 speech   => $fulfillment->{'speech'},
-                contextOut  => \@contexts, 
+                contextOut  => \@contexts,
+                lang        => $user->lang
             };
             return _process_request( $request_params );
         }
@@ -177,6 +189,7 @@ post '/webhook' => sub {
                         lifespan => 1,
                     }
                 ],
+                lang        => $user->lang
             };
             return _process_request( $request_params );
         }
@@ -242,6 +255,7 @@ post '/webhook' => sub {
                 #         lifespan => 1,
                 #     }
                 # ],
+                lang => $user->lang
             };
             return _process_request( $request_params );
         }
@@ -252,6 +266,7 @@ post '/webhook' => sub {
         my $request_params = {
             speech   => $fulfillment->{'speech'},
             contextOut  => [],
+            lang => $user->lang,
         };
         return _process_request( $request_params );
     }
@@ -320,9 +335,7 @@ post '/webhook' => sub {
                         kliq_id  => $kliq_group->id,
                     } ); 
 
-                    my $pin = int(rand(100));
-                    $pin = '0' . $pin if $pin < 10;
-
+                    my $pin = $kliq_group->verification_pin;
                     $message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '", all you need to do is download, install and share this URL privately to your ' . $friend_count . ' friends directly in FB Messenger, WeChat, Twitter, Telegram or even SMS and ONLY with your ' . $friend_count . ' friends. ' . $url . ' - Your personal one time pin is ' . $pin . ' and must not be shared with anyone. Insert it only once when asked after you click on the link.';
                     @contexts = ();
                 }
@@ -368,6 +381,7 @@ post '/webhook' => sub {
         my $request_params = {
             speech   => ($is_complete) ? $message : $fulfillment->{'speech'} . " " . $message,
             contextOut  => \@contexts,
+            lang => $user->lang,
         };
         return _process_request( $request_params );
     }
@@ -386,9 +400,21 @@ post '/webhook/echo' => sub {
 
 sub _process_request {
     my $params = shift;
+
+    my $speech = $params->{'speech'} || '';
+    my $display_text = $params->{'displayText'};
+
+    if ($speech && $params->{lang} ne 'en') {
+        $speech = _translate_message($speech, $params->{lang});
+    }
+
+    if ($display_text && $params->{lang} ne 'en') {
+        $display_text = _translate_message($display_text, $params->{lang});
+    }
+
     my $response = {
-        speech      => $params->{'speech'} || '',  
-        displayText => $params->{'displayText'} || $params->{'speech'} || '',
+        speech      => $speech || '',  
+        displayText => $display_text || $speech || '',
         contextOut  => $params->{'contextOut'},
         source      => $SOURCE,
     };
@@ -403,6 +429,32 @@ sub _debug {
         warn $debug . "\n";
         error($debug . "\n");
     }
+}
+
+sub _detect_lang {
+    my ($text) = @_;
+
+    my $google_translate = WWW::Google::Translate->new({
+        key            => 'AIzaSyCDxbHQdso9H1FSHfVWOkjKan0mW6j9tYM',
+    });
+
+    my $r = $google_translate->detect({ q => $text });
+    my $lang = $r->{data}->{detections}->[0]->[0]->{language};
+    return $lang;
+}
+
+sub _translate_message {
+    my ($text, $to_lang) = @_;
+
+    my $google_translate = WWW::Google::Translate->new({
+        key            => 'AIzaSyCDxbHQdso9H1FSHfVWOkjKan0mW6j9tYM',
+        default_source => 'en',
+        default_target => $to_lang,
+    });
+
+    my $r = $google_translate->translate({ q => $text });
+    my $translated_text = $r->{data}->{translations}->[0]->{translatedText} if scalar @{$r->{data}->{translations}};
+    return $translated_text;
 }
 
 sub _resolve_handle {
@@ -455,6 +507,10 @@ sub _resolve_url {
     my $google_play_url = URI->new('https://play.google.com/store/apps/details');
     # my $app_id          = 'fr.simon.marquis.installreferrer'; # TODO: Use real app ID
     my $app_id          = 'com.flare.app';
+    my $ios_url         = 'http://example.com/tranzmt';
+    my $ios_uri_scheme  = 'safewrd://';
+    my $universal_linking_enabled = 1;
+    my $ios_bundle_id   = 'it.tranzmt.flare';
     # TODO: Put in Configuration file
 
     my $url_params = {
@@ -466,6 +522,10 @@ sub _resolve_url {
     _debug( "Google Play URL: " . $google_play_url->as_string);
     my $payload = {
         '$android_url' => $google_play_url->as_string,
+        #'$ios_url'     => $ios_url,
+        '$ios_uri_scheme' => $ios_uri_scheme,
+        '$universal_linking_enabled' => $universal_linking_enabled,
+        '$ios_bundle_id' => $ios_bundle_id,
     };
 
     my $request_params = {
