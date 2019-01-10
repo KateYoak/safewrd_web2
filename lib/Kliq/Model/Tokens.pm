@@ -152,7 +152,7 @@ sub create_persona {
 }
 
 sub merge_user {
-    my ($self, $uid, $tid) = @_; # newuser, uid-to-change
+    my ($self, $uid, $tid, $is_merge_chat_users) = @_; # newuser, uid-to-change
 
     my $is_old_user_available = $self->schema->resultset('User')->find($tid);
     return if !$is_old_user_available;
@@ -184,6 +184,19 @@ sub merge_user {
         };
     }    
 
+    # Update KliqContact so its pointing to the new user
+    $rs = $self->schema->resultset('KliqContact')->search({ contact_id => $tid });
+    while (my $rec = $rs->next) {
+        try {
+            $rec->update({ contact_id => $uid });
+        } catch {
+        };
+    }    
+
+    if ($is_merge_chat_users) {
+        $is_new_user_available->update({ merged_chat_user_id => $tid });
+    }
+
     #-- delete previous user
     $self->schema->resultset('User')->find($tid)->delete();
 
@@ -206,12 +219,14 @@ sub get_persona {
 
 sub create_user {
     my $self = shift;
+    my $lang = shift;
 
     my $rand = rand(1000);
     my $user = $self->schema->resultset('User')->create({
         username => "Anonymous.$rand",
         password  => "s3cr3t",
-        email     => "anonymous.$rand\@tranzmt.it"
+        email     => "anonymous.$rand\@tranzmt.it",
+        lang      => $lang || 'en',
         }) or die("Unable to create user");
 
     return $user;
