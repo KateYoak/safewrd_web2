@@ -47,7 +47,6 @@ hook 'before' => sub {
 
     # Modify name of process
     $0 = join(' ', 'kliq worker', request->method, request->path);
-
     my $domain = request->host;
     $domain =~ s/:.*$//;
     $domain =~ s/^(.*)\.(.*)\.(.*)$/$2\.$3/g;
@@ -56,16 +55,22 @@ hook 'before' => sub {
     header('Cache-Control' => 'no-store, no-cache, must-revalidate');
     header('Access-Control-Allow-Methods' => ['GET','POST','PUT','DELETE','OPTIONS']);
 
+error('Got request ' . request->path . ' with session id ' . session('user_id'));
+
     #-- find user
     my $user = undef;
     if (session('user_id')) {
         $user = schema->resultset('User')->find(session('user_id'));
+=pod
         unless($user) {
             var error => "Invalid user " . session('user_id') . " (stale cookie?)";
             request->path_info('/error');
             return;
         }
-        var user => $user;
+=cut
+        if ($user) {
+            var user => $user;
+        }
     }
     elsif($DEBUG || params->{debug}) {
         my $uid = params->{user} || '94A4988D-93F8-1014-A991-F7EDC84F2656';
@@ -96,7 +101,19 @@ hook 'before' => sub {
     if(request->path =~ '^/(v1/upload|v1/zencoded|v1/cors|v1)?$') {
         return;
     }
+    elsif(request->path =~ '^/v1/delete_user$') {
+        return;
+    }
+    elsif(request->path =~ '^/v1/merge_users$') {
+        return;
+    }
+    elsif(request->path =~ '^/v1/chat_user_friends$') {
+        return;
+    }
     elsif(request->path =~ '^/v1/verify_kliq_owner$') {
+        return;
+    }
+    elsif(request->path =~ '^/v1/notify_contact_joined$') {
         return;
     }
     elsif(request->path =~ '^/v1/download$') {
@@ -120,7 +137,7 @@ hook 'before' => sub {
     elsif(request->path =~ '^/v1/media') {
         return;
     }    
-    elsif(request->path =~ '^/v1/webhook') {    
+    elsif(request->path =~ '^/v1/webhook') {
         # let chatbot api handle this
         return;
     }
@@ -221,36 +238,159 @@ post '/update_swrve_user_id' => sub {
 };
 
 post '/merge_users' => sub {
-    #my $from_user_id = params->{from_user_id};
-    #my $to_user_id = params->{to_user_id};
-
     my $args = dejsonify(body_params());
-    my $from_user_id = $args->{from_user_id};
-    my $to_user_id   = $args->{to_user_id};
- 
-    my $response = model('tokens')->merge_user($to_user_id, $from_user_id);
-    if ($response) { 
-        content_type 'application/json';
-        return to_json({ success => 1, user_id => $response });
+    my $from_user_id = $args->{chat_id};
+    my $to_user_id   = $args->{app_user_id} || session('user_id');
+    my $type         = $args->{type};
+
+error('Got request to merge users. ' . $from_user_id . ' to ' . $to_user_id . ' - type - ' . $type);
+
+    my $response = {};
+    if ($type && $type eq 'friend') {
+        # chat_id is contact_id. Add app_user_id to contact
+        my $contact = schema->resultset('Contact')->find({ id => $from_user_id });
+        if ($contact) {
+            $contact->update({ user_id => $to_user_id });
+            $response = { success => 1, user_id => $to_user_id };
+        }
+        else {
+            $response = { success => 0, error => 'Invalid chat owner id. Could not find that contact' };
+        }
     }
     else {
-        content_type 'application/json';
-        return to_json({ success => 0, error => 'Bad user_id' });
+        my $to_user = schema->resultset('User')->find({ id => $to_user_id });
+        my $from_user = schema->resultset('User')->find({ id => $from_user_id });
+        if (!$to_user) {
+            $response = { success => 0, error => 'Invalid app user id. Could not find that user' };
+
+        }
+        elsif (!$from_user) {
+            $response = { success => 0, error => 'Invalid chat id. Could not find that user' };
+        }
+        elsif ($to_user->merged_chat_user_id) {
+            $response = { success => 0, error => 'This user has already been merged' };
+        }
+        else {
+            # All good. Merge users. chat_id is user_id
+            my $final_user_id = model('tokens')->merge_user($to_user_id, $from_user_id, 1);
+            if ($final_user_id) { 
+                $response = { success => 1, user_id => $final_user_id };
+            }
+            else {
+                $response = { success => 0, error => 'Invalid chat owner id. Could not find that user' };
+            }
+        }
     }
+
+error('Response: ' . Dumper($response));
+
+    content_type 'application/json';
+    return to_json($response);
 };
 
-get '/verify_kliq_owner' => sub {
+post '/verify_kliq_owner' => sub {
+    my $owner_id = params->{owner_id} || session('user_id');
+
+    error('Got request to verify kliq owner: ' . $owner_id);
     my $verify_pin = schema->resultset('Kliq')->search({
         id      => params->{kliq_id},
-        user_id => params->{user_id},
+        user_id => $owner_id,
         verification_pin => params->{verification_pin},
     })->single();
 
     my $verified = 0;
     $verified = 1 if $verify_pin;
 
+    error('Verification response: ' . $verified);
+
     content_type 'application/json';
     return to_json({ verified => $verified });
+};
+
+get '/chat_user_friends' => sub {
+    my $kliq_id = params->{kliq_id};
+
+    my $friends = [];
+    my $kliq = schema->resultset('Kliq')->find({
+        id => $kliq_id
+    });
+    if ($kliq) {
+        my $user = schema->resultset('User')->search({
+            id => $kliq->user_id
+        })->single;
+        my $persona = schema->resultset('Persona')->search({
+            user_id => $kliq->user_id
+        })->single;
+        push(@{$friends}, {
+            type    => 'owner',
+            chat_id => $user->id,
+            name    => 'Safety Group Owner',
+            profile_pic_url => $persona->profile_url,
+            is_authorized => (defined $user->merged_chat_user_id ? 1 : 0),
+        });
+ 
+        # Add friends
+        my $kliq_contacts = schema->resultset('KliqContact')->search({
+            kliq_id => $kliq_id
+        });
+        while (my $kliq_contact = $kliq_contacts->next) {
+            my $contact = schema->resultset('Contact')->find({
+                id => $kliq_contact->contact_id, 
+            });
+            if ($contact) {
+                push(@{$friends}, {
+                    type    => 'friend',
+                    chat_id => $contact->id,
+                    name    => $contact->name,
+                    profile_pic_url => $contact->image,
+                    is_authorized => (defined $contact->user_id ? 1 : 0),
+                });
+            }
+        }
+    }
+
+    content_type 'application/json';
+    return to_json($friends);
+};
+
+post '/delete_user' => sub {
+    my $user_id = params->{user_id};
+    if (!$user_id) {
+        my $persona = schema->resultset('Persona')->search({
+           email => params->{email}
+        })->single();
+        $user_id = $persona->user_id if $persona;
+    }
+
+    my $user;
+    if ($user_id) {
+        $user = schema->resultset('User')->search({ id => $user_id })->single();
+    }
+
+    my $response = {};
+    if ($user) {
+        # Delete user details
+        for my $table(qw/OauthToken Contact Kliq Upload Share Comment Persona CmsMedia/) {
+            my $rs = schema->resultset($table)->search({ user_id => $user_id });
+            while (my $rec = $rs->next) {
+                $rec->delete();
+            }
+        }
+
+        my $contacts = schema->resultset('Contact')->search({ owner_id => $user_id });
+        while (my $rec = $contacts->next) {
+            $rec->delete();
+        }
+
+        schema->resultset('User')->find($user_id)->delete();
+        $response = { success => 1 };
+    }
+    else { 
+        $response = { success => 0, error => 'Could not find that user' };
+    }
+
+    content_type 'application/json';
+    return to_json($response);
 };
 
 get '/contacts_summary' => sub {
@@ -409,14 +549,20 @@ post '/notify_video_view' => sub {
 post '/notify_contact_joined' => sub {
     my $args = dejsonify(body_params());
 
-    if ($args->{kliq_owner_user_id} && $args->{kliq_contact_user_id}) {
+    if ($args->{kliq_id} && $args->{kliq_contact_user_id}) {
+        my $kliq = schema->resultset('Kliq')->search({
+            id => $args->{kliq_id}
+        })->single();
+        if (!$kliq) {
+            return status_bad_request("Invalid kliq_id");
+        }
+
+        my $kliq_owner_user_id = $kliq->user_id;
         my $owner_persona = schema->resultset('Persona')->search({
-            user_id => $args->{kliq_owner_user_id},
-            service => 'google'
+            user_id => $kliq_owner_user_id,
         })->single();
         my $member_persona = schema->resultset('Persona')->search({
             user_id => $args->{kliq_contact_user_id},
-            service => 'google'
         })->single();
 
         if ($owner_persona && $member_persona) {
@@ -424,14 +570,14 @@ post '/notify_contact_joined' => sub {
             my $request_hash_owner = {
                 type => 'in-app',
                 payload => {
-                    user_id               => $args->{kliq_owner_user_id},
+                    user_id               => $kliq_owner_user_id,
                     notification_title    => $member_persona->name . " joined your Safety Group",
                     message               => $member_persona->name . " has just joined your Safety Group.",
                     type                  => "text_message",
                     action                => 'contact_joined_kliq_group',
                     badge                 => 1,
                     sound                 => "flare.wav",
-                    kliq_owner_user_id    => $args->{kliq_owner_user_id},
+                    kliq_owner_user_id    => $kliq_owner_user_id,
                     kliq_contact_user_id  => $args->{kliq_contact_user_id},
                 },
             };
@@ -447,20 +593,20 @@ post '/notify_contact_joined' => sub {
                     action                => 'contact_joined_kliq_group',
                     badge                 => 1,
                     sound                 => "flare.wav",
-                    kliq_owner_user_id    => $args->{kliq_owner_user_id},
+                    kliq_owner_user_id    => $kliq_owner_user_id,
                     kliq_contact_user_id  => $args->{kliq_contact_user_id},
                 },
             };
             redis->rpush(notifyPhone => to_json($request_hash_member));
         }
         else {
-            return status_bad_request("Invalid kliq_owner_user_id/kliq_contact_user_id");
+            return status_bad_request("Invalid kliq_id/kliq_contact_user_id");
         }
 
         status_ok({ success => 1 });
     }
     else {
-        return status_bad_request("Missing params kliq_owner_user_id/kliq_contact_user_id");
+        return status_bad_request("Missing params kliq_id/kliq_contact_user_id");
     }
 };
 
