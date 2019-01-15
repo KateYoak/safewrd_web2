@@ -69,44 +69,10 @@ sub _build_rtmp_url {
 sub _call_drone {
   my ($self, $event) = @_;
   my $ua = LWP::UserAgent->new();
-  my ($lat, $lng) = map { s/^\s+|\s+$//g; $_ } split(/,/, $event->location);
+  my ($lat, $lng) = $event->latlng;
   my $drone = $event->nearest_drone($lat, $lng);
-  $ua->post(
-    'http://localhost:8888/start_new_session',
-    'Content-Type' => 'application/json',
-    Content        => JSON::encode_json(
-      {
-        access_token => $drone->access_token,
-
-        vehicle_id       => $drone->vehicle_id,
-        mission_wait     => 15,
-        mission_location => {lat => $lat + 0, lng => $lng + 0,},
-        home_location    => {
-          lat => $drone->get_column('lat') + 0,
-          lng => $drone->get_column('lng') + 0
-        },
-        "alt"       => 5,
-        "wait_time" => 10,
-
-        stream_url => $event->rtmp_url,
-
-        # new parameters
-        event_id   => $event->id,
-        event_type => 'find',
-        api_key    => $drone->access_token,
-        poi        => {
-          wait_time => 15.0,
-          clearance => 10.0,
-          alt       => 5.0,
-          lat       => $lat + 0,
-          long      => $lng + 0,
-        },
-
-        token           => 'smart-contract-token',
-        token_check_url => 'token_check_url',
-      }
-    )
-  );
+  $drone->call($event);
+  return $drone;
 }
 
 around 'update' => sub {
@@ -142,13 +108,18 @@ around 'update' => sub {
 
   # TODO: Consider validating whether other fields may be changed too or not.
   my $result = $self->$orig($id, {event_status => $event_status});
+  
   if ( $event_status eq 'confirmed'
     or $event_status eq 'published'
     or $event_status eq 'test')
   {
     my $event = $self->get_row($id);
-    $self->_call_drone($event)
-      if $event->kliq->is_emergency && $event->drone_enabled;
+    if($event->kliq->is_emergency && $event->drone_enabled){
+      my $drone = $self->_call_drone($event);
+      $event->add_to_missions({ drone => $drone});
+    }
+    
+
     $self->redis->rpush(notifyEvent => to_json({event => $id}));
   }
   track_event_request('Event_' . ucfirst($event_status));

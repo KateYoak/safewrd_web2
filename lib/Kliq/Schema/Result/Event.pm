@@ -49,6 +49,10 @@ __PACKAGE__->uuid_columns('id');
 
 __PACKAGE__->belongs_to(user => 'Kliq::Schema::Result::User', 'user_id');
 __PACKAGE__->belongs_to(kliq => 'Kliq::Schema::Result::Kliq', 'kliq_id');
+__PACKAGE__->has_many(
+  missions => 'Kliq::Schema::Result::Mission',
+  {'foreign.event_id' => 'self.id'}
+);
 
 sub _serializable_rels {
   return qw/+user +kliq/;
@@ -70,5 +74,11 @@ sub nearest_drone {
     }
   )->next;
 }
+sub latlng {
+  my $self = shift;
+  my ($lat, $lng) = map { s/^\s+|\s+$//g; $_ } split(/,/, $self->location);
+  return ($lat, $lng);
+}
+  
 1;
 __END__
