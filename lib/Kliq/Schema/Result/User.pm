@@ -116,6 +116,21 @@ __PACKAGE__->add_columns(
         size => 255,
         is_nullable => 1,
     },
+    aireos_user_id => {
+        data_type => 'varchar',
+        size => 255,
+        is_nullable => 1,
+    },
+    aireos_credit => {
+        data_type => 'integer',
+        size => 11,
+    },
+    drone_enabled => {
+        data_type => "tinyint",
+        size => 1,
+        default_value => 0,
+        is_nullable => 1,
+    },
     created => {
         data_type => "timestamp",
         datetime_undef_if_invalid => 1,
