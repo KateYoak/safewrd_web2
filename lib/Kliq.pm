@@ -30,6 +30,9 @@ use IPC::Cmd qw/run/;
 use Kliq::Model::ZencoderOutput;
 
 use LWP::UserAgent;
+use HTTP::Request;
+use XML::Simple;
+use JSON;
 
 set serializer => 'JSON';
 set logger     => 'log_handler';
@@ -182,7 +185,7 @@ get '/user' => sub {
     }
 
     content_type 'application/json';
-    return to_json({ uid => session('user_id') });
+    return to_json({ uid => session('user_id'), drone_enabled => $user->drone_enabled, aireos_credit => $user->aireos_credit });
 };
 
 get '/contact_id' => sub {
@@ -240,10 +243,23 @@ post '/update_swrve_user_id' => sub {
 post '/merge_users' => sub {
     my $args = dejsonify(body_params());
     my $from_user_id = $args->{chat_id};
+    my $kliq_id      = $args->{kliq_id};
     my $to_user_id   = $args->{app_user_id} || session('user_id');
     my $type         = $args->{type};
 
-error('Got request to merge users. ' . $from_user_id . ' to ' . $to_user_id . ' - type - ' . $type);
+error('Got request to merge users. ' . $from_user_id . ' to ' . $to_user_id . ' - type - ' . $type, ' - kliq - ' . $kliq_id);
+
+    my $kliq = schema->resultset('Kliq')->search({
+        id => $args->{kliq_id}
+    })->single();
+    if (!$kliq) {
+        return status_bad_request("Invalid kliq_id");
+    }
+
+    my $kliq_owner_user_id = $kliq->user_id;
+    my $owner_persona = schema->resultset('Persona')->search({
+        user_id => $kliq_owner_user_id,
+    })->single();
 
     my $response = {};
     if ($type && $type eq 'friend') {
@@ -252,6 +268,44 @@ error('Got request to merge users. ' . $from_user_id . ' to ' . $to_user_id . ' 
         if ($contact) {
             $contact->update({ user_id => $to_user_id });
             $response = { success => 1, user_id => $to_user_id };
+
+            # Merge is done. Send push notifications
+            my $member_persona = schema->resultset('Persona')->search({
+                user_id => $to_user_id,
+            })->single();
+
+            # Send in-app messages
+            my $request_hash_owner = {
+                type => 'in-app',
+                payload => {
+                    user_id               => $kliq_owner_user_id,
+                    notification_title    => $member_persona->name . " joined your Safety Group",
+                    message               => $member_persona->name . " has just joined your Safety Group.",
+                    type                  => "text_message",
+                    action                => 'contact_joined_kliq_group',
+                    badge                 => 1,
+                    sound                 => "flare.wav",
+                    kliq_owner_user_id    => $kliq_owner_user_id,
+                    kliq_contact_user_id  => $to_user_id,
+                },
+            };
+            redis->rpush(notifyPhone => to_json($request_hash_owner));
+
+            my $request_hash_member = {
+                type => 'in-app',
+                payload => {
+                    user_id               => $to_user_id,
+                    notification_title    => "You are officially in " . $owner_persona->name . "'s emergency Safety Group",
+                    message               => "You are officially in " . $owner_persona->name . "'s emergency Safety Group, so if they are ever in trouble and they say their 'Safe word' you will be the first to know by getting an emergency live video stream.",
+                    type                  => "text_message",
+                    action                => 'contact_joined_kliq_group',
+                    badge                 => 1,
+                    sound                 => "flare.wav",
+                    kliq_owner_user_id    => $kliq_owner_user_id,
+                    kliq_contact_user_id  => $to_user_id,
+                },
+            };
+            redis->rpush(notifyPhone => to_json($request_hash_member));
         }
         else {
             $response = { success => 0, error => 'Invalid chat owner id. Could not find that contact' };
@@ -275,6 +329,34 @@ error('Got request to merge users. ' . $from_user_id . ' to ' . $to_user_id . ' 
             my $final_user_id = model('tokens')->merge_user($to_user_id, $from_user_id, 1);
             if ($final_user_id) { 
                 $response = { success => 1, user_id => $final_user_id };
+
+                # Owner joined. Send all friends push notification
+                my $kliq_contacts = schema->resultset('KliqContact')->search({
+                    kliq_id => $kliq_id
+                });
+                while (my $kliq_contact = $kliq_contacts->next) {
+                    my $contact = schema->resultset('Contact')->find({
+                        id => $kliq_contact->contact_id, 
+                    });
+
+                    next if !$contact->user_id;
+
+                    my $request_hash_member = {
+                        type => 'in-app',
+                        payload => {
+                            user_id               => $contact->user_id,
+                            notification_title    => "You are officially in " . $owner_persona->name . "'s emergency Safety Group",
+                            message               => "You are officially in " . $owner_persona->name . "'s emergency Safety Group, so if they are ever in trouble and they say their 'Safe word' you will be the first to know by getting an emergency live video stream.",
+                            type                  => "text_message",
+                            action                => 'contact_joined_kliq_group',
+                            badge                 => 1,
+                            sound                 => "flare.wav",
+                            kliq_owner_user_id    => $kliq_owner_user_id,
+                            kliq_contact_user_id  => $contact->user_id,
+                        },
+                    };
+                    redis->rpush(notifyPhone => to_json($request_hash_member));
+                }
             }
             else {
                 $response = { success => 0, error => 'Invalid chat owner id. Could not find that user' };
@@ -588,7 +670,7 @@ post '/notify_contact_joined' => sub {
                 payload => {
                     user_id               => $args->{kliq_contact_user_id},
                     notification_title    => "You are officially in " . $owner_persona->name . "'s emergency Safety Group",
-                    message               => "You are officially in " . $owner_persona->name . "'s emergency Safety Group, so if they are ever in t     rouble and they say their 'Safe word' you will be the first to know by getting an emergency live video stream.",
+                    message               => "You are officially in " . $owner_persona->name . "'s emergency Safety Group, so if they are ever in trouble and they say their 'Safe word' you will be the first to know by getting an emergency live video stream.",
                     type                  => "text_message",
                     action                => 'contact_joined_kliq_group',
                     badge                 => 1,
@@ -1685,6 +1767,391 @@ get '/ddtemp1' => sub {
 post '/ddtemp1' => sub {
     return status_ok({ message => "post to url [[".request->request_uri()."]] was with body [[".request->body()."]]"});
 };
+
+get '/subscriptions/status' => sub {
+    my $user_id = session('user_id');
+    my $user = schema->resultset('User')->find({ id => $user_id });
+    unless($user) {
+        return to_json({
+            error => "Invalid user. No user found with id - " . $user_id 
+        });
+    }
+
+    my $response = { active => 0 };
+    my $recurly_response;
+    try {
+        $recurly_response = make_recurly_request('GET', "/accounts/" . $user_id . "/subscriptions");
+    }
+    catch {
+        error('Failed to fetch subscription: ' . $_);
+        $response = { error => 'Failed to fetch subscription' };
+    };
+
+    if (ref $recurly_response eq 'HASH') {
+        for my $subscription (@{$recurly_response->{subscription}}) {
+            if ($subscription->{state} eq 'active') {
+                $response->{active} = 1;
+                last;
+            }
+        }
+    }
+
+    content_type 'application/json';
+    return to_json($response);
+};
+
+get '/subscriptions' => sub {
+    my $user_id = session('user_id');
+    my $user = schema->resultset('User')->find({ id => $user_id });
+    unless($user) {
+        return to_json({
+            error => "Invalid user. No user found with id - " . $user_id 
+        });
+    }
+
+    my $response = {};
+    my $recurly_response;
+    try {
+        $recurly_response = make_recurly_request('GET', "/accounts/" . $user_id . "/subscriptions");
+    }
+    catch {
+        error('Failed to fetch subscription: ' . $_);
+        $response = { error => 'Failed to fetch subscription' };
+    };
+
+    if (ref $recurly_response eq 'HASH') {
+        for my $subscription (@{$recurly_response->{subscription}}) {
+            next if $subscription->{state} ne 'active';
+
+            $response = {
+                plan => $subscription->{plan}->{name},
+                plan_code => $subscription->{plan}->{plan_code},
+                current_term_ends_at => $subscription->{current_term_ends_at}->{content},
+            };
+            if ($subscription->{trial_ends_at}) {
+                $response->{trial_ends_at} = $subscription->{trial_ends_at}->{content};
+            }
+
+            last; # Only one subscription for a user 
+        }
+    }
+
+    content_type 'application/json';
+    return to_json($response);
+};
+
+post '/subscriptions/terminate' => sub {
+    my $user_id = session('user_id');
+    my $user = schema->resultset('User')->find({ id => $user_id });
+    unless($user) {
+        return to_json({
+            error => "Invalid user. No user found with id - " . $user_id 
+        });
+    }
+
+    my $response = {};
+    my $recurly_response;
+    my @recurly_subscription_ids;;
+    try {
+        $recurly_response = make_recurly_request('GET', "/accounts/" . $user_id . "/subscriptions");
+        if (ref $recurly_response eq 'HASH') {
+            for my $subscription (@{$recurly_response->{subscription}}) {
+                next if $subscription->{state} ne 'active';
+                push(@recurly_subscription_ids, $subscription->{uuid});
+            }
+        }
+    }
+    catch {
+        error('Failed to fetch subscription: ' . $_);
+        $response = { error => 'Failed to fetch subscription for that user' };
+    };
+
+    # Cancel all subscriptions
+    if (scalar(@recurly_subscription_ids)) {
+        try {
+            for my $recurly_subscription_id (@recurly_subscription_ids) {
+                $response = make_recurly_request('PUT', "/subscriptions/" . $recurly_subscription_id . "/terminate");
+                if (ref $response eq 'HASH' && $response->{state} eq 'expired') {
+                    $response = { success => 1 };
+                }
+                else {
+                    $response = { error => 'Failed to cancel subscription' };
+                } 
+            }
+        }
+        catch {
+            error('Failed to cancel subscription: ' . $_);;
+        };
+    }
+    else {
+        $response = { error => 'There are no active subscriptions for this user' };
+    }
+
+    content_type 'application/json';
+    return to_json($response);
+};
+
+post '/subscriptions' => sub {
+    content_type 'application/json';
+    my $body = request->body();
+    my $req = from_json($body);
+
+    my $user_id = session('user_id');
+    my $user = schema->resultset('User')->find({ id => $user_id });
+    unless($user) {
+        return to_json({
+            error => "Invalid user. No user found with id - " . $user_id 
+        });
+    }
+
+    #FIXME: This shouldn't just pick google
+    my $persona = schema->resultset('Persona')->search({
+        user_id => $user_id,
+        service => 'google',
+    })->single();
+    my @names = split(/\s+/, $persona->name);
+    my $first_name = shift(@names);
+    my $last_name = join(' ', @names);
+    my $content_hash = {
+        subscription => {
+            plan_code => $req->{plan_code},
+            currency => 'USD',
+            account => {
+                account_code => $user_id,
+                email        => $persona->email,
+                first_name   => $first_name,
+                last_name    => $last_name,
+                billing_info => {
+                    number   => $req->{card_number},
+                    month    => $req->{expiry_month},
+                    year     => $req->{expiry_year},
+                    address1 => $req->{address},
+                    city     => $req->{city},
+                    state    => $req->{state},
+                    zip      => $req->{zip},
+                    country  => $req->{country},
+                },
+            },
+            auto_renew => 'true',
+        },
+    };
+
+    my $response = {};
+    try {
+        my $request_xml = XMLout($content_hash, NoAttr => 1, RootName => undef);
+        $response = make_recurly_request('POST', "/subscriptions", $request_xml);
+    }
+    catch {
+        error('Failed to create payment subscription: ' . $_);;
+    };
+
+    if (ref $response eq 'HASH' && $response->{uuid} && $response->{state} eq 'active') {
+        $response = { success => 1 };
+    }
+    else {
+        error('Failed to create payment subscription: ' . Dumper($response));
+
+        my $error = 'Failed to create subscription';
+        if (ref $response eq 'HASH' && $response->{error}) {
+            $error = $response->{error}->{content};
+        }
+
+        $response = { success => 0, error => $error };
+    }
+
+    content_type 'application/json';
+    return to_json($response);
+};
+
+post '/enable_drone' => sub {
+    my $user_id = session('user_id');
+    my $user = schema->resultset('User')->find({ id => $user_id });
+    unless($user) {
+        return to_json({
+            error => "Invalid user. No user found with id - " . $user_id 
+        });
+    }
+
+    #TODO: Confirm that the user has a subscription
+
+    my $response = {};
+
+    # Create Aireos account
+    my $aireos_response;
+    try {
+        my $request_json = encode_json({ user_id => $user_id });
+        $aireos_response = make_aireos_request('POST', '/account', $request_json);
+    }
+    catch {
+        error('Exception in creating Aireos account: ' . $_);
+        $response = { success => 0, error => 'Failed to create Aireos account' };
+    };
+
+    if (!defined $response->{error} && ref $aireos_response eq 'HASH' &&  $aireos_response->{status} eq 'OK' && $aireos_response->{eos_account}) {
+        $user->update({
+            drone_enabled  => 1,
+            aireos_user_id => $aireos_response->{eos_account},
+        });
+        $response = { success => 1 };
+    }
+    else {
+        error('Failed to create Aireos account: ' . Dumper($aireos_response));
+        $response = { success => 0, error => 'Failed to create Aireos account' };
+    }
+
+    content_type 'application/json';
+    return to_json($response);
+};
+
+post '/add_aireos_credit' => sub {
+    content_type 'application/json';
+    my $body = request->body();
+    my $req = from_json($body);
+
+    my $amount = $req->{amount} || 25;
+
+    my $user_id = session('user_id');
+    my $user = schema->resultset('User')->find({ id => $user_id });
+    unless ($user) {
+        return to_json({
+            error => "Invalid user. No user found with id - " . $user_id 
+        });
+    }
+
+    #TODO: Confirm that the user has drone enabled and has a  subscription
+    unless ($user->drone_enabled) {
+        return to_json({
+            error => "Drone is not enabled for this user"
+        });
+    }
+
+    if (!defined $user->aireos_user_id) {
+        return to_json({
+            error => "There is no Aireos account for this user"
+        });
+    }
+
+    # Process payment
+    my $content_hash = {
+        purchase => {
+            collection_method => 'automatic',
+            currency => 'USD',
+            account => {
+                account_code => $user_id,
+            },
+            adjustments => [{
+                revenue_schedule_type => 'at_invoice',
+                unit_amount_in_cents  => $amount * 100,
+                description           => 'Credit for Aireos drone',
+            }],
+        },
+    };
+
+    my $response = {};
+    my $recurly_response;
+    try {
+        my $request_xml = XMLout($content_hash, NoAttr => 1, RootName => undef, GroupTags => { adjustments => 'adjustment' });
+        $recurly_response = make_recurly_request('POST', "/purchases", $request_xml);
+    }
+    catch {
+        error('Exception in processing Aireos drone enable payment: ' . $_);
+        $response = { success => 0, error => 'Failed to process payment' };
+    };
+
+    if (!defined $response->{error} && ref $recurly_response eq 'HASH' && $recurly_response->{charge_invoice}->{uuid} && $recurly_response->{charge_invoice}->{state} eq 'paid') {
+        # Payment was successful.
+        my $aireos_response;
+        try {
+            my $request_json = encode_json({ user_id => $user_id, payment_amount => $amount });
+            $aireos_response = make_aireos_request('POST', '/payment', $request_json);
+        }
+        catch {
+            error('Exception in posting payment to Aireos: ' . $_);
+            $response = { success => 0, error => 'Failed to post payment to Aireos' };
+        };
+
+        if (!defined $response->{error} && ref $aireos_response eq 'HASH' &&  $aireos_response->{status} eq 'OK' && $aireos_response->{transaction}->{transaction_id}) {
+            my $updated_credit = $user->aireos_credit + $amount;
+            $user->update({
+                aireos_credit => $updated_credit,
+            });
+
+            # All done.
+            $response = { success => 1, available_credit => $updated_credit };
+        }
+        else {
+            error('Failed to post payment to Aireos: ' . Dumper($aireos_response));
+            $response = { success => 0, error => 'Failed to post payment to Aireos' };
+        }
+    }
+    else {
+        error('Failed to process Aireos drone enable payment: ' . Dumper($recurly_response));
+
+        my $error = 'Failed to process payment';
+        if (ref $recurly_response eq 'HASH' && $recurly_response->{error}) {
+            $error = $recurly_response->{error}->{content};
+        }
+
+        $response = { success => 0, error => $error };
+    }
+
+    content_type 'application/json';
+    return to_json($response);
+};
+
+sub make_recurly_request {
+    my ($type, $path, $content) = @_;
+
+    #TODO: Move to config
+    my $api_endpoint = 'https://safewrd.recurly.com/v2';
+    my $api_key      = 'ed783b56892d4bd2896e821041fec80e';
+    my $api_version  = '2.17';
+
+    my $url = $api_endpoint . $path;
+    my $req = HTTP::Request->new($type => $url);
+    $req->authorization_basic($api_key);
+    $req->header('Accept' => 'application/xml');
+    $req->header('X-Api-Version' => $api_version);
+    $req->content($content) if $content;
+
+#error('recurly request xml: ' . $content);
+
+    my $ua = LWP::UserAgent->new();
+    $ua->protocols_allowed(['https']);
+
+    my $resp = $ua->request($req);
+    my $code = $resp->code;
+    if ($code == 200 || $code == 201 || $code == 422) {
+        return XMLin($resp->content);
+    }
+
+    die "Recurly call to $url failed - $code - " . $resp->content;
+}
+
+sub make_aireos_request {
+    my ($type, $path, $content) = @_;
+
+    #TODO: Move to config
+    my $api_endpoint = 'https://air.eosrio.io/api';
+
+    my $url = $api_endpoint . $path;
+    my $req = HTTP::Request->new($type => $url);
+    $req->header('Content-Type' => 'application/json');
+    $req->content($content) if $content;
+
+#error('Aireos request json: ' . $content);
+
+    my $ua = LWP::UserAgent->new();
+    $ua->protocols_allowed(['https']);
+
+    my $resp = $ua->request($req);
+    my $code = $resp->code;
+    if ($code == 200 || $code == 201 || $code == 422) {
+        return decode_json($resp->content);
+    }
+
+    die "Aireos call to $url failed - $code - " . $resp->content;
+}
 
 1;
 __END__
