@@ -75,6 +75,8 @@ requires 'YAML::XS'                   => '0.38';
 requires 'namespace::autoclean'       => '0.13';
 requires 'REST::Client';
 requires 'JSON::WebToken';
+requires 'LWP::UserAgent';
+requires 'Digest::SHA';
 
 #----------------#
 # DH Script Deps #
