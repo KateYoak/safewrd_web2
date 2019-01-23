@@ -68,8 +68,8 @@ sub _build_rtmp_url {
 
 sub _call_drone {
   my ($self, $event) = @_;
-  my $ua = LWP::UserAgent->new();
-  my ($lat, $lng) = $event->latlng;
+
+
   my $drone = $event->nearest_drone($lat, $lng);
   $drone->call($event);
   return $drone;
@@ -115,8 +115,7 @@ around 'update' => sub {
   {
     my $event = $self->get_row($id);
     if($event->kliq->is_emergency && $event->drone_enabled){
-      my $drone = $self->_call_drone($event);
-      $event->add_to_missions({ drone => $drone});
+      my $mission = $event->send_drone;
     }
     
 

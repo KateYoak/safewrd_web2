@@ -58,10 +58,18 @@ sub _serializable_rels {
   return qw/+user +kliq/;
 }
 
+sub send_drone {
+  my $self = shift;
+  my $drone = $event->nearest_drone() or die 'Could not find drone near event';
+  my ($mission) = $event->add_to_missions({ drone => $drone});
+  $drone->goto_mission($mission);
+  return $mission;
+}
+
 sub nearest_drone {
   my $self = shift;
-
-  my ($lat, $lng) = @_;
+  my ($lat, $lng) = $self->latlng;
+  
   return $self->result_source->schema->resultset('Drone')->search(
     {location => {'!=' => undef}},
     {

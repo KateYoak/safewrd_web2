@@ -36,6 +36,16 @@ __PACKAGE__->uuid_columns('id');
 __PACKAGE__->belongs_to(drone => 'Kliq::Schema::Result::Drone', 'drone_id');
 __PACKAGE__->belongs_to(event => 'Kliq::Schema::Result::Drone', 'event_id');
 
+use Digest::SHA qw(sha256_hex);
+
+sub build_hash {
+  my $self  = shift;
+  my $event = $self->event;
+  my ($lat, $lng) = $event->latlng;
+  my $user_id = $event->user_id;
+  return uc sha256_hex(
+    join(q{|}, $user_id, $event->id, $self->id, $lat, $lng));
+}
 
 1;
 __END__

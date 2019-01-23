@@ -57,15 +57,34 @@ sub update_destination {
   );
 }
 
-sub call {
-  my ($drone, $event) = @_;
-  my ($lat,   $lng)   = $event->latlng;
+sub update_blockchain {
+  my ($self, %payload) = @_;
   $ua->post(
-    'http://localhost:8888/start_new_session',
+    'https://air.eosrio.io/api/action',
+    'Content-Type' => 'application/json',
+    Content        => JSON::encode_json(\%payload)
+  );
+}
+
+sub goto_mission {
+  my ($drone, $mission) = @_;
+  my $event = $mission->event;
+  my ($lat, $lng) = $event->latlng;
+
+  my $mission_hash = $mission->build_hash;
+
+  $self->update_blockchain(
+    user_id     => $event->user_id,
+    action_name => 'newmission',
+    data =>
+      {user => $event->user->aireos_user_id, mission_hash => $mission_hash}
+  );
+
+  $ua->post(
+    'http://localhost:8888/mission',
     'Content-Type' => 'application/json',
     Content        => JSON::encode_json(
       {
-        access_token     => $drone->access_token,
         vehicle_id       => $drone->vehicle_id,
         mission_wait     => 15,
         mission_location => {lat => $lat + 0, lng => $lng + 0,},
@@ -80,17 +99,18 @@ sub call {
 
         # new parameters
         event_id   => $event->id,
+        mission_id => $mission->id,
         event_type => 'find',
-        api_key    => $drone->access_token,
-        poi        => {
-          wait_time => 15.0,
-          clearance => 10.0,
-          alt       => 5.0,
-          lat       => $lat + 0,
-          long      => $lng + 0,
-        },
 
-        token           => 'smart-contract-token',
+        # poi        => {
+        #   wait_time => 15.0,
+        #   clearance => 10.0,
+        #   alt       => 5.0,
+        #   lat       => $lat + 0,
+        #   long      => $lng + 0,
+        # },
+
+        token           => $mission_hash,
         token_check_url => 'token_check_url',
       }
     )
