@@ -66,15 +66,6 @@ sub _build_rtmp_url {
   }
 }
 
-sub _call_drone {
-  my ($self, $event) = @_;
-
-
-  my $drone = $event->nearest_drone($lat, $lng);
-  $drone->call($event);
-  return $drone;
-}
-
 around 'update' => sub {
   my ($orig, $self, $id, $params) = @_;
 
