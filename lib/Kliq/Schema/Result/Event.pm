@@ -60,6 +60,7 @@ sub _serializable_rels {
 
 sub send_drone {
   my $self = shift;
+  my $event = $self;
   my $drone = $event->nearest_drone() or die 'Could not find drone near event';
   my ($mission) = $event->add_to_missions({ drone => $drone});
   $drone->goto_mission($mission);
