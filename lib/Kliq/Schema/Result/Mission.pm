@@ -6,7 +6,7 @@ use warnings;
 
 use base 'Kliq::Schema::Result';
 
-__PACKAGE__->table("drone");
+__PACKAGE__->table("mission");
 __PACKAGE__->add_columns(
   "id",
   {data_type => "char", is_nullable => 0, size => 36},
@@ -34,7 +34,7 @@ __PACKAGE__->uuid_columns('id');
 
 
 __PACKAGE__->belongs_to(drone => 'Kliq::Schema::Result::Drone', 'drone_id');
-__PACKAGE__->belongs_to(event => 'Kliq::Schema::Result::Drone', 'event_id');
+__PACKAGE__->belongs_to(event => 'Kliq::Schema::Result::Event', 'event_id');
 
 use Digest::SHA qw(sha256_hex);
 

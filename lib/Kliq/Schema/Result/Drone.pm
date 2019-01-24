@@ -67,7 +67,8 @@ sub update_blockchain {
 }
 
 sub goto_mission {
-  my ($drone, $mission) = @_;
+  my ($self, $mission) = @_;
+  my $drone = $self;
   my $event = $mission->event;
   my ($lat, $lng) = $event->latlng;
 
@@ -98,6 +99,7 @@ sub goto_mission {
         stream_url => $event->rtmp_url,
 
         # new parameters
+	user_id => $event->user_id,
         event_id   => $event->id,
         mission_id => $mission->id,
         event_type => 'find',
@@ -109,7 +111,6 @@ sub goto_mission {
         #   lat       => $lat + 0,
         #   long      => $lng + 0,
         # },
-
         token           => $mission_hash,
         token_check_url => 'token_check_url',
       }
