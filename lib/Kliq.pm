@@ -185,7 +185,11 @@ get '/user' => sub {
     }
 
     content_type 'application/json';
-    return to_json({ uid => session('user_id'), drone_enabled => $user->drone_enabled, aireos_credit => $user->aireos_credit, aireos_user_id => $user->aireos_user_id });
+
+    my $ua = LWP::UserAgent->new();
+    my $res = $ua->get('https://air.eosrio.io/api/balance/'. $user->aireos_user_id);
+    my $aireos_result = from_json($res->decoded_content);
+    return to_json({ uid => session('user_id'), drone_enabled => $user->drone_enabled, aireos_credit => $aireos_result->{balance}, aireos_user_id => $user->aireos_user_id });
 };
 
 get '/contact_id' => sub {
