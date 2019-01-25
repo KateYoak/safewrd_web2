@@ -38,13 +38,14 @@ __PACKAGE__->belongs_to(event => 'Kliq::Schema::Result::Event', 'event_id');
 
 use Digest::SHA qw(sha256_hex);
 
-sub build_hash {
+sub build_hashes {
   my $self  = shift;
   my $event = $self->event;
   my ($lat, $lng) = $event->latlng;
   my $user_id = $event->user_id;
-  return uc sha256_hex(
-    join(q{|}, $user_id, $event->id, $self->id, $lat, $lng));
+  my $mission_hash = uc sha256_hex(join(q{|}, $user_id, $event->id, $self->id));
+  my $waypoint_hash = uc sha256_hex(join(q{|}, $mission_hash, $lat, $lng));
+  return ($mission_hash, $waypoint_hash);
 }
 
 1;
