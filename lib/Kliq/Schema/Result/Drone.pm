@@ -72,13 +72,36 @@ sub goto_mission {
   my $event = $mission->event;
   my ($lat, $lng) = $event->latlng;
 
-  my $mission_hash = $mission->build_hash;
+  my ($mission_hash, $waypoint_hash) = $mission->build_hashes;
 
+  # staking value
+  
+  $self->update_blockchain(
+    user_id     => $event->user_id,
+    action_name => 'stake',
+    data        => {
+      owner    => $event->user->aireos_user_id,
+      quantity => '300.0000 AIR' # US $5
+    }
+  );
+
+  # craeting new mission
   $self->update_blockchain(
     user_id     => $event->user_id,
     action_name => 'newmission',
     data =>
       {user => $event->user->aireos_user_id, mission_hash => $mission_hash}
+  );
+  
+  # adding waypoint
+  $self->update_blockchain(
+    user_id     => $event->user_id,
+    action_name => 'addwp',
+    data        => {
+      owner      => $event->user->aireos_user_id,
+      wp_hash    => $waypoint_hash,
+      mission_id => 0
+    }
   );
 
   $ua->post(
@@ -99,7 +122,7 @@ sub goto_mission {
         stream_url => $event->rtmp_url,
 
         # new parameters
-	user_id => $event->user_id,
+        user_id    => $event->user_id,
         event_id   => $event->id,
         mission_id => $mission->id,
         event_type => 'find',
