@@ -37,15 +37,37 @@ __PACKAGE__->belongs_to(drone => 'Kliq::Schema::Result::Drone', 'drone_id');
 __PACKAGE__->belongs_to(event => 'Kliq::Schema::Result::Event', 'event_id');
 
 use Digest::SHA qw(sha256_hex);
+use JSON;
+use LWP::UserAgent;
+my $ua = LWP::UserAgent->new();
 
 sub build_hashes {
   my $self  = shift;
   my $event = $self->event;
   my ($lat, $lng) = $event->latlng;
   my $user_id = $event->user_id;
-  my $mission_hash = uc sha256_hex(join(q{|}, $user_id, $event->id, $self->id));
-  my $waypoint_hash = uc sha256_hex(join(q{|}, $mission_hash, $lat, $lng));
+  my $mission_hash = lc sha256_hex(join(q{|}, $user_id, $event->id, $self->id));
+  my $waypoint_hash = lc sha256_hex(join(q{|}, $mission_hash, $lat, $lng));
   return ($mission_hash, $waypoint_hash);
+}
+
+sub eos_info {
+  my $self = shift;
+  
+  my ($mission_hash, $waypoint_hash) = $self->build_hashes;
+  my $user = $self->event->user;
+  my $res =
+    $ua->get('https://air.eosrio.io/api/missions/' . $user->aireos_user_id);
+  if ($res->is_success) {
+    my $info = JSON::from_json($res->decoded_content);
+    my ($mission) =
+      grep { lc $_->{mission_hash} eq lc $mission_hash } @{$info->{rows} || []};
+    return $mission;
+  }
+  else {
+    warn qq|ERROR fetching misson's EOS info: \n| . $res->content;
+    return {};
+  }
 }
 
 1;
