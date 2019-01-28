@@ -186,10 +186,10 @@ get '/user' => sub {
 
     content_type 'application/json';
 
-    my $ua = LWP::UserAgent->new();
-    my $res = $ua->get('https://air.eosrio.io/api/balance/'. $user->aireos_user_id);
-    my $aireos_result = from_json($res->decoded_content);
-    return to_json({ uid => session('user_id'), drone_enabled => $user->drone_enabled, aireos_credit => $aireos_result->{balance}, aireos_user_id => $user->aireos_user_id });
+    my $credit = sprintf(q{%.2f}, 0.0 + $user->eos_balance);
+    
+    return to_json({ uid => session('user_id'), drone_enabled => $user->drone_enabled, aireos_credit => $credit, aireos_user_id => $user->aireos_user_id });    
+
 };
 
 get '/contact_id' => sub {
@@ -456,7 +456,7 @@ post '/delete_user' => sub {
     my $response = {};
     if ($user) {
         # Delete user details
-        for my $table(qw/OauthToken Contact Kliq Upload Share Comment Persona CmsMedia/) {
+        for my $table(qw/OauthToken Contact Event Kliq Upload Share Comment Persona CmsMedia/) {
             my $rs = schema->resultset($table)->search({ user_id => $user_id });
             while (my $rec = $rs->next) {
                 $rec->delete();

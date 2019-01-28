@@ -144,55 +144,52 @@ __PACKAGE__->uuid_columns('id');
 
 __PACKAGE__->add_unique_constraint("username", ["username"]);
 
-__PACKAGE__->has_many(
-    uploads => 'Kliq::Schema::Result::Upload', 'user_id'
-    );
+__PACKAGE__->has_many(uploads => 'Kliq::Schema::Result::Upload', 'user_id');
+
+__PACKAGE__->has_many(contacts => 'Kliq::Schema::Result::Contact', 'owner_id');
+
+__PACKAGE__->has_many(kliqs => 'Kliq::Schema::Result::Kliq', 'user_id');
+
+__PACKAGE__->has_many(payments => 'Kliq::Schema::Result::Payment', 'user_id');
+
+__PACKAGE__->has_many(tokens => 'Kliq::Schema::Result::OauthToken', 'user_id');
+
+__PACKAGE__->has_many(shares => 'Kliq::Schema::Result::Share', 'user_id');
+
+__PACKAGE__->has_many(events => 'Kliq::Schema::Result::Event', 'user_id');
+
+__PACKAGE__->has_many(comments => 'Kliq::Schema::Result::Comment', 'user_id');
+
+__PACKAGE__->has_many(media => 'Kliq::Schema::Result::CmsMedia', 'user_id');
+
+__PACKAGE__->has_many(personas => 'Kliq::Schema::Result::Persona', 'user_id');
 
 __PACKAGE__->has_many(
-    contacts => 'Kliq::Schema::Result::Contact', 'owner_id'
-    );
-
-__PACKAGE__->has_many(
-    kliqs => 'Kliq::Schema::Result::Kliq', 'user_id'
-    );
-
-__PACKAGE__->has_many(
-    payments => 'Kliq::Schema::Result::Payment', 'user_id'
-    );
-
-__PACKAGE__->has_many(
-    tokens => 'Kliq::Schema::Result::OauthToken', 'user_id'
-    );
-
-__PACKAGE__->has_many(
-    shares => 'Kliq::Schema::Result::Share', 'user_id'
-    );
-
-__PACKAGE__->has_many(
-    events => 'Kliq::Schema::Result::Event', 'user_id'
-    );
-
-__PACKAGE__->has_many(
-    comments => 'Kliq::Schema::Result::Comment', 'user_id'
-    );
-
-__PACKAGE__->has_many(
-    media => 'Kliq::Schema::Result::CmsMedia', 'user_id'
-    );
-
-__PACKAGE__->has_many(
-    personas => 'Kliq::Schema::Result::Persona', 'user_id'
-    );
-
-__PACKAGE__->has_many(
-    zencoder_outputs => 'Kliq::Schema::Result::ZencoderOutput', 'user_id'
-    );
+  zencoder_outputs => 'Kliq::Schema::Result::ZencoderOutput',
+  'user_id'
+);
 
 sub _serializable_rels {
-    return qw/
-        tokens contacts kliqs uploads shares comments +personas
+  return qw/
+    tokens contacts kliqs uploads shares comments +personas
     /;
 }
+
+
+use LWP::UserAgent;
+use JSON qw(from_json);
+
+sub eos_balance {
+  my $self = shift;
+  my $ua = LWP::UserAgent->new();
+  my $res =
+    $ua->get('https://air.eosrio.io/api/balance/' . $self->aireos_user_id);
+  my $aireos_result = from_json($res->decoded_content);
+  return $aireos_result->{balance};
+}
+
+1;
+
 
 1;
 __END__
