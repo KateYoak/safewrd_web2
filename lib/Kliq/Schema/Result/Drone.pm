@@ -43,18 +43,38 @@ sub update_location {
 }
 
 sub update_destination {
-  my ($self, $lat, $lng) = @_;
-  $ua->post(
-    'http://localhost:8888/update_location',
-    'Content-Type' => 'application/json',
-    Content        => JSON::encode_json(
-      {
-        access_token     => $self->access_token,
-        vehicle_id       => $self->vehicle_id,
-        mission_location => {lat => $lat + 0, lng => $lng + 0,}
+  my ($self, $mission) = @_;
+  my $event = $mission->event;
+  my ($lat, $lng) = $event->latlng;
+
+  my ($mission_hash, $waypoint_hash) = $mission->build_hashes;
+
+  if (my $eos_info = $mission->eos_info) {
+    $self->update_blockchain(
+      user_id     => $event->user_id,
+      action_name => 'addwp',
+      data        => {
+        owner      => $event->user->aireos_user_id,
+        wp_hash    => $waypoint_hash,
+        mission_id => $eos_info->{mission_id} + 0
       }
-    )
-  );
+    );
+
+    $ua->put(
+      'http://localhost:8888/mission',
+      'Content-Type' => 'application/json',
+      Content        => JSON::encode_json(
+        {
+          eos_mission_id => $eos_info->{mission_id} + 0,
+          drone_id       => $self->id,
+          lat            => $lat + 0,
+          lng            => $lng + 0,
+        }
+      )
+    );
+
+  }
+
 }
 
 sub update_blockchain {
@@ -75,13 +95,13 @@ sub goto_mission {
   my ($mission_hash, $waypoint_hash) = $mission->build_hashes;
 
   # staking value
-  
+
   $self->update_blockchain(
     user_id     => $event->user_id,
     action_name => 'stake',
     data        => {
       owner    => $event->user->aireos_user_id,
-      quantity => '300.0000 AIR' # US $5
+      quantity => '300.0000 AIR'                  # US $5
     }
   );
 
@@ -92,7 +112,7 @@ sub goto_mission {
     data =>
       {user => $event->user->aireos_user_id, mission_hash => $mission_hash}
   );
-  
+
   # adding waypoint
   $self->update_blockchain(
     user_id     => $event->user_id,
@@ -103,6 +123,8 @@ sub goto_mission {
       mission_id => 0
     }
   );
+
+  my $eos_info = $mission->eos_info;
 
   $ua->post(
     'http://localhost:8888/mission',
@@ -134,6 +156,9 @@ sub goto_mission {
         #   lat       => $lat + 0,
         #   long      => $lng + 0,
         # },
+        eos_owner       => $event->user->aireos_user_id,
+        eos_mission_id  => $eos_info->{mission_id},
+        eos_balance     => $event->user->eos_balance + 0,
         token           => $mission_hash,
         token_check_url => 'token_check_url',
       }

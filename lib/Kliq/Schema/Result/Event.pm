@@ -1,4 +1,3 @@
-
 package Kliq::Schema::Result::Event;
 
 use utf8;
@@ -59,18 +58,31 @@ sub _serializable_rels {
 }
 
 sub send_drone {
-  my $self = shift;
+  my $self  = shift;
   my $event = $self;
   my $drone = $event->nearest_drone() or die 'Could not find drone near event';
-  my ($mission) = $event->add_to_missions({ drone => $drone});
+
+  my ($mission) = $event->add_to_missions({drone => $drone});
   $drone->goto_mission($mission);
   return $mission;
+}
+
+sub update_location {
+  my ($self) = @_;
+  my $missions = $self->missions->search_rs(undef,
+    {rows => 1, order_by => {-desc => 'created'}});
+  
+  if (my $mission = $missions->next) {
+    if(my $drone = $mission->drone){
+      $drone->update_destination($mission);
+    }
+  }
 }
 
 sub nearest_drone {
   my $self = shift;
   my ($lat, $lng) = $self->latlng;
-  
+
   return $self->result_source->schema->resultset('Drone')->search(
     {location => {'!=' => undef}},
     {
@@ -83,11 +95,12 @@ sub nearest_drone {
     }
   )->next;
 }
+
 sub latlng {
   my $self = shift;
-  my ($lat, $lng) = map { s/^\s+|\s+$//g; $_ } split(/,/, $self->location);
+  my ($lat, $lng) = map { s/^\s+|\s+$//g; $_ } split(/\s*,\s*/, $self->location);
   return ($lat, $lng);
 }
-  
+
 1;
 __END__

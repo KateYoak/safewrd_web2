@@ -76,10 +76,10 @@ around 'update' => sub {
   }
 
   if (my $location = $params->{new_location}) {
-    my $ret_result = $self->$orig($id, {});
+    my $ret_result = $self->$orig($id, { location => $location });
+    $ret_result->update_location;
     return $ret_result;
   }
-  
 
   my $event_status = $params->{event_status} // '';
   unless ($event_status eq 'new'
