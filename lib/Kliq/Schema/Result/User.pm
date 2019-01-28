@@ -180,9 +180,10 @@ use LWP::UserAgent;
 use JSON qw(from_json);
 
 sub eos_balance {
+  my $self = shift;
   my $ua = LWP::UserAgent->new();
   my $res =
-    $ua->get('https://air.eosrio.io/api/balance/' . $user->aireos_user_id);
+    $ua->get('https://air.eosrio.io/api/balance/' . $self->aireos_user_id);
   my $aireos_result = from_json($res->decoded_content);
   return $aireos_result->{balance};
 }

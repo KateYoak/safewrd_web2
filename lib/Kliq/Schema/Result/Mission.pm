@@ -53,7 +53,8 @@ sub build_hashes {
 
 sub eos_info {
   my $self = shift;
-  my ($mission_hash, $waypoint_hash) = $mission->build_hashes;
+  
+  my ($mission_hash, $waypoint_hash) = $self->build_hashes;
   my $user = $self->event->user;
   my $res =
     $ua->get('https://air.eosrio.io/api/missions/' . $user->aireos_user_id);
