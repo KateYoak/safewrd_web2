@@ -148,9 +148,9 @@ post '/webhook' => sub {
             }
 
             # flow of control using contexts
-            my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+            my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
             my $request_params = {
-                speech   => $fulfillment->{'speech'},
+                fulfillmentText   => $fulfillment_txt,
                 outputContexts  => \@contexts,
                 lang        => $user->lang
             };
@@ -180,9 +180,9 @@ post '/webhook' => sub {
                     contact_id => $f->id,
                 });
             }
-            my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+            my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
             my $request_params = {
-                speech   => $fulfillment->{'speech'},
+                fulfillmentText   => $fulfillment_txt,
                 outputContexts  => [ 
                     {
                         name     => "$api_session/contexts/" . 'create-safeword',
@@ -204,35 +204,35 @@ post '/webhook' => sub {
                 safeword => $safeword,
             });
             _debug("Kliq Group ID: " . $kliq_group->id);
-            my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+            my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
             # interpolate friend count
-            if ($fulfillment->{'speech'} =~ /{{friend-count}}/i) {
+            if ($fulfillment_txt =~ /{{friend-count}}/i) {
                 my @kliq_members = schema->resultset('KliqContact')->search({
                     kliq_id => $kliq_group->id,
                 })->all();
                 _debug("Kliq Group Count: " . Dumper(scalar( @kliq_members )));
                 my $friend_count = scalar( @kliq_members );
-                $fulfillment->{'speech'} =~ s/{{friend-count}}/$friend_count/g;
+                $fulfillment_txt =~ s/{{friend-count}}/$friend_count/g;
             }
             else {
-                $fulfillment->{'speech'} =~ s/{{friend-count}}//g;
+                $fulfillment_txt =~ s/{{friend-count}}//g;
             }
 
             # interpolate url 
-            if ($fulfillment->{'speech'} =~ /{{tranzmt-url}}/i) {
+            if ($fulfillment_txt =~ /{{tranzmt-url}}/i) {
                 # generate url
                 my $url = _resolve_url( {
                     owner_id => $user->id, 
                     kliq_id  => $kliq_group->id,
                 } ); 
-                $fulfillment->{'speech'} =~ s/{{tranzmt-url}}/$url/g;
+                $fulfillment_txt =~ s/{{tranzmt-url}}/$url/g;
             }
             else {
-                $fulfillment->{'speech'} =~ s/{{tranzmt-url}}//g;
+                $fulfillment_txt =~ s/{{tranzmt-url}}//g;
             }
 
             # interpolate url 
-            if ($fulfillment->{'speech'} =~ /{{pin}}/i) {
+            if ($fulfillment_txt =~ /{{pin}}/i) {
                 # generate pin
                 my $pin = int(rand(100));
                 $pin = '0' . $pin if $pin < 10;
@@ -241,14 +241,14 @@ post '/webhook' => sub {
                     verification_pin => $pin,
                 });
 
-                $fulfillment->{'speech'} =~ s/{{pin}}/$pin/g;
+                $fulfillment_txt =~ s/{{pin}}/$pin/g;
             }
             else {
-                $fulfillment->{'speech'} =~ s/{{pin}}//g;
+                $fulfillment_txt =~ s/{{pin}}//g;
             }
 
             my $request_params = {
-                speech   => $fulfillment->{'speech'},
+                fulfillmentText   => $fulfillment_txt,
                 # outputContexts  => [ 
                 #     {
                 #         name     => "$api_session/contexts/" . 'create-safeword',
@@ -262,9 +262,9 @@ post '/webhook' => sub {
     }
     elsif ( $result->{'action'} eq 'input.welcome' ) {
         # flow of control using contexts
-        my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+        my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
         my $request_params = {
-            speech   => $fulfillment->{'speech'},
+            fulfillmentText   => $fulfillment_txt,
             outputContexts  => [],
             lang => $user->lang,
         };
@@ -377,9 +377,9 @@ post '/webhook' => sub {
         }
 
         # flow of control using contexts
-        my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+        my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
         my $request_params = {
-            speech   => ($is_complete) ? $message : $fulfillment->{'speech'} . " " . $message,
+            fulfillmentText   => ($is_complete) ? $message : $fulfillment_txt . " " . $message,
             outputContexts  => \@contexts,
             lang => $user->lang,
         };
@@ -401,11 +401,11 @@ post '/webhook/echo' => sub {
 sub _process_request {
     my $params = shift;
 
-    my $speech = $params->{'speech'} || '';
+    my $fulfillmentText = $params->{'fulfillmentText'} || '';
     my $display_text = $params->{'displayText'};
 
-    if ($speech && $params->{lang} ne 'en') {
-        $speech = _translate_message($speech, $params->{lang});
+    if ($fulfillmentText && $params->{lang} ne 'en') {
+        $fulfillmentText = _translate_message($fulfillmentText, $params->{lang});
     }
 
     if ($display_text && $params->{lang} ne 'en') {
@@ -413,7 +413,7 @@ sub _process_request {
     }
 
     my $response = {
-        fulfillmentText => $display_text || $speech || '',
+        fulfillmentText => $display_text || $fulfillmentText || '',
         outputContexts  => $params->{'outputContexts'},
         source      => $SOURCE,
     };
