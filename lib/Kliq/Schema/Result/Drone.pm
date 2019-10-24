@@ -96,7 +96,7 @@ sub goto_mission {
 
   # staking value
 
-  $self->update_blockchain(
+  my $r = $self->update_blockchain(
     user_id     => $event->user_id,
     action_name => 'stake',
     data        => {
@@ -104,17 +104,17 @@ sub goto_mission {
       quantity => '300.0000 AIR'                  # US $5
     }
   );
-
+  warn 'STAKE: ' . $r->content;
   # craeting new mission
-  $self->update_blockchain(
+  $r = $self->update_blockchain(
     user_id     => $event->user_id,
     action_name => 'newmission',
     data =>
       {user => $event->user->aireos_user_id, mission_hash => $mission_hash}
   );
-
+  warn 'NEW-MISSION: ' . $r->content;
   # adding waypoint
-  $self->update_blockchain(
+  $r = $self->update_blockchain(
     user_id     => $event->user_id,
     action_name => 'addwp',
     data        => {
@@ -123,9 +123,10 @@ sub goto_mission {
       mission_id => 0
     }
   );
-
+  warn 'ADD-WP: ' . $r->content;
   my $eos_info = $mission->eos_info;
-
+  use Data::Dumper qw(Dumper);
+  warn Dumper($eos_info);
   $ua->post(
     'http://localhost:8888/mission',
     'Content-Type' => 'application/json',

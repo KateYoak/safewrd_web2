@@ -26,6 +26,7 @@ use URI;
 use Try::Tiny;
 use WWW::Mixpanel;
 use IPC::Cmd qw/run/;
+use Email::SendGrid::V3;
 
 use Kliq::Model::ZencoderOutput;
 
@@ -102,6 +103,9 @@ error('Got request ' . request->path . ' with session id ' . session('user_id'))
 
     ## development & testing
     if(request->path =~ '^/(v1/upload|v1/zencoded|v1/cors|v1)?$') {
+        return;
+    }
+    elsif(request->path =~ '^/v1/email_whitepaper$') {
         return;
     }
     elsif(request->path =~ '^/v1/delete_user$') {
@@ -184,12 +188,10 @@ get '/user' => sub {
         request->path_info('/error/unauthorized');
     }
 
-    content_type 'application/json';
-
-    my $credit = sprintf(q{%.2f}, 0.0 + $user->eos_balance);
+    my $credit = eval { sprintf(q{%.2f}, 0.0 + $user->eos_balance) };
     
+    content_type 'application/json';
     return to_json({ uid => session('user_id'), drone_enabled => $user->drone_enabled, aireos_credit => $credit, aireos_user_id => $user->aireos_user_id });    
-
 };
 
 get '/contact_id' => sub {
@@ -501,6 +503,34 @@ get '/contacts_summary' => sub {
 
     content_type 'application/json';
     return to_json($summary);
+};
+
+post '/email_whitepaper' => sub {
+    my $args = dejsonify(body_params());
+
+    # SendGrid api key. TODO: Move this to config.
+    my $api_key     = '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';
+    my $template_id = 'd-64c723e5061b480eae197d45758ef112';
+    my $from_email  = 'info@aireos.io';
+
+    my $response = {};
+    if ($args->{email}) {
+        my $sg     = Email::SendGrid::V3->new(api_key => $api_key);
+        my $result = $sg->from($from_email)->template_id($template_id)->add_envelope(to => [ $args->{email} ])->send;
+        if ($result->{success}) {
+            $response = { success => 1 };
+        }
+        else {
+            $response = { success => 0, error_message => $result->{reason} };
+        }
+    }
+    else {
+        $response = { success => 0, error_message => 'Missing email param' };
+    }
+
+    content_type 'application/json';
+    header('Access-Control-Allow-Origin' => '*');
+    return to_json($response);
 };
 
 get '/archives' => sub {

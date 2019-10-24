@@ -69,7 +69,7 @@ sub send_drone {
 
 sub update_location {
   my ($self) = @_;
-  my $missions = $self->missions->search_rs(undef,
+  my $missions = $self->missions->search_rs({ created => { '>' => \q{(NOW() - INTERVAL 3 MINUTE)}}},
     {rows => 1, order_by => {-desc => 'created'}});
   
   if (my $mission = $missions->next) {

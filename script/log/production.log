@@ -1,0 +1,328 @@
+[2019-02-06 05:31:43.17952] [27488] [info] Listening at "http://*:4004"
+[2019-02-06 05:31:43.17999] [27488] [info] Manager 27488 started
+[2019-02-06 05:31:43.18287] [27489] [info] Worker 27489 started
+[2019-02-06 05:31:43.18451] [27490] [info] Worker 27490 started
+[2019-02-06 05:31:43.18545] [27488] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 05:31:43.18622] [27492] [info] Worker 27492 started
+[2019-02-06 05:31:43.18715] [27491] [info] Worker 27491 started
+[2019-02-06 05:31:47.50186] [27488] [warn] Stopping worker 27491 immediately
+[2019-02-06 05:31:47.50202] [27488] [warn] Stopping worker 27492 immediately
+[2019-02-06 05:31:47.50206] [27488] [warn] Stopping worker 27489 immediately
+[2019-02-06 05:31:47.50210] [27488] [warn] Stopping worker 27490 immediately
+[2019-02-06 05:31:47.50265] [27488] [info] Worker 27490 stopped
+[2019-02-06 05:31:47.50272] [27488] [warn] Stopping worker 27491 immediately
+[2019-02-06 05:31:47.50276] [27488] [warn] Stopping worker 27492 immediately
+[2019-02-06 05:31:47.50279] [27488] [warn] Stopping worker 27489 immediately
+[2019-02-06 05:31:47.50387] [27488] [info] Worker 27491 stopped
+[2019-02-06 05:31:47.50394] [27488] [warn] Stopping worker 27492 immediately
+[2019-02-06 05:31:47.50398] [27488] [warn] Stopping worker 27489 immediately
+[2019-02-06 05:31:47.50448] [27488] [info] Worker 27489 stopped
+[2019-02-06 05:31:47.50456] [27488] [warn] Stopping worker 27492 immediately
+[2019-02-06 05:31:47.50481] [27488] [info] Worker 27492 stopped
+[2019-02-06 05:31:47.50489] [27488] [info] Manager 27488 stopped
+[2019-02-06 05:41:06.75977] [27569] [info] Listening at "http://*:4004"
+[2019-02-06 05:41:06.76025] [27569] [info] Manager 27569 started
+[2019-02-06 05:41:06.76444] [27571] [info] Worker 27571 started
+[2019-02-06 05:41:06.76526] [27570] [info] Worker 27570 started
+[2019-02-06 05:41:06.76573] [27569] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 05:41:06.76697] [27572] [info] Worker 27572 started
+[2019-02-06 05:41:06.76715] [27573] [info] Worker 27573 started
+[2019-02-06 05:41:56.30541] [27569] [info] Worker 27570 stopped
+[2019-02-06 05:41:56.30555] [27569] [info] Worker 27571 stopped
+[2019-02-06 05:41:56.30570] [27569] [info] Worker 27572 stopped
+[2019-02-06 05:41:56.30577] [27569] [info] Worker 27573 stopped
+[2019-02-06 05:41:56.30585] [27569] [info] Manager 27569 stopped
+[2019-02-06 05:42:12.76624] [27582] [info] Listening at "http://*:4004"
+[2019-02-06 05:42:12.76681] [27582] [info] Manager 27582 started
+[2019-02-06 05:42:12.76962] [27583] [info] Worker 27583 started
+[2019-02-06 05:42:12.77124] [27584] [info] Worker 27584 started
+[2019-02-06 05:42:12.77224] [27582] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 05:42:12.77296] [27586] [info] Worker 27586 started
+[2019-02-06 05:42:12.77391] [27585] [info] Worker 27585 started
+[2019-02-06 05:43:15.23124] [27582] [info] Worker 27583 stopped
+[2019-02-06 05:43:15.23140] [27582] [info] Worker 27585 stopped
+[2019-02-06 05:43:15.23148] [27582] [info] Worker 27586 stopped
+[2019-02-06 05:43:15.23157] [27582] [warn] Stopping worker 27584 immediately
+[2019-02-06 05:43:15.23438] [27582] [info] Worker 27584 stopped
+[2019-02-06 05:43:15.23449] [27582] [info] Manager 27582 stopped
+[2019-02-06 05:43:34.18463] [27592] [info] Listening at "http://*:4004"
+[2019-02-06 05:43:34.18520] [27592] [info] Manager 27592 started
+[2019-02-06 05:43:34.18899] [27594] [info] Worker 27594 started
+[2019-02-06 05:43:34.18970] [27593] [info] Worker 27593 started
+[2019-02-06 05:43:34.19063] [27592] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 05:43:34.19130] [27595] [info] Worker 27595 started
+[2019-02-06 05:43:34.19218] [27596] [info] Worker 27596 started
+[2019-02-06 05:46:20.71627] [27592] [info] Worker 27593 stopped
+[2019-02-06 05:46:20.71647] [27592] [info] Worker 27594 stopped
+[2019-02-06 05:46:20.71663] [27592] [info] Worker 27595 stopped
+[2019-02-06 05:46:20.71675] [27592] [warn] Stopping worker 27596 immediately
+[2019-02-06 05:46:20.71729] [27592] [info] Worker 27596 stopped
+[2019-02-06 05:46:20.71739] [27592] [info] Manager 27592 stopped
+[2019-02-06 09:27:59.26058] [28396] [info] Listening at "http://*:4004"
+[2019-02-06 09:27:59.26117] [28396] [info] Manager 28396 started
+[2019-02-06 09:27:59.26515] [28398] [info] Worker 28398 started
+[2019-02-06 09:27:59.26599] [28397] [info] Worker 28397 started
+[2019-02-06 09:27:59.26674] [28396] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 09:27:59.26763] [28399] [info] Worker 28399 started
+[2019-02-06 09:27:59.26832] [28400] [info] Worker 28400 started
+[2019-02-06 09:28:14.38064] [28397] [error] DBIx::Class::Storage::DBI::catch {...} (): DBI Connection failed: DBI connect('database=kliq21;user=root;password=c6h12o6','',...) failed: Access denied for user 'root'@'localhost' (using password: YES) at /home/ubuntu/perl5/perlbrew/perls/perl-5.16.0/lib/site_perl/5.16.0/DBIx/Class/Storage/DBI.pm line 1489. at /home/ubuntu/tranzmt-api/script/drone.pl line 35
+
+[2019-02-06 09:28:17.73717] [28400] [error] DBIx::Class::Storage::DBI::catch {...} (): DBI Connection failed: DBI connect('database=kliq21;user=root;password=c6h12o6','',...) failed: Access denied for user 'root'@'localhost' (using password: YES) at /home/ubuntu/perl5/perlbrew/perls/perl-5.16.0/lib/site_perl/5.16.0/DBIx/Class/Storage/DBI.pm line 1489. at /home/ubuntu/tranzmt-api/script/drone.pl line 35
+
+[2019-02-06 09:28:39.76600] [28396] [info] Worker 28398 stopped
+[2019-02-06 09:28:39.76617] [28396] [info] Worker 28399 stopped
+[2019-02-06 09:28:39.76625] [28396] [warn] Stopping worker 28397 immediately
+[2019-02-06 09:28:39.76630] [28396] [warn] Stopping worker 28400 immediately
+[2019-02-06 09:28:39.76949] [28396] [info] Worker 28397 stopped
+[2019-02-06 09:28:39.76960] [28396] [info] Worker 28400 stopped
+[2019-02-06 09:28:39.76968] [28396] [info] Manager 28396 stopped
+[2019-02-06 09:28:45.14985] [28404] [info] Listening at "http://*:4004"
+[2019-02-06 09:28:45.15039] [28404] [info] Manager 28404 started
+[2019-02-06 09:28:45.15411] [28406] [info] Worker 28406 started
+[2019-02-06 09:28:45.15479] [28405] [info] Worker 28405 started
+[2019-02-06 09:28:45.15577] [28404] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 09:28:45.15639] [28408] [info] Worker 28408 started
+[2019-02-06 09:28:45.15780] [28407] [info] Worker 28407 started
+[2019-02-06 09:59:57.90128] [28404] [warn] Stopping worker 28405 immediately
+[2019-02-06 09:59:57.90143] [28404] [warn] Stopping worker 28408 immediately
+[2019-02-06 09:59:57.90148] [28404] [warn] Stopping worker 28407 immediately
+[2019-02-06 09:59:57.90152] [28404] [warn] Stopping worker 28406 immediately
+[2019-02-06 09:59:57.90361] [28404] [info] Worker 28408 stopped
+[2019-02-06 09:59:57.90373] [28404] [warn] Stopping worker 28405 immediately
+[2019-02-06 09:59:57.90378] [28404] [warn] Stopping worker 28407 immediately
+[2019-02-06 09:59:57.90382] [28404] [warn] Stopping worker 28406 immediately
+[2019-02-06 09:59:57.90593] [28404] [info] Worker 28405 stopped
+[2019-02-06 09:59:57.90601] [28404] [warn] Stopping worker 28407 immediately
+[2019-02-06 09:59:57.90605] [28404] [warn] Stopping worker 28406 immediately
+[2019-02-06 09:59:57.90773] [28404] [info] Worker 28406 stopped
+[2019-02-06 09:59:57.90786] [28404] [warn] Stopping worker 28407 immediately
+[2019-02-06 09:59:57.90851] [28404] [info] Worker 28407 stopped
+[2019-02-06 09:59:57.90860] [28404] [info] Manager 28404 stopped
+[2019-02-06 10:00:20.39460] [28465] [info] Listening at "http://*:4004"
+[2019-02-06 10:00:20.39512] [28465] [info] Manager 28465 started
+[2019-02-06 10:00:20.39793] [28466] [info] Worker 28466 started
+[2019-02-06 10:00:20.39959] [28467] [info] Worker 28467 started
+[2019-02-06 10:00:20.40108] [28465] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 10:00:20.40130] [28468] [info] Worker 28468 started
+[2019-02-06 10:00:20.40272] [28469] [info] Worker 28469 started
+[2019-02-06 10:22:24.03224] [28465] [info] Worker 28466 stopped
+[2019-02-06 10:22:24.03241] [28465] [info] Worker 28469 stopped
+[2019-02-06 10:22:24.03249] [28465] [warn] Stopping worker 28467 immediately
+[2019-02-06 10:22:24.03254] [28465] [warn] Stopping worker 28468 immediately
+[2019-02-06 10:22:24.03509] [28465] [info] Worker 28467 stopped
+[2019-02-06 10:22:24.03523] [28465] [info] Worker 28468 stopped
+[2019-02-06 10:22:24.03534] [28465] [info] Manager 28465 stopped
+[2019-02-06 10:22:32.34269] [28514] [info] Listening at "http://*:4004"
+[2019-02-06 10:22:32.34592] [28515] [info] Manager 28515 started
+[2019-02-06 10:22:32.35060] [28517] [info] Worker 28517 started
+[2019-02-06 10:22:32.35123] [28515] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 10:22:32.35229] [28518] [info] Worker 28518 started
+[2019-02-06 10:22:32.35345] [28516] [info] Worker 28516 started
+[2019-02-06 10:22:32.35500] [28519] [info] Worker 28519 started
+[2019-02-06 11:24:51.72932] [28515] [info] Stopping worker 28516 gracefully (120 seconds)
+[2019-02-06 11:24:51.72973] [28515] [info] Stopping worker 28519 gracefully (120 seconds)
+[2019-02-06 11:24:51.73767] [28515] [info] Stopping worker 28517 gracefully (120 seconds)
+[2019-02-06 11:24:51.74566] [28515] [info] Stopping worker 28518 gracefully (120 seconds)
+[2019-02-06 11:24:51.76625] [28515] [info] Worker 28519 stopped
+[2019-02-06 11:24:51.78526] [28515] [info] Worker 28517 stopped
+[2019-02-06 11:24:51.78873] [28515] [info] Worker 28518 stopped
+[2019-02-06 11:24:55.52950] [28515] [info] Starting zero downtime software upgrade (180 seconds)
+[2019-02-06 11:24:56.11178] [28906] [info] Listening at "http://*:4004"
+[2019-02-06 11:24:56.11214] [28906] [info] Manager 28906 started
+[2019-02-06 11:24:56.11527] [28907] [info] Worker 28907 started
+[2019-02-06 11:24:56.11708] [28908] [info] Worker 28908 started
+[2019-02-06 11:24:56.11872] [28909] [info] Worker 28909 started
+[2019-02-06 11:24:56.11954] [28910] [info] Worker 28910 started
+[2019-02-06 11:24:56.12007] [28906] [info] Upgrade successful, stopping 28515
+[2019-02-06 11:24:56.12065] [28515] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 11:25:01.59664] [28906] [info] Stopping worker 28908 gracefully (120 seconds)
+[2019-02-06 11:25:01.59677] [28906] [info] Stopping worker 28910 gracefully (120 seconds)
+[2019-02-06 11:25:01.59684] [28906] [info] Stopping worker 28907 gracefully (120 seconds)
+[2019-02-06 11:25:01.59689] [28906] [info] Stopping worker 28909 gracefully (120 seconds)
+[2019-02-06 11:25:01.65548] [28906] [info] Worker 28910 stopped
+[2019-02-06 11:25:01.65932] [28906] [info] Worker 28909 stopped
+[2019-02-06 11:25:01.66409] [28906] [info] Worker 28907 stopped
+[2019-02-06 11:25:01.66802] [28906] [info] Worker 28908 stopped
+[2019-02-06 11:25:01.66812] [28906] [info] Manager 28906 stopped
+[2019-02-06 11:25:01.68336] [28515] [error] Zero downtime software upgrade failed
+[2019-02-06 11:25:14.99083] [28515] [info] Worker 28516 stopped
+[2019-02-06 11:25:14.99101] [28515] [info] Manager 28515 stopped
+[2019-02-06 11:25:25.02605] [28915] [info] Listening at "http://*:4004"
+[2019-02-06 11:25:25.02659] [28915] [info] Manager 28915 started
+[2019-02-06 11:25:25.02994] [28916] [info] Worker 28916 started
+[2019-02-06 11:25:25.03239] [28917] [info] Worker 28917 started
+[2019-02-06 11:25:25.03481] [28915] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 11:25:25.03480] [28918] [info] Worker 28918 started
+[2019-02-06 11:25:25.03650] [28919] [info] Worker 28919 started
+[2019-02-06 11:26:46.48924] [28915] [info] Worker 28919 stopped
+[2019-02-06 11:26:46.48943] [28915] [warn] Stopping worker 28916 immediately
+[2019-02-06 11:26:46.48950] [28915] [warn] Stopping worker 28917 immediately
+[2019-02-06 11:26:46.48955] [28915] [warn] Stopping worker 28918 immediately
+[2019-02-06 11:26:46.49119] [28915] [info] Worker 28917 stopped
+[2019-02-06 11:26:46.49130] [28915] [info] Worker 28918 stopped
+[2019-02-06 11:26:46.49136] [28915] [warn] Stopping worker 28916 immediately
+[2019-02-06 11:26:46.49295] [28915] [info] Worker 28916 stopped
+[2019-02-06 11:26:46.49307] [28915] [info] Manager 28915 stopped
+[2019-02-06 11:26:59.85884] [28928] [info] Listening at "http://*:4004"
+[2019-02-06 11:26:59.85943] [28928] [info] Manager 28928 started
+[2019-02-06 11:26:59.86243] [28929] [info] Worker 28929 started
+[2019-02-06 11:26:59.86425] [28930] [info] Worker 28930 started
+[2019-02-06 11:26:59.86531] [28928] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 11:26:59.86600] [28931] [info] Worker 28931 started
+[2019-02-06 11:26:59.86691] [28932] [info] Worker 28932 started
+[2019-02-06 11:33:04.62549] [28928] [info] Worker 28929 stopped
+[2019-02-06 11:33:04.62567] [28928] [info] Worker 28931 stopped
+[2019-02-06 11:33:04.62576] [28928] [warn] Stopping worker 28932 immediately
+[2019-02-06 11:33:04.62581] [28928] [warn] Stopping worker 28930 immediately
+[2019-02-06 11:33:04.62588] [28928] [info] Worker 28930 stopped
+[2019-02-06 11:33:04.62594] [28928] [info] Worker 28932 stopped
+[2019-02-06 11:33:04.62599] [28928] [info] Manager 28928 stopped
+[2019-02-06 11:33:24.77784] [28952] [info] Listening at "http://*:4004"
+[2019-02-06 11:33:24.77846] [28952] [info] Manager 28952 started
+[2019-02-06 11:33:24.78309] [28954] [info] Worker 28954 started
+[2019-02-06 11:33:24.78401] [28953] [info] Worker 28953 started
+[2019-02-06 11:33:24.78467] [28952] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 11:33:24.78591] [28956] [info] Worker 28956 started
+[2019-02-06 11:33:24.78623] [28955] [info] Worker 28955 started
+[2019-02-06 11:35:32.84415] [28952] [info] Worker 28953 stopped
+[2019-02-06 11:35:32.84433] [28952] [info] Worker 28955 stopped
+[2019-02-06 11:35:32.84439] [28952] [info] Worker 28956 stopped
+[2019-02-06 11:35:32.84447] [28952] [warn] Stopping worker 28954 immediately
+[2019-02-06 11:35:32.84527] [28952] [info] Worker 28954 stopped
+[2019-02-06 11:35:32.84535] [28952] [info] Manager 28952 stopped
+[2019-02-06 11:35:37.08351] [28961] [info] Listening at "http://*:4004"
+[2019-02-06 11:35:37.08749] [28962] [info] Manager 28962 started
+[2019-02-06 11:35:37.09148] [28963] [info] Worker 28963 started
+[2019-02-06 11:35:37.09907] [28964] [info] Worker 28964 started
+[2019-02-06 11:35:37.10021] [28962] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 11:35:37.10329] [28965] [info] Worker 28965 started
+[2019-02-06 11:35:37.10506] [28966] [info] Worker 28966 started
+[2019-02-06 15:21:46.32608] [28962] [info] Starting zero downtime software upgrade (180 seconds)
+[2019-02-06 15:21:46.88024] [29298] [info] Listening at "http://*:4004"
+[2019-02-06 15:21:46.88059] [29298] [info] Manager 29298 started
+[2019-02-06 15:21:46.88346] [29299] [info] Worker 29299 started
+[2019-02-06 15:21:46.88521] [29300] [info] Worker 29300 started
+[2019-02-06 15:21:46.88683] [29301] [info] Worker 29301 started
+[2019-02-06 15:21:46.88741] [29302] [info] Worker 29302 started
+[2019-02-06 15:21:46.88800] [29298] [info] Upgrade successful, stopping 28962
+[2019-02-06 15:21:46.88864] [28962] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-06 15:21:46.88880] [28962] [info] Stopping worker 28964 gracefully (120 seconds)
+[2019-02-06 15:21:46.88888] [28962] [info] Stopping worker 28965 gracefully (120 seconds)
+[2019-02-06 15:21:46.88893] [28962] [info] Stopping worker 28966 gracefully (120 seconds)
+[2019-02-06 15:21:46.88897] [28962] [info] Stopping worker 28963 gracefully (120 seconds)
+[2019-02-06 15:21:46.92127] [28962] [info] Worker 28965 stopped
+[2019-02-06 15:21:46.93692] [28962] [info] Worker 28964 stopped
+[2019-02-06 15:21:46.94315] [28962] [info] Worker 28966 stopped
+[2019-02-06 15:21:46.94858] [28962] [info] Worker 28963 stopped
+[2019-02-06 15:21:46.94875] [28962] [info] Manager 28962 stopped
+[2019-02-12 10:31:57.72748] [29300] [error] Redis server has gone away
+[2019-02-12 10:36:14.84437] [29299] [error] Redis server has gone away
+[2019-02-12 10:36:36.72269] [29300] [error] Redis server has gone away
+[2019-02-12 10:41:31.32221] [29299] [error] Redis server has gone away
+[2019-02-12 11:38:05.84051] [29300] [error] Redis server has gone away
+[2019-02-12 11:42:09.08427] [29299] [error] Redis server has gone away
+[2019-02-12 11:44:45.54725] [29300] [error] Redis server has gone away
+[2019-02-12 11:44:46.85871] [29298] [info] Stopping worker 29302 gracefully (120 seconds)
+[2019-02-12 11:44:46.86569] [29298] [info] Stopping worker 29300 gracefully (120 seconds)
+[2019-02-12 11:44:46.86586] [29298] [info] Stopping worker 29301 gracefully (120 seconds)
+[2019-02-12 11:44:46.87387] [29298] [info] Stopping worker 29299 gracefully (120 seconds)
+[2019-02-12 11:44:46.92488] [29298] [info] Worker 29300 stopped
+[2019-02-12 11:44:46.92506] [29298] [info] Worker 29302 stopped
+[2019-02-12 11:44:46.92513] [29298] [info] Worker 29301 stopped
+[2019-02-12 11:44:46.92606] [29298] [info] Worker 29299 stopped
+[2019-02-12 11:44:46.92618] [29298] [info] Manager 29298 stopped
+[2019-02-12 11:45:10.35795] [23856] [info] Listening at "http://*:4004"
+[2019-02-12 11:45:10.36148] [23857] [info] Manager 23857 started
+[2019-02-12 11:45:10.36403] [23858] [info] Worker 23858 started
+[2019-02-12 11:45:10.36807] [23860] [info] Worker 23860 started
+[2019-02-12 11:45:10.36976] [23857] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-12 11:45:10.36955] [23859] [info] Worker 23859 started
+[2019-02-12 11:45:10.37167] [23861] [info] Worker 23861 started
+[2019-02-12 11:45:39.78013] [23857] [info] Stopping worker 23860 gracefully (120 seconds)
+[2019-02-12 11:45:39.78038] [23857] [info] Stopping worker 23859 gracefully (120 seconds)
+[2019-02-12 11:45:39.78043] [23857] [info] Stopping worker 23858 gracefully (120 seconds)
+[2019-02-12 11:45:39.78047] [23857] [info] Stopping worker 23861 gracefully (120 seconds)
+[2019-02-12 11:45:39.80944] [23857] [info] Worker 23859 stopped
+[2019-02-12 11:45:39.82097] [23857] [info] Worker 23860 stopped
+[2019-02-12 11:45:39.82109] [23857] [info] Worker 23861 stopped
+[2019-02-12 11:45:45.37200] [23857] [info] Starting zero downtime software upgrade (180 seconds)
+[2019-02-12 11:45:45.92266] [23867] [info] Listening at "http://*:4004"
+[2019-02-12 11:45:45.92298] [23867] [info] Manager 23867 started
+[2019-02-12 11:45:45.92560] [23868] [info] Worker 23868 started
+[2019-02-12 11:45:45.92708] [23869] [info] Worker 23869 started
+[2019-02-12 11:45:45.92852] [23871] [info] Worker 23871 started
+[2019-02-12 11:45:45.92918] [23870] [info] Worker 23870 started
+[2019-02-12 11:45:45.92981] [23867] [info] Upgrade successful, stopping 23857
+[2019-02-12 11:45:45.93028] [23857] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-12 11:45:50.47672] [23867] [info] Stopping worker 23870 gracefully (120 seconds)
+[2019-02-12 11:45:50.47699] [23867] [info] Stopping worker 23871 gracefully (120 seconds)
+[2019-02-12 11:45:50.47706] [23867] [info] Stopping worker 23869 gracefully (120 seconds)
+[2019-02-12 11:45:50.49367] [23867] [info] Stopping worker 23868 gracefully (120 seconds)
+[2019-02-12 11:45:50.50653] [23867] [info] Worker 23869 stopped
+[2019-02-12 11:45:50.52451] [23867] [info] Worker 23868 stopped
+[2019-02-12 11:45:50.54178] [23867] [info] Worker 23870 stopped
+[2019-02-12 11:45:50.54401] [23867] [info] Worker 23871 stopped
+[2019-02-12 11:45:50.54410] [23867] [info] Manager 23867 stopped
+[2019-02-12 11:45:50.55852] [23857] [error] Zero downtime software upgrade failed
+[2019-02-12 11:46:25.59378] [23857] [info] Worker 23858 stopped
+[2019-02-12 11:46:25.59397] [23857] [info] Manager 23857 stopped
+[2019-02-12 11:47:21.52153] [23901] [info] Listening at "http://*:4004"
+[2019-02-12 11:47:21.52213] [23901] [info] Manager 23901 started
+[2019-02-12 11:47:21.52608] [23903] [info] Worker 23903 started
+[2019-02-12 11:47:21.52675] [23902] [info] Worker 23902 started
+[2019-02-12 11:47:21.52818] [23901] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-12 11:47:21.52852] [23904] [info] Worker 23904 started
+[2019-02-12 11:47:21.52969] [23905] [info] Worker 23905 started
+[2019-02-12 12:22:03.24268] [23901] [info] Worker 23902 stopped
+[2019-02-12 12:22:03.24281] [23901] [info] Worker 23904 stopped
+[2019-02-12 12:22:03.24287] [23901] [info] Worker 23905 stopped
+[2019-02-12 12:22:03.24294] [23901] [warn] Stopping worker 23903 immediately
+[2019-02-12 12:22:03.24378] [23901] [info] Worker 23903 stopped
+[2019-02-12 12:22:03.24388] [23901] [info] Manager 23901 stopped
+[2019-02-12 12:22:21.60544] [24129] [info] Listening at "http://*:4004"
+[2019-02-12 12:22:21.60616] [24129] [info] Manager 24129 started
+[2019-02-12 12:22:21.60971] [24130] [info] Worker 24130 started
+[2019-02-12 12:22:21.61218] [24132] [info] Worker 24132 started
+[2019-02-12 12:22:21.61301] [24129] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-12 12:22:21.61313] [24131] [info] Worker 24131 started
+[2019-02-12 12:22:21.61468] [24133] [info] Worker 24133 started
+[2019-02-12 12:23:42.91087] [24129] [info] Worker 24130 stopped
+[2019-02-12 12:23:42.91101] [24129] [info] Worker 24131 stopped
+[2019-02-12 12:23:42.91110] [24129] [info] Worker 24133 stopped
+[2019-02-12 12:23:42.91119] [24129] [warn] Stopping worker 24132 immediately
+[2019-02-12 12:23:42.91184] [24129] [info] Worker 24132 stopped
+[2019-02-12 12:23:42.91191] [24129] [info] Manager 24129 stopped
+[2019-02-12 12:23:47.95808] [24141] [info] Listening at "http://*:4004"
+[2019-02-12 12:23:47.95924] [24141] [info] Manager 24141 started
+[2019-02-12 12:23:47.96280] [24142] [info] Worker 24142 started
+[2019-02-12 12:23:47.96431] [24143] [info] Worker 24143 started
+[2019-02-12 12:23:47.96564] [24141] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-12 12:23:47.96579] [24144] [info] Worker 24144 started
+[2019-02-12 12:23:47.96693] [24145] [info] Worker 24145 started
+[2019-02-12 12:24:06.02983] [24141] [warn] Stopping worker 24143 immediately
+[2019-02-12 12:24:06.03052] [24141] [info] Worker 24143 stopped
+[2019-02-12 12:24:06.03067] [24141] [warn] Stopping worker 24144 immediately
+[2019-02-12 12:24:06.03073] [24141] [warn] Stopping worker 24145 immediately
+[2019-02-12 12:24:06.03077] [24141] [warn] Stopping worker 24142 immediately
+[2019-02-12 12:24:06.03353] [24141] [info] Worker 24145 stopped
+[2019-02-12 12:24:06.03364] [24141] [warn] Stopping worker 24144 immediately
+[2019-02-12 12:24:06.03369] [24141] [warn] Stopping worker 24142 immediately
+[2019-02-12 12:24:06.03381] [24141] [info] Worker 24144 stopped
+[2019-02-12 12:24:06.03388] [24141] [warn] Stopping worker 24142 immediately
+[2019-02-12 12:24:06.03441] [24141] [info] Worker 24142 stopped
+[2019-02-12 12:24:06.03450] [24141] [info] Manager 24141 stopped
+[2019-02-12 12:24:11.96461] [24148] [info] Listening at "http://*:4004"
+[2019-02-12 12:24:11.96763] [24149] [info] Manager 24149 started
+[2019-02-12 12:24:11.97268] [24152] [info] Worker 24152 started
+[2019-02-12 12:24:11.97348] [24149] [info] Creating process id file "/home/ubuntu/tranzmt-api/script/hypnotoad.pid"
+[2019-02-12 12:24:11.97423] [24151] [info] Worker 24151 started
+[2019-02-12 12:24:11.97505] [24153] [info] Worker 24153 started
+[2019-02-12 12:24:11.97630] [24150] [info] Worker 24150 started
+[2019-05-07 21:18:30.38585] [24149] [info] Worker 24150 stopped
+[2019-05-07 21:18:30.38615] [24149] [info] Worker 24153 stopped
+[2019-05-07 21:18:30.38629] [24149] [warn] Stopping worker 24151 immediately
+[2019-05-07 21:18:30.38635] [24149] [warn] Stopping worker 24152 immediately
+[2019-05-07 21:18:30.38882] [24149] [info] Worker 24151 stopped
+[2019-05-07 21:18:30.38891] [24149] [warn] Stopping worker 24152 immediately
+[2019-05-07 21:18:30.39433] [24149] [info] Worker 24152 stopped
+[2019-05-07 21:18:30.39443] [24149] [info] Manager 24149 stopped
