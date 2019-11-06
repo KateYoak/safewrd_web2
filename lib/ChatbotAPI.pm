@@ -62,7 +62,7 @@ post '/webhook' => sub {
     if (!defined($persona)) {
         _debug( 'DEBUG: Creating a user for this persona' );
         eval {
-            my $message = $original_request->{payload}->{message}->{text};
+            my $message = $original_request->{payload}->{'data'}->{message}->{text};
             $message = $original_request->{payload}->{inputs}->[0]->{arguments}->[0]->{text_value} if $service eq 'google';
 
             my $lang = _detect_lang($message);
@@ -460,9 +460,9 @@ sub _resolve_handle {
     my $params = shift;
 
     _debug('**** in _resolve_handle(). source - ' . $params->{source});
-    _debug('**** sender - ' . $params->{'payload'}->{'sender'}->{'id'});
+    _debug('**** sender - ' . $params->{'payload'}->{'data'}->{'sender'}->{'id'});
     if ( $params->{'source'} eq 'facebook' ) {
-        return fb_surrogate_id_from_picture($params->{'payload'}->{'sender'}->{'id'}) || $params->{'payload'}->{'sender'}->{'id'};
+        return fb_surrogate_id_from_picture($params->{'payload'}->{'data'}->{'sender'}->{'id'}) || $params->{'payload'}->{'data'}->{'sender'}->{'id'};
     }
     elsif ( $params->{'source'} eq 'twitter' ) {
         return $params->{'payload'}->{'direct_message'}->{'sender_id_str'};
