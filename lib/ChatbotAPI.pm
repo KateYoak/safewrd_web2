@@ -37,14 +37,14 @@ post '/webhook' => sub {
     my $req = from_json($body);
     _debug( 'API.ai JSON Request: ' . to_json( $req, { pretty => 1 }) );
 
-    my $result           = $req->{'result'};
-    my $id               = $req->{'id'}; 
-    my $api_session_id   = $req->{'sessionId'}; 
+    my $result           = $req->{'queryResult'};
+    my $id               = $req->{'responseId'}; 
+    my $api_session      = $req->{'session'}; 
     my $timestamp        = $req->{'timestamp'};
     my $status           = $req->{'status'};
-    my $original_request = $req->{'originalRequest'}; # data from client UI
+    my $original_request = $req->{'originalDetectIntentRequest'}; # data from client UI
     my $service          = $original_request->{'source'} || 'manual';
-    #my $handle           = ($service eq 'manual') ? join( '-', 'dev-api-ai', $api_session_id ) : _resolve_handle( $original_request );
+    #my $handle           = ($service eq 'manual') ? join( '-', 'dev-api-ai', $api_session ) : _resolve_handle( $original_request );
     my $handle           = _resolve_handle( $original_request );
 
     # capture user data
@@ -62,8 +62,8 @@ post '/webhook' => sub {
     if (!defined($persona)) {
         _debug( 'DEBUG: Creating a user for this persona' );
         eval {
-            my $message = $original_request->{data}->{message}->{text};
-            $message = $original_request->{data}->{inputs}->[0]->{arguments}->[0]->{text_value} if $service eq 'google';
+            my $message = $original_request->{payload}->{message}->{text};
+            $message = $original_request->{payload}->{inputs}->[0]->{arguments}->[0]->{text_value} if $service eq 'google';
 
             my $lang = _detect_lang($message);
             _debug( 'User lang detected: ' . $lang );
@@ -132,26 +132,26 @@ post '/webhook' => sub {
             my $next_friend_count = int(scalar(@friends)) + 1;
             if ( $next_friend_count > $MAX_SAFETYGROUP ) {
                 push @contexts, { 
-                    name => 'yes-add-friend',
-                    lifespan => 1,
+                    name => "$api_session/contexts/" . 'yes-add-friend',
+                    lifespanCount => 1,
                 }; 
                 push @contexts, {
-                    name => 'no-create-safetygroup',
-                    lifespan => 1,
+                    name => "$api_session/contexts/" . 'no-create-safetygroup',
+                    lifespanCount => 1,
                 };
             }
             else {
                 push @contexts, { 
-                    name => join( "-", $context_prefix, $next_friend_count ),
-                    lifespan => 1,
+                    name => "$api_session/contexts/" . join( "-", $context_prefix, $next_friend_count ),
+                    lifespanCount => 1,
                 }; 
             }
 
             # flow of control using contexts
-            my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+            my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
             my $request_params = {
-                speech   => $fulfillment->{'speech'},
-                contextOut  => \@contexts,
+                fulfillmentText   => $fulfillment_txt,
+                outputContexts  => \@contexts,
                 lang        => $user->lang
             };
             return _process_request( $request_params );
@@ -180,13 +180,13 @@ post '/webhook' => sub {
                     contact_id => $f->id,
                 });
             }
-            my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+            my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
             my $request_params = {
-                speech   => $fulfillment->{'speech'},
-                contextOut  => [ 
+                fulfillmentText   => $fulfillment_txt,
+                outputContexts  => [ 
                     {
-                        name     => 'create-safeword',
-                        lifespan => 1,
+                        name     => "$api_session/contexts/" . 'create-safeword',
+                        lifespanCount => 1,
                     }
                 ],
                 lang        => $user->lang
@@ -204,35 +204,35 @@ post '/webhook' => sub {
                 safeword => $safeword,
             });
             _debug("Kliq Group ID: " . $kliq_group->id);
-            my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+            my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
             # interpolate friend count
-            if ($fulfillment->{'speech'} =~ /{{friend-count}}/i) {
+            if ($fulfillment_txt =~ /{{friend-count}}/i) {
                 my @kliq_members = schema->resultset('KliqContact')->search({
                     kliq_id => $kliq_group->id,
                 })->all();
                 _debug("Kliq Group Count: " . Dumper(scalar( @kliq_members )));
                 my $friend_count = scalar( @kliq_members );
-                $fulfillment->{'speech'} =~ s/{{friend-count}}/$friend_count/g;
+                $fulfillment_txt =~ s/{{friend-count}}/$friend_count/g;
             }
             else {
-                $fulfillment->{'speech'} =~ s/{{friend-count}}//g;
+                $fulfillment_txt =~ s/{{friend-count}}//g;
             }
 
             # interpolate url 
-            if ($fulfillment->{'speech'} =~ /{{tranzmt-url}}/i) {
+            if ($fulfillment_txt =~ /{{tranzmt-url}}/i) {
                 # generate url
                 my $url = _resolve_url( {
                     owner_id => $user->id, 
                     kliq_id  => $kliq_group->id,
                 } ); 
-                $fulfillment->{'speech'} =~ s/{{tranzmt-url}}/$url/g;
+                $fulfillment_txt =~ s/{{tranzmt-url}}/$url/g;
             }
             else {
-                $fulfillment->{'speech'} =~ s/{{tranzmt-url}}//g;
+                $fulfillment_txt =~ s/{{tranzmt-url}}//g;
             }
 
             # interpolate url 
-            if ($fulfillment->{'speech'} =~ /{{pin}}/i) {
+            if ($fulfillment_txt =~ /{{pin}}/i) {
                 # generate pin
                 my $pin = int(rand(100));
                 $pin = '0' . $pin if $pin < 10;
@@ -241,18 +241,18 @@ post '/webhook' => sub {
                     verification_pin => $pin,
                 });
 
-                $fulfillment->{'speech'} =~ s/{{pin}}/$pin/g;
+                $fulfillment_txt =~ s/{{pin}}/$pin/g;
             }
             else {
-                $fulfillment->{'speech'} =~ s/{{pin}}//g;
+                $fulfillment_txt =~ s/{{pin}}//g;
             }
 
             my $request_params = {
-                speech   => $fulfillment->{'speech'},
-                # contextOut  => [ 
+                fulfillmentText   => $fulfillment_txt,
+                # outputContexts  => [ 
                 #     {
-                #         name     => 'create-safeword',
-                #         lifespan => 1,
+                #         name     => "$api_session/contexts/" . 'create-safeword',
+                #         lifespanCount => 1,
                 #     }
                 # ],
                 lang => $user->lang
@@ -262,10 +262,10 @@ post '/webhook' => sub {
     }
     elsif ( $result->{'action'} eq 'input.welcome' ) {
         # flow of control using contexts
-        my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+        my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
         my $request_params = {
-            speech   => $fulfillment->{'speech'},
-            contextOut  => [],
+            fulfillmentText   => $fulfillment_txt,
+            outputContexts  => [],
             lang => $user->lang,
         };
         return _process_request( $request_params );
@@ -299,12 +299,12 @@ post '/webhook' => sub {
             if (!defined($kliq_group)) {
                 $message = "Looks like you already have the minimum number of friends on your group, do you want to add anybody else to your group?";
                 push @contexts, { 
-                    name => 'yes-add-friend',
-                    lifespan => 1,
+                    name => "$api_session/contexts/" . 'yes-add-friend',
+                    lifespanCount => 1,
                 }; 
                 push @contexts, {
-                    name => 'no-create-safetygroup',
-                    lifespan => 1,
+                    name => "$api_session/contexts/" . 'no-create-safetygroup',
+                    lifespanCount => 1,
                 };
             }
             else {
@@ -312,19 +312,19 @@ post '/webhook' => sub {
                 # safetygroup?  
                 if (!defined($kliq_group->safeword)) {
                     push @contexts, {
-                        name     => 'create-safeword',
-                        lifespan => 1,
+                        name     => "$api_session/contexts/" . 'create-safeword',
+                        lifespanCount => 1,
                     };
                 }
                 elsif (!defined($kliq_group->name)) {
                     $message = "Do you want to add anybody else to your group?";
                     push @contexts, { 
-                        name => 'yes-add-friend',
-                        lifespan => 1,
+                        name => "$api_session/contexts/" . 'yes-add-friend',
+                        lifespanCount => 1,
                     }; 
                     push @contexts, {
-                        name => 'no-create-safetygroup',
-                        lifespan => 1,
+                        name => "$api_session/contexts/" . 'no-create-safetygroup',
+                        lifespanCount => 1,
                     };
                 }
                 else {
@@ -352,35 +352,35 @@ post '/webhook' => sub {
             if ($friend_count > 1 && $friend_count < $MAX_SAFETYGROUP) {
                 $message = "Looks like you've already added some friends. What's the name of your " . $ORDINAL_MAP->{$next_friend_count} . " friend?";
                 push @contexts, { 
-                    name => join( "-", $context_prefix, $next_friend_count ),
-                    lifespan => 1,
+                    name => "$api_session/contexts/" . join( "-", $context_prefix, $next_friend_count ),
+                    lifespanCount => 1,
                 }; 
             }
             elsif ($friend_count < 1) {
                 $message = "What's the name of the first friend you want to add to your group? (eg. Mike Brown, or Mike)";
                 push @contexts, { 
-                    name => join( "-", $context_prefix, $next_friend_count ),
-                    lifespan => 1,
+                    name => "$api_session/contexts/" . join( "-", $context_prefix, $next_friend_count ),
+                    lifespanCount => 1,
                 }; 
             }
             else {
                 $message = "Looks like you already have the minimum number of friends, do you want to add anybody else to your group?";
                 push @contexts, { 
-                    name => 'yes-add-friend',
-                    lifespan => 1,
+                    name => "$api_session/contexts/" . 'yes-add-friend',
+                    lifespanCount => 1,
                 }; 
                 push @contexts, {
-                    name => 'no-create-safetygroup',
-                    lifespan => 1,
+                    name => "$api_session/contexts/" . 'no-create-safetygroup',
+                    lifespanCount => 1,
                 };
             }
         }
 
         # flow of control using contexts
-        my $fulfillment = shift @{$result->{'fulfillment'}->{'messages'}};
+        my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
         my $request_params = {
-            speech   => ($is_complete) ? $message : $fulfillment->{'speech'} . " " . $message,
-            contextOut  => \@contexts,
+            fulfillmentText   => ($is_complete) ? $message : $fulfillment_txt . " " . $message,
+            outputContexts  => \@contexts,
             lang => $user->lang,
         };
         return _process_request( $request_params );
@@ -401,11 +401,11 @@ post '/webhook/echo' => sub {
 sub _process_request {
     my $params = shift;
 
-    my $speech = $params->{'speech'} || '';
+    my $fulfillmentText = $params->{'fulfillmentText'} || '';
     my $display_text = $params->{'displayText'};
 
-    if ($speech && $params->{lang} ne 'en') {
-        $speech = _translate_message($speech, $params->{lang});
+    if ($fulfillmentText && $params->{lang} ne 'en') {
+        $fulfillmentText = _translate_message($fulfillmentText, $params->{lang});
     }
 
     if ($display_text && $params->{lang} ne 'en') {
@@ -413,9 +413,8 @@ sub _process_request {
     }
 
     my $response = {
-        speech      => $speech || '',  
-        displayText => $display_text || $speech || '',
-        contextOut  => $params->{'contextOut'},
+        fulfillmentText => $display_text || $fulfillmentText || '',
+        outputContexts  => $params->{'outputContexts'},
         source      => $SOURCE,
     };
 
@@ -461,15 +460,15 @@ sub _resolve_handle {
     my $params = shift;
 
     _debug('**** in _resolve_handle(). source - ' . $params->{source});
-    _debug('**** sender - ' . $params->{'data'}->{'sender'}->{'id'});
+    _debug('**** sender - ' . $params->{'payload'}->{'sender'}->{'id'});
     if ( $params->{'source'} eq 'facebook' ) {
-        return fb_surrogate_id_from_picture($params->{'data'}->{'sender'}->{'id'}) || $params->{'data'}->{'sender'}->{'id'};
+        return fb_surrogate_id_from_picture($params->{'payload'}->{'sender'}->{'id'}) || $params->{'payload'}->{'sender'}->{'id'};
     }
     elsif ( $params->{'source'} eq 'twitter' ) {
-        return $params->{'data'}->{'direct_message'}->{'sender_id_str'};
+        return $params->{'payload'}->{'direct_message'}->{'sender_id_str'};
     }
     elsif ( $params->{'source'} eq 'google' ) {
-        return $params->{'data'}->{'user'}->{'user_id'};
+        return $params->{'payload'}->{'user'}->{'user_id'};
     }
     else {
         var error => "Unable to resolve handle for " . $params->{'source'};

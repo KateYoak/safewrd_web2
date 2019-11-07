@@ -1,5 +1,10 @@
 #!/usr/bin/env perl
 
+# Start/Restart
+#   hypnotoad drone.pl
+#
+# Stop:
+#   hypnotoad -s drone.pl
 use Mojolicious::Lite;
 use signatures;
 use Mojo::JSON qw(decode_json encode_json);
@@ -196,25 +201,25 @@ __DATA__
     var geojson = {
       "type": "FeatureCollection",
       "features": [{
-  "type": "Feature",
-  "geometry": {
-    "type": "LineString",
-    "coordinates": [
-      [lng, lat]
-    ]
-  }
+	"type": "Feature",
+	"geometry": {
+	  "type": "LineString",
+	  "coordinates": [
+	    [lng, lat]
+	  ]
+	}
       }]
     };
 
     var point = {
       "type": "FeatureCollection",
       "features": [{
-  "type": "Feature",
-  "properties": {},
-  "geometry": {
-    "type": "Point",
-    "coordinates": [lng, lat]
-  }
+	"type": "Feature",
+	"properties": {},
+	"geometry": {
+	  "type": "Point",
+	  "coordinates": [lng, lat]
+	}
       }]
     };
 
@@ -222,18 +227,18 @@ __DATA__
     var prev_lng = lng;
     function fit(map, coordinates){
       var bounds = coordinates.reduce(function(bounds, coord) {
-  return bounds.extend(coord);
+	return bounds.extend(coord);
       }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 
       map.fitBounds(bounds, {
-  padding: 200
+	padding: 200
       });
     }
 
     function update_location(lat, lng){
       point.features[0].properties.bearing = turf.bearing(
-  turf.point([prev_lng, prev_lat]),
-  turf.point([lng, lat])
+	turf.point([prev_lng, prev_lat]),
+	turf.point([lng, lat])
       );
 
       // updates line
@@ -271,58 +276,58 @@ __DATA__
 
       // add the line which will be modified in the animation
       fetch("<%= url_for('mission_path', mission => $mission)->to_abs %>").then(function(res){
-  return res.json();
+	return res.json();
       }).then(function(json){
-  var path = json.filter((item) => item.hasOwnProperty('location')).map((item) => [item.location.lng, item.location.lat]);
-  if(path.length) {
-    geojson.features[0].geometry.coordinates = path.slice().reverse();
-  }
+	var path = json.filter((item) => item.hasOwnProperty('location')).map((item) => [item.location.lng, item.location.lat]);
+	if(path.length) {
+	  geojson.features[0].geometry.coordinates = path.slice().reverse();
+	}
       }).finally(function(){
-  map.addLayer({
-    "id": "drone",
-    "type": "symbol",
-    'source': {
-      'type': 'geojson',
-      'data': point
-    },
-    "layout": {
-      "icon-image": "rocket-15",
-      "icon-rotate": ["get", "bearing"],
-      "icon-rotation-alignment": "map",
-      "icon-allow-overlap": true,
-      "icon-ignore-placement": true
-    }
-  });
-  map.addLayer({
-    'id': 'line-animation',
-    'type': 'line',
-    'source': {
-      'type': 'geojson',
-      'data': geojson
-    },
-    'layout': {
-      'line-cap': 'round',
-      'line-join': 'round',
-    },
-    'paint': {
-      'line-color': '#ed6498',
-      'line-width': 5,
-      'line-opacity': .8
-    }
-  });
+	map.addLayer({
+	  "id": "drone",
+	  "type": "symbol",
+	  'source': {
+	    'type': 'geojson',
+	    'data': point
+	  },
+	  "layout": {
+	    "icon-image": "rocket-15",
+	    "icon-rotate": ["get", "bearing"],
+	    "icon-rotation-alignment": "map",
+	    "icon-allow-overlap": true,
+	    "icon-ignore-placement": true
+	  }
+	});
+	map.addLayer({
+	  'id': 'line-animation',
+	  'type': 'line',
+	  'source': {
+	    'type': 'geojson',
+	    'data': geojson
+	  },
+	  'layout': {
+	    'line-cap': 'round',
+	    'line-join': 'round',
+	  },
+	  'paint': {
+	    'line-color': '#ed6498',
+	    'line-width': 5,
+	    'line-opacity': .8
+	  }
+	});
 
-  //      geojson.features[0].geometry.coordinates.push([lng, lat ]);
-  map.getSource('line-animation').setData(geojson);
-  map.getSource('drone').setData(point);
-  fit(map,geojson.features[0].geometry.coordinates)
+	//      geojson.features[0].geometry.coordinates.push([lng, lat ]);
+	map.getSource('line-animation').setData(geojson);
+	map.getSource('drone').setData(point);
+	fit(map,geojson.features[0].geometry.coordinates)
       });
 
       /* setInterval(
-   function(){ return;
-   var x= prev_lng + (Math.random() - 0.5)/400;
-   var y = prev_lat + (Math.random() - 0.5)/400;
-   update_location(y, x);
-   },  Math.random() * 3 * 1000 + 2000
+	 function(){ return;
+	 var x= prev_lng + (Math.random() - 0.5)/400;
+	 var y = prev_lat + (Math.random() - 0.5)/400;
+	 update_location(y, x);
+	 },  Math.random() * 3 * 1000 + 2000
        * ); */
     });
   </script>
