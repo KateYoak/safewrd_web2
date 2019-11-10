@@ -470,6 +470,9 @@ sub _resolve_handle {
     elsif ( $params->{'source'} eq 'google' ) {
         return $params->{'payload'}->{'user'}->{'user_id'};
     }
+    elsif ( $params->{'source'} eq 'twilio' ) {
+        return $params->{'payload'}->{'data'}->{'From'};
+    }
     else {
         var error => "Unable to resolve handle for " . $params->{'source'};
         request->path_info('/error');
