@@ -378,6 +378,12 @@ post '/webhook' => sub {
 
         # flow of control using contexts
         my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
+
+        # twilio special case just for initial greeting
+        if ($service eq 'twilio' && $friend_count < 1) {
+            $fulfillment_txt = qq(With a "Safety group", your "safeword" and our App, your friends can receive a live video stream from you whenever you're in trouble and say your "safeword".\nSo, let's create your "Safety Group". You need a minimum of five friends or family members to create your group.);
+        }
+
         my $request_params = {
             fulfillmentText   => ($is_complete) ? $message : $fulfillment_txt . " " . $message,
             outputContexts  => \@contexts,
