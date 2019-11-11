@@ -2164,7 +2164,7 @@ sub make_recurly_request {
 
     #TODO: Move to config
     my $api_endpoint = 'https://safewrd.recurly.com/v2';
-    my $api_key      = 'ed783b56892d4bd2896e821041fec80e';
+    my $api_key      = 'aa889fb521ed4449a4d7ba8048ae1d3b';
     my $api_version  = '2.17';
 
     my $url = $api_endpoint . $path;
