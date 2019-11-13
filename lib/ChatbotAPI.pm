@@ -49,6 +49,7 @@ post '/webhook' => sub {
 
     # capture user data
     _debug( 'User Data: ' . to_json( $original_request, { pretty => 1 } ) );
+    _debug( 'Handle: ' . $handle );
 
     my $user;
     # check persona, get user id using persona
@@ -378,6 +379,12 @@ post '/webhook' => sub {
 
         # flow of control using contexts
         my $fulfillment_txt = $result->{fulfillmentMessages}[0]{text}{text}[0];
+
+        # twilio special case just for initial greeting
+        if ($service eq 'twilio' && $friend_count < 1) {
+            $fulfillment_txt = qq(With a "Safety group", your "safeword" and our App, your friends can receive a live video stream from you whenever you're in trouble and say your "safeword".\nSo, let's create your "Safety Group". You need a minimum of five friends or family members to create your group.);
+        }
+
         my $request_params = {
             fulfillmentText   => ($is_complete) ? $message : $fulfillment_txt . " " . $message,
             outputContexts  => \@contexts,
@@ -460,7 +467,6 @@ sub _resolve_handle {
     my $params = shift;
 
     _debug('**** in _resolve_handle(). source - ' . $params->{source});
-    _debug('**** sender - ' . $params->{'payload'}->{'data'}->{'sender'}->{'id'});
     if ( $params->{'source'} eq 'facebook' ) {
         return fb_surrogate_id_from_picture($params->{'payload'}->{'data'}->{'sender'}->{'id'}) || $params->{'payload'}->{'data'}->{'sender'}->{'id'};
     }
@@ -468,7 +474,8 @@ sub _resolve_handle {
         return $params->{'payload'}->{'direct_message'}->{'sender_id_str'};
     }
     elsif ( $params->{'source'} eq 'google' ) {
-        return $params->{'payload'}->{'user'}->{'user_id'};
+        #return $params->{'payload'}->{'user'}->{'user_id'};  Deprecated by google May 2019
+        return $params->{'payload'}->{'conversation'}->{'conversationId'}; # NOTE: persists for ONLY a single conversation!
     }
     elsif ( $params->{'source'} eq 'twilio' ) {
         return $params->{'payload'}->{'data'}->{'From'};
