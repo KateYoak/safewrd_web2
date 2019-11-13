@@ -49,6 +49,7 @@ post '/webhook' => sub {
 
     # capture user data
     _debug( 'User Data: ' . to_json( $original_request, { pretty => 1 } ) );
+    _debug( 'Handle: ' . $handle );
 
     my $user;
     # check persona, get user id using persona
@@ -466,7 +467,6 @@ sub _resolve_handle {
     my $params = shift;
 
     _debug('**** in _resolve_handle(). source - ' . $params->{source});
-    _debug('**** sender - ' . $params->{'payload'}->{'data'}->{'sender'}->{'id'});
     if ( $params->{'source'} eq 'facebook' ) {
         return fb_surrogate_id_from_picture($params->{'payload'}->{'data'}->{'sender'}->{'id'}) || $params->{'payload'}->{'data'}->{'sender'}->{'id'};
     }
@@ -474,7 +474,8 @@ sub _resolve_handle {
         return $params->{'payload'}->{'direct_message'}->{'sender_id_str'};
     }
     elsif ( $params->{'source'} eq 'google' ) {
-        return $params->{'payload'}->{'user'}->{'user_id'};
+        #return $params->{'payload'}->{'user'}->{'user_id'};  Deprecated by google May 2019
+        return $params->{'payload'}->{'conversation'}->{'conversationId'}; # NOTE: persists for ONLY a single conversation!
     }
     elsif ( $params->{'source'} eq 'twilio' ) {
         return $params->{'payload'}->{'data'}->{'From'};
