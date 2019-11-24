@@ -337,7 +337,7 @@ post '/webhook' => sub {
                     } ); 
 
                     my $pin = $kliq_group->verification_pin;
-                    $message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '", all you need to do is download, install and share this URL privately to your ' . $friend_count . ' friends directly in FB Messenger, WeChat, Twitter, Telegram or even SMS and ONLY with your ' . $friend_count . ' friends. ' . $url . ' - Your personal one time pin is ' . $pin . ' and must not be shared with anyone. Insert it only once when asked after you click on the link.';
+                    $message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '". Click here '. $url .' to install and use your one time pin code '. $pin .' then come back here and COPY/SHARE the link only, with ONLY your '. $friend_count .' friends directly via SMS, DM or Private Message.';
                     @contexts = ();
                 }
             }
