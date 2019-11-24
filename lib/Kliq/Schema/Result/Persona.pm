@@ -21,6 +21,12 @@ __PACKAGE__->add_columns(
         is_nullable => 1, # for real, matched later
         is_foreign_key => 1
     },
+    ambassador_id => {
+        data_type => 'CHAR',
+        size => 36,
+        is_nullable => 1,
+        is_foreign_key => 1,
+    },
     handle => {
         data_type => "varchar",
         is_nullable => 0,
@@ -28,7 +34,7 @@ __PACKAGE__->add_columns(
     },
     service => {
         data_type => "enum",
-        extra => { list => [qw/google twitter facebook yahoo linkedin kliq manual/] },
+        extra => { list => [qw/google twitter facebook yahoo linkedin kliq manual twilio/] },
         is_nullable => 0,
     },
     screen_name => {
@@ -103,6 +109,10 @@ __PACKAGE__->belongs_to(
     user => 'Kliq::Schema::Result::User', 'user_id'
     );
 
+__PACKAGE__->belongs_to(
+    ambassador => 'Kliq::Schema::Result::User', 'ambassador_id'
+    );
+
 __PACKAGE__->has_many(
     tokens => 'Kliq::Schema::Result::OauthToken', 'persona_id'
     );
@@ -111,6 +121,12 @@ sub insert {
     my ( $self, @args ) = @_;
 
     my $guard = $self->result_source->schema->txn_scope_guard;
+
+    #here we are looking for the lead in the leads table
+    my $lead = $self->result_source->schema->resultset('Lead')->search_rs({ service => $self->service, handle => $self->handle } )->single();
+    if ($lead) {
+        $self->ambassador_id($lead->ambassador_id); #and using it to assign ambassador_id that signed us up
+    }
 
     $self->next::method(@args);
 
@@ -127,6 +143,14 @@ sub insert {
         $known_contact->update({
             user_id => $self->user_id,
         });
+    }
+    if ($lead) {
+        #if we had a lead, let's close it by assigning the new persona_id to it
+        $lead->update( { persona_id => $self->id });
+    } else {
+        #otherwise, if there was no lead at all, we would still like to back-fill the lead as closed (with persona_id)
+        #so we have them all in one place, and with a unique phone number.
+        $self->result_source->schema->resultset('Lead')->create( { service => $self->service, handle => $self->handle, persona_id => $self->id } );
     }
 
     $guard->commit;
