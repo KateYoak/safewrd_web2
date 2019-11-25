@@ -1,0 +1,5 @@
+#this is for the dev env 
+sudo mkdir -p /var/opt/clqs-api 
+chown ubuntu.ubuntu /var/opt/clqs-api
+#this is for prod
+mkdir -p /var/opt/clqs-api/media/ambassadors/

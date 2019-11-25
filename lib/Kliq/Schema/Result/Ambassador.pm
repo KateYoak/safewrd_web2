@@ -14,67 +14,41 @@ __PACKAGE__->add_columns(
         size => 36,
         is_nullable => 0,
     },
-    name => { 
+    nickname => {
+        data_type => 'varchar', 
+        is_nullable => 1,  #set after hire
+        size => 50,
+    },
+    firstName => { 
         data_type => "varchar", 
-        is_nullable => 1, # relax
+        is_nullable => 0,
+        size => 50,
+    },
+    lastName => { 
+        data_type => "varchar", 
+        is_nullable => 0,
         size => 50,
     },
     email => { 
         data_type => "varchar", 
-        is_nullable => 1, # relax
+        is_nullable => 0, 
         size => 50 
     },
     phone => { 
         data_type => "varchar", 
-        is_nullable => 1, # relax
+        is_nullable => 0, 
         size => 15,
-        is_serializable => 0
     },
-    website => { 
-        data_type => "varchar", 
-        is_nullable => 1, # relax
-        size => 200,
-        is_serializable => 0
-    },
-    image => {
-        data_type => "varchar", 
+    photo => {
+        data_type => "varchar",  #local uri
         is_nullable => 1, 
         size => 255 
     },
-    gender => {
+    status => {
         data_type => "enum",
-        extra => { list => ["male", "female"] },
-        is_nullable => 1,
-    },
-    org_name => { 
-        data_type => "varchar", 
-        is_nullable => 1,  # relax
-        size => 75,
-        is_serializable => 0
-    },
-    org_title => { 
-        data_type => "varchar", 
-        is_nullable => 1,  # relax
-        size => 75,
-        is_serializable => 0
-    },
-    location => { 
-        data_type => "varchar", 
-        is_nullable => 1, 
-        size => 200,
-        is_serializable => 0
-    },
-    timezone => { 
-        data_type => "varchar", 
-        is_nullable => 1, 
-        size => 75,
-        is_serializable => 0
-    },
-    language => { 
-        data_type => "varchar", 
-        is_nullable => 1, 
-        size => 10,
-        is_serializable => 0
+        extra => { list => [qw/pending hired rejected cancelled/] },
+        is_nullable => 0,
+        default_value => 'pending' 
     },
     created => {
         data_type => "timestamp",
@@ -86,6 +60,8 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->uuid_columns('id');
+
+__PACKAGE__->add_unique_constraint("email", [qw/email/]);
 
 __PACKAGE__->has_many(
     lead => 'Kliq::Schema::Result::Lead', 'ambassador_id'
