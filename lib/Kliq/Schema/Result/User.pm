@@ -108,7 +108,7 @@ __PACKAGE__->add_columns(
     },
     lang => {
         data_type => "varchar",
-        is_nullable => 0,
+        is_nullable => 1,
         size => 255
     },
     merged_chat_user_id => {
@@ -124,6 +124,7 @@ __PACKAGE__->add_columns(
     aireos_credit => {
         data_type => 'integer',
         size => 11,
+        is_nullable => 1,
     },
     drone_enabled => {
         data_type => "tinyint",

@@ -151,6 +151,9 @@ error('Got request ' . request->path . ' with session id ' . session('user_id'))
     elsif(request->path =~ '^/v1/rtmp_url') {    
         return;
     }
+    elsif(request->path =~'^/v1/ambassador') {
+        return; #this is currently in Chatbot
+    }
     elsif(!$user) {
         request->path_info('/error/unauthorized');
     }
