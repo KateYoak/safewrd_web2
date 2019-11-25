@@ -298,7 +298,7 @@ post '/webhook' => sub {
             })->single();
 
             if (!defined($kliq_group)) {
-                $message = "Looks like you already have the minimum number of friends on your group, do you want to add anybody else to your group?";
+                $message = "Looks like you already have the minimum number of friends on your group, do you want to add anybody else to your group? (yes or no)";
                 push @contexts, { 
                     name => "$api_session/contexts/" . 'yes-add-friend',
                     lifespanCount => 1,
@@ -318,7 +318,7 @@ post '/webhook' => sub {
                     };
                 }
                 elsif (!defined($kliq_group->name)) {
-                    $message = "Do you want to add anybody else to your group?";
+                    $message = "Do you want to add anybody else to your group? (yes or no)";
                     push @contexts, { 
                         name => "$api_session/contexts/" . 'yes-add-friend',
                         lifespanCount => 1,
@@ -365,7 +365,7 @@ post '/webhook' => sub {
                 }; 
             }
             else {
-                $message = "Looks like you already have the minimum number of friends, do you want to add anybody else to your group?";
+                $message = "Looks like you already have the minimum number of friends, do you want to add anybody else to your group? (yes or no)";
                 push @contexts, { 
                     name => "$api_session/contexts/" . 'yes-add-friend',
                     lifespanCount => 1,
