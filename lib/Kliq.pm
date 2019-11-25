@@ -147,6 +147,9 @@ error('Got request ' . request->path . ' with session id ' . session('user_id'))
     elsif(request->path =~ '^/v1/rtmp_url') {    
         return;
     }
+    elsif(request->path =~'^/v1/ambassador') {
+        return; #this is currently in Chatbot
+    }
     elsif(!$user) {
         request->path_info('/error/unauthorized');
     }
@@ -208,42 +211,6 @@ get '/contact_id' => sub {
 
     content_type 'application/json';
     return to_json({ contact_id => $contact->id });
-};
-
-post '/ambassador' => sub {
-    my $args = dejsonify(body_params());
-    my @expected = qw/name email/; #fields that we expect to receive from ambassador form
-    my %ambassador;
-    @ambassador { @expected } = @$args{ @expected }; # cleaned up hash
-    my $result;
-    eval {
-        $result = schema->resultset('Ambassador')->create( { %ambassador } );
-    } ;
-    if ($@){
-        return to_json( { success => 0, Error => $@ });
-    }
-    return to_json({ success => 1, Ambassador => $result->get_columns });
-};
-
-post '/lead' => sub {
-    my $args = dejsonify(body_params());
-    my @expected = qw/ambassador_id phone handle service/; 
-    my %lead;
-    @lead { @expected } = @$args{ @expected }; # cleaned up hash
-    if ($lead{phone}) {
-        $lead{handle} = delete $lead{phone}; #either handle + service or phone acceptable
-        $lead{service} = 'twilio';
-    }
-    my $result;
-    eval {
-        $result = schema->resultset('Lead')->create( { %lead } );
-    };
-    # @todo here we'd like to also kick off the Twilio SMS
-
-    if ($@){
-        return to_json( { success => 0, Error => $@ });
-    }
-    return to_json({ success => 1, Ambassador => $result->get_columns });
 };
 
 post '/update_swrve_user_id' => sub {
