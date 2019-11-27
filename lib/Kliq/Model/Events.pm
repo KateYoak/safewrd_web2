@@ -77,7 +77,8 @@ around 'update' => sub {
 
   if (my $location = $params->{new_location}) {
     my $ret_result = $self->$orig($id, { location => $location });
-    $ret_result->update_location;
+    my $event = $self->get_row($id);
+    $event->update_location;
     return $ret_result;
   }
 

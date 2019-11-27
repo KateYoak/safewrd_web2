@@ -1,0 +1,35 @@
+[2019-02-06 05:32:08.93549] [27502] [info] Listening at "http://*:8081"
+[2019-02-06 05:32:13.10903] [27503] [info] Listening at "http://*:4004"
+[2019-02-06 05:32:15.20246] [27503] [debug] GET "/wsmission" (ac3787f3)
+[2019-02-06 05:32:15.20393] [27503] [debug] Template "not_found.development.html.ep" not found
+[2019-02-06 05:32:15.20414] [27503] [debug] Template "not_found.html.ep" not found
+[2019-02-06 05:32:15.20431] [27503] [debug] Rendering template "mojo/debug.html.ep"
+[2019-02-06 05:32:15.21944] [27503] [debug] Your secret passphrase needs to be changed
+[2019-02-06 05:32:15.22269] [27503] [debug] 404 Not Found (0.020235s, 49.419/s)
+[2019-02-06 05:32:21.83308] [27503] [debug] GET "/wsmission/" (a5b6018c)
+[2019-02-06 05:32:21.83379] [27503] [debug] Template "not_found.development.html.ep" not found
+[2019-02-06 05:32:21.83399] [27503] [debug] Template "not_found.html.ep" not found
+[2019-02-06 05:32:21.83413] [27503] [debug] Rendering cached template "mojo/debug.html.ep"
+[2019-02-06 05:32:21.83999] [27503] [debug] 404 Not Found (0.006891s, 145.117/s)
+[2019-02-06 05:34:23.82256] [27537] [info] Listening at "http://*:4004"
+[2019-02-06 05:34:25.45888] [27537] [debug] GET "/ws-mission/" (eb25f36f)
+[2019-02-06 05:34:25.46036] [27537] [debug] Template "not_found.development.html.ep" not found
+[2019-02-06 05:34:25.46057] [27537] [debug] Template "not_found.html.ep" not found
+[2019-02-06 05:34:25.46077] [27537] [debug] Rendering template "mojo/debug.html.ep"
+[2019-02-06 05:34:25.47661] [27537] [debug] Your secret passphrase needs to be changed
+[2019-02-06 05:34:25.48005] [27537] [debug] 404 Not Found (0.021174s, 47.228/s)
+[2019-02-06 05:35:06.45948] [27537] [debug] GET "/" (a5cfcbb9)
+[2019-02-06 05:35:06.45992] [27537] [debug] Routing to a callback
+[2019-02-06 05:35:06.53590] [27537] [debug] Rendering template "index.html.ep" from DATA section
+[2019-02-06 05:35:06.55967] [27537] [debug] 200 OK (0.100145s, 9.986/s)
+[2019-02-06 05:38:03.73035] [27561] [info] Listening at "http://*:4004"
+[2019-02-06 05:38:24.99698] [27561] [debug] GET "/" (a4b668d7)
+[2019-02-06 05:38:24.99751] [27561] [debug] Routing to a callback
+[2019-02-06 05:38:25.07201] [27561] [debug] Rendering template "index.html.ep" from DATA section
+[2019-02-06 05:38:25.09636] [27561] [debug] 200 OK (0.099334s, 10.067/s)
+[2019-02-06 05:39:33.75178] [27561] [debug] GET "/" (5d985bfa)
+[2019-02-06 05:39:33.75206] [27561] [debug] Routing to a callback
+[2019-02-06 05:39:33.75448] [27561] [debug] Rendering cached template "index.html.ep" from DATA section
+[2019-02-06 05:39:33.76163] [27561] [debug] 200 OK (0.009788s, 102.166/s)
+[2019-02-06 05:39:41.08638] [27568] [info] Listening at "http://*:4004"
+[2019-02-06 11:26:52.84490] [28927] [info] Listening at "http://*:3000"

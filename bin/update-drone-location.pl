@@ -3,10 +3,11 @@ use feature 'say';
 use DDP;
 use JSON qw(decode_json);
 use Coro;
+use DDP;
 use FurlX::Coro;
 my $s
   = Kliq::Schema->connect(
-  q{dbi:mysql:database=kliq2;host=127.0.0.1;port=3306;user=kliq_SSM;password=self-expression}
+  q{dbi:mysql:database=kliq21;host=127.0.0.1;port=3306;user=kliq_SSM;password=self-expression}
   );
 
 while (1) {
@@ -15,13 +16,14 @@ while (1) {
     push @coros, async {
       my $ua  = FurlX::Coro->new();
       my $res = $ua->get(
-        'http://dev.flytbase.com/rest/ros/flytsim/mavros/global_position/global',
+        'http://dev.flytbase.com/rest/ros/flytos/mavros/global_position/global',
         [
-          'Authorization' => 'Token ' . $drone->access_token,
+          'Authorization' => 'Token ' . ($drone->access_token),
           VehicleID       => $drone->vehicle_id
         ]
       );
-      my $json = decode_json($res->decoded_content);
+      p($res);
+      my $json = eval {decode_json($res->decoded_content)} || {};
       return unless $json->{latitude} && $json->{longitude};
       return {
         id       => $drone->id,
@@ -30,7 +32,7 @@ while (1) {
     };
   }
   _update_drone_location($_->join) for @coros;
-  sleep(5);
+  sleep(10);
 }
 
 sub _update_drone_location {

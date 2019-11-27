@@ -26,6 +26,7 @@ use URI;
 use Try::Tiny;
 use WWW::Mixpanel;
 use IPC::Cmd qw/run/;
+use Email::SendGrid::V3;
 
 use Kliq::Model::ZencoderOutput;
 
@@ -102,6 +103,9 @@ error('Got request ' . request->path . ' with session id ' . session('user_id'))
 
     ## development & testing
     if(request->path =~ '^/(v1/upload|v1/zencoded|v1/cors|v1)?$') {
+        return;
+    }
+    elsif(request->path =~ '^/v1/email_whitepaper$') {
         return;
     }
     elsif(request->path =~ '^/v1/delete_user$') {
@@ -187,10 +191,9 @@ get '/user' => sub {
         request->path_info('/error/unauthorized');
     }
 
-    content_type 'application/json';
-
-    my $credit = sprintf(q{%.2f}, 0.0 + $user->eos_balance);
+    my $credit = eval { sprintf(q{%.2f}, 0.0 + $user->eos_balance) };
     
+    content_type 'application/json';
     return to_json({ uid => session('user_id'), drone_enabled => $user->drone_enabled, aireos_credit => $credit, aireos_user_id => $user->aireos_user_id });    
 };
 
@@ -458,7 +461,7 @@ post '/delete_user' => sub {
     my $response = {};
     if ($user) {
         # Delete user details
-        for my $table(qw/OauthToken Contact Kliq Upload Share Comment Persona CmsMedia/) {
+        for my $table(qw/OauthToken Contact Event Kliq Upload Share Comment Persona CmsMedia/) {
             my $rs = schema->resultset($table)->search({ user_id => $user_id });
             while (my $rec = $rs->next) {
                 $rec->delete();
@@ -503,6 +506,34 @@ get '/contacts_summary' => sub {
 
     content_type 'application/json';
     return to_json($summary);
+};
+
+post '/email_whitepaper' => sub {
+    my $args = dejsonify(body_params());
+
+    # SendGrid api key. TODO: Move this to config.
+    my $api_key     = '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';
+    my $template_id = 'd-64c723e5061b480eae197d45758ef112';
+    my $from_email  = 'info@aireos.io';
+
+    my $response = {};
+    if ($args->{email}) {
+        my $sg     = Email::SendGrid::V3->new(api_key => $api_key);
+        my $result = $sg->from($from_email)->template_id($template_id)->add_envelope(to => [ $args->{email} ])->send;
+        if ($result->{success}) {
+            $response = { success => 1 };
+        }
+        else {
+            $response = { success => 0, error_message => $result->{reason} };
+        }
+    }
+    else {
+        $response = { success => 0, error_message => 'Missing email param' };
+    }
+
+    content_type 'application/json';
+    header('Access-Control-Allow-Origin' => '*');
+    return to_json($response);
 };
 
 get '/archives' => sub {
@@ -1792,12 +1823,19 @@ get '/subscriptions/status' => sub {
         error('Failed to fetch subscription: ' . $_);
         $response = { error => 'Failed to fetch subscription' };
     };
-
-    if (ref $recurly_response eq 'HASH') {
-        for my $subscription (@{$recurly_response->{subscription}}) {
-            if ($subscription->{state} eq 'active') {
+error('resonse: ' . Dumper($recurly_response));
+    if (ref $recurly_response eq 'HASH' && $recurly_response->{subscription}) {
+        if (ref $recurly_response->{subscription} eq 'HASH') {
+            if ($recurly_response->{subscription}->{state} eq 'active') {
                 $response->{active} = 1;
-                last;
+            } 
+        }
+        elsif (ref $recurly_response->{subscription} eq 'ARRAY') {
+            for my $subscription (@{$recurly_response->{subscription}}) {
+                if ($subscription->{state} eq 'active') {
+                    $response->{active} = 1;
+                    last;
+                }
             }
         }
     }
@@ -1982,6 +2020,20 @@ post '/enable_drone' => sub {
 
     my $response = {};
 
+=pod
+#Commented out just to avoid last minute changes before demo
+    if (defined $user->aireos_user_id) {
+        # Aireos user exists. Set drone enabled in DB.
+        $user->update({
+            drone_enabled  => 1,
+        });
+
+        $response = { success => 1 };
+        content_type 'application/json';
+        return to_json($response);
+    }
+=cut
+
     # Create Aireos account
     my $aireos_response;
     try {
@@ -2002,7 +2054,11 @@ post '/enable_drone' => sub {
     }
     else {
         error('Failed to create Aireos account: ' . Dumper($aireos_response));
-        $response = { success => 0, error => 'Failed to create Aireos account' };
+        my $message = 'Failed to create Aireos account';
+        if (ref $aireos_response eq 'HASH' && $aireos_response->{status} eq 'ERROR') {
+            $message .= ' - ' . $aireos_response->{message};
+        }
+        $response = { success => 0, error => $message };
     }
 
     content_type 'application/json';
@@ -2024,7 +2080,7 @@ post '/add_aireos_credit' => sub {
         });
     }
 
-    #TODO: Confirm that the user has drone enabled and has a  subscription
+    #FIXME: Confirm that the user has drone enabled and has a  subscription
     unless ($user->drone_enabled) {
         return to_json({
             error => "Drone is not enabled for this user"
@@ -2077,6 +2133,7 @@ post '/add_aireos_credit' => sub {
         };
 
         if (!defined $response->{error} && ref $aireos_response eq 'HASH' &&  $aireos_response->{status} eq 'OK' && $aireos_response->{transaction}->{transaction_id}) {
+            #FIXME: Call end-point to fetch credit
             my $updated_credit = $user->aireos_credit + $amount;
             $user->update({
                 aireos_credit => $updated_credit,
