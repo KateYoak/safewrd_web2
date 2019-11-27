@@ -410,9 +410,9 @@ post '/ambassador' => sub {
 
         content_type 'application/json';
         my $body = request->body();
-        _debug( 'Request Body:' . to_json( $body, { pretty => 1 } ) );
+        #_debug( 'Request Body:' . to_json( $body, { pretty => 1 } ) );
         my $args = from_json($body);
-        _debug( 'Request Body (JSON):' . to_json( $args, { pretty => 1 } ) );
+        #_debug( 'Request Body (JSON):' . to_json( $args, { pretty => 1 } ) );
 
         my @expected = qw/firstName lastName phone email photo suffix/; #fields that we expect to receive from ambassador form
         my %ambassador;
@@ -455,11 +455,13 @@ post '/ambassador' => sub {
            $message = "System error";
        }
     }
-    return to_json (
+    my $ret =  to_json (
         $@ ? 
              { Success => 0, Message => $message , Error => ref $@? Dumper($@): $@ } : 
              { Success => 1, Ambassador => $ambassador }
     );
+    _debug("Sending json $ret");
+    return $ret;
 };
 
 post '/ambassador/lead' => sub {
