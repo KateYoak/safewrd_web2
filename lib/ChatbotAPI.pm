@@ -414,7 +414,7 @@ post '/ambassador' => sub {
         my $args = from_json($body);
         #_debug( 'Request Body (JSON):' . to_json( $args, { pretty => 1 } ) );
 
-        my @expected = qw/firstName lastName phone email photo suffix/; #fields that we expect to receive from ambassador form
+        my @expected = qw/firstName lastName nickname phone email photo suffix/; #fields that we expect to receive from ambassador form
         my %ambassador;
         @ambassador { @expected } = @$args{ @expected }; # cleaned up hash
 
@@ -448,9 +448,8 @@ post '/ambassador' => sub {
     my $message;
     if ($@) {
        if ($@ =~/Duplicate entry/) {
-           $message = "Ambassador exists";
-       } elsif (!ref $@) {
-           $message = $@;
+           $@ =~/entry '(.+?)' for key '(.+?)'/;
+           $message = "Ambassador with $2 $1 exists";
        } else {
            $message = "System error";
        }
@@ -465,24 +464,42 @@ post '/ambassador' => sub {
 };
 
 post '/ambassador/lead' => sub {
-    my $args = dejsonify(body_params());
-    my @expected = qw/ambassador_id phone handle service/; 
-    my %lead;
-    @lead { @expected } = @$args{ @expected }; # cleaned up hash
-    if ($lead{phone}) {
-        $lead{handle} = delete $lead{phone}; #either handle + service or phone acceptable
-        $lead{service} = 'twilio';
-    }
-    my $result;
+
+    content_type 'application/json';
+    my $result = 
     eval {
-        $result = schema->resultset('Lead')->create( { %lead } );
+        my $body = request->body();
+        _debug( 'Request Body:' .  $body);
+        my $args = from_json($body);
+
+        my @expected = qw/nickname phone handle service/; 
+        my %lead;
+        @lead { @expected } = @$args{ @expected }; # cleaned up hash
+        if ($lead{phone}) {
+            $lead{handle} = delete $lead{phone}; #either handle + service or phone acceptable
+            $lead{service} = 'twilio';
+        }
+        my $ambassador = schema->resultset('Ambassador')->find( {nickname => $lead{nickname} } );
+        if (!$ambassador) {
+            die { Message => "Unable to find ambassador $lead{nickname}"};
+        } 
+        $lead{ambassador_id} = $ambassador->{id};
+        delete $lead{nickname};
+
+        return schema->resultset('Lead')->create( { %lead } );
     };
     # @todo here we'd like to also kick off the Twilio SMS
 
     if ($@){
-        return to_json( { success => 0, Error => $@ });
+        if ($@ =~ /Duplicate/){
+            return to_json ( { success => 0, Message => 'Phone number exists', Error => $@});
+        } elsif (ref $@ && $@->{Message}) {
+            return to_json( { success => 0, Message => $@ });
+        } else {
+            return to_json ( { success => 0, Message => 'System error', Error => $@});
+        }
     }
-    return to_json({ success => 1, Ambassador => $result->get_columns });
+    return to_json({ success => 1, Lead => { $result->get_columns } });
 };
 
 # ----- helper scripts ----

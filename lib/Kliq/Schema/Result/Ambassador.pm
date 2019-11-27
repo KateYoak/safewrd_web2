@@ -50,6 +50,10 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
         default_value => 'pending' 
     },
+    latest_signups_counted => {
+        data_type => 'integer',
+        is_nullable => 1,
+    },
     created => {
         data_type => "timestamp",
         datetime_undef_if_invalid => 1,
@@ -62,14 +66,14 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->uuid_columns('id');
 
 __PACKAGE__->add_unique_constraint("email", [qw/email/]);
+__PACKAGE__->add_unique_constraint("nickname", [qw/nickname/]);
 
 __PACKAGE__->has_many(
     lead => 'Kliq::Schema::Result::Lead', 'ambassador_id'
     );
 __PACKAGE__->has_many(
-    user => 'Kliq::Schema::Result::Persona', 'ambassador_id'
+    persona => 'Kliq::Schema::Result::Persona', 'ambassador_id'
     );
-
 
 1;
 __END__

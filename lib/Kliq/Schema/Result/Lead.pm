@@ -6,7 +6,7 @@ use warnings;
 
 use base 'Kliq::Schema::Result';
 
-__PACKAGE__->table("lead");
+__PACKAGE__->table("leads");
 
 __PACKAGE__->add_columns(
     id => {
