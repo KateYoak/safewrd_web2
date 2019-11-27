@@ -110,7 +110,7 @@ __PACKAGE__->belongs_to(
     );
 
 __PACKAGE__->belongs_to(
-    ambassador => 'Kliq::Schema::Result::User', 'ambassador_id'
+    ambassador => 'Kliq::Schema::Result::Ambassador', 'ambassador_id'
     );
 
 __PACKAGE__->has_many(
