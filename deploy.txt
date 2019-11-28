@@ -1,5 +1,10 @@
-#this is for the dev env 
-sudo mkdir -p /var/opt/clqs-api 
-chown ubuntu.ubuntu /var/opt/clqs-api
-#this is for prod
-mkdir -p /var/opt/clqs-api/media/ambassadors/
+
+alter table ambassadors alter column latest_signups_counted set default 0;
+ALTER TABLE ambassadors MODIFY latest_signups_counted INT(11) NOT NULL;
+
+install bin/update-ambassador_counts.pl in cron to run every minute.  Make sure errors and warnings are mailed somewhere useful.  It must be in an environment where it can access project Perl modules.  (One choice is to change working directory to bin where it lives.  It will handle it from there.)
+
+Ensure that perldeps.txt Perl modules are installed in production.
+
+
+
