@@ -46,7 +46,7 @@ foreach my $row (@rows){
 		}
 		my $sender = new Safewrd::SMS;
 		my $sent = $sender->send_sms(
-			text	=>	"Congratulations!  You've signed up $count patron leads!",
+			text	=>	"$row->{nickname} , you are credited for $count Sign-ups thus far.   Awesome job! Don't stop",
 			to	=>	'+1'.$row->{phone},
 		);
 		unless ($sent){
