@@ -338,7 +338,7 @@ post '/webhook' => sub {
 
                     my $pin = $kliq_group->verification_pin;
                     #$message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '". Click here '. $url .' to install and use your one time pin code '. $pin .' then come back here and COPY/SHARE the link only, with ONLY your '. $friend_count .' friends directly via SMS, DM or Private Message.';
-                    $message = 'Okay, '. $kliq_group->safeword .' it is. Alright, we\'re good.  Okay, we want to also send you an email and confirm we have your \'SAFEWRD\' and SAFETY GROUP correct and finally provide you with a quick, simple 2-step process to send a 30-second video test to your friends. To do so, please follow this link: '. _bitly_url('https://vip.safewrd.com/finishline/'.$user->id);
+                    $message = 'Okay, '. $kliq_group->safeword .' it is. Alright, we\'re good.  Okay, we want to also send you an email and confirm we have your \'SAFEWRD\' and SAFETY GROUP correct and finally provide you with a quick, simple 2-step process to send a 30-second video test to your friends. To do so, please follow this link: '. _bitly_url('https://vip.safewrd.app/finishline/'.$user->id);
 
                     @contexts = ();
                 }
