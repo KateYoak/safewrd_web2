@@ -483,24 +483,57 @@ post '/ambassador/lead' => sub {
         if (!$ambassador) {
             die { Message => "Unable to find ambassador $lead{nickname}"};
         } 
-        $lead{ambassador_id} = $ambassador->{id};
+        $lead{ambassador_id} = $ambassador->id;
         delete $lead{nickname};
+        _debug("Ambassador found $lead{ambassador_id} Phone: $lead{handle}");
 
-        return schema->resultset('Lead')->create( { %lead } );
+        send_lead_sms($lead{handle});
+        my $result =  { schema->resultset('Lead')->create( { %lead } )->get_columns } ;
+
+        $result->{sent} = 1;
+        return $result;
+
     };
+
     # @todo here we'd like to also kick off the Twilio SMS
 
     if ($@){
         if ($@ =~ /Duplicate/){
             return to_json ( { success => 0, Message => 'Phone number exists', Error => $@});
         } elsif (ref $@ && $@->{Message}) {
-            return to_json( { success => 0, Message => $@ });
+            return to_json( { success => 0, Message => $@->{Message}, Error => $@->{Error} });
         } else {
             return to_json ( { success => 0, Message => 'System error', Error => $@});
         }
     }
-    return to_json({ success => 1, Lead => { $result->get_columns } });
+    return to_json({ success => 1, Lead =>  $result });
 };
+use Safewrd::SMS;
+
+sub send_lead_sms {
+    my $theirphone = shift;
+    my $phone = $theirphone;
+
+    $phone =~ s/\D//g;
+    _debug($phone . ' length: ' . length($phone) );
+    if (length($phone) == 10) {
+        $phone = '+1' . $phone;
+    } elsif (length($phone) == 11 && $phone =~ /^1/) {
+        $phone = '+' . $phone;
+    } else {
+        die "Not a valid US phone number";
+    }
+    my $sender = new Safewrd::SMS;
+    
+    my $sent = $sender->send_sms(
+        text    =>      'JOIN THE MOVEMENT #STREAM4HELP , by texting Hi to create your safeword + Safety group',
+        to      =>      $phone,
+    );  
+    if (!$sent) {
+        die "Unable to send an SMS to " . $theirphone;
+    }
+
+}
 
 # ----- helper scripts ----
 
