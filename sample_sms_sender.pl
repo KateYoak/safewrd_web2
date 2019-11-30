@@ -13,7 +13,7 @@ my $sent = $sender->send_sms(
 	to	=>	'+16267056996',
 );
 
-if($sent){
+if ($sent){
 	print "That appears to have gone well.\n";
 }else{
 	print "Well, darn.\n";

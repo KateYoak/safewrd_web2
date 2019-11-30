@@ -52,7 +52,8 @@ __PACKAGE__->add_columns(
     },
     latest_signups_counted => {
         data_type => 'integer',
-        is_nullable => 1,
+        is_nullable => 0,
+        default_value => 0,
     },
     created => {
         data_type => "timestamp",
