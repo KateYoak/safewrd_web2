@@ -501,14 +501,14 @@ post '/ambassador/lead' => sub {
 
     if ($@){
         if ($@ =~ /Duplicate/){
-            return to_json ( { success => 0, Message => 'Phone number exists', Error => $@});
+            return to_json ( { Success => 0, Message => 'Phone number exists', Error => $@});
         } elsif (ref $@ && $@->{Message}) {
-            return to_json( { success => 0, Message => $@->{Message}, Error => $@->{Error} });
+            return to_json( { Success => 0, Message => $@->{Message}, Error => $@->{Error} });
         } else {
-            return to_json ( { success => 0, Message => 'System error', Error => $@});
+            return to_json ( { Success => 0, Message => 'System error', Error => $@});
         }
     }
-    return to_json({ success => 1, Lead =>  $result });
+    return to_json({ Success => 1, Lead =>  $result });
 };
 use Safewrd::SMS;
 
