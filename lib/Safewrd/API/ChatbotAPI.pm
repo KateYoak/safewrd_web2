@@ -1,4 +1,4 @@
-package ChatbotAPI;
+package Safewrd::API::ChatbotAPI;
 
 use strict;
 use warnings;
@@ -249,8 +249,7 @@ post '/webhook' => sub {
             }
 
             my $request_params = {
-                fulfillmentText    => 'Okay, '. $kliq_group->safeword .' it is. Alright, we\'re good.  Okay, we want to also send you an email and confirm we have your \'SAFEWRD\' and SAFETY GROUP correct and finally provide you with a quick, simple 2-step process to send a 30-second video test to your friends. To do so, please follow this link: '. _bitly_url('https://vip.safewrd.app/finishline?user_id='.$user->id),
-                #fulfillmentText   => $fulfillment_txt,
+                fulfillmentText   => $fulfillment_txt,
                 # outputContexts  => [ 
                 #     {
                 #         name     => "$api_session/contexts/" . 'create-safeword',
@@ -338,9 +337,7 @@ post '/webhook' => sub {
                     } ); 
 
                     my $pin = $kliq_group->verification_pin;
-                    #$message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '". Click here '. $url .' to install and use your one time pin code '. $pin .' then come back here and COPY/SHARE the link only, with ONLY your '. $friend_count .' friends directly via SMS, DM or Private Message.';
-                    $message = 'Okay, '. $kliq_group->safeword .' it is. Alright, we\'re good.  Okay, we want to also send you an email and confirm we have your \'SAFEWRD\' and SAFETY GROUP correct and finally provide you with a quick, simple 2-step process to send a 30-second video test to your friends. To do so, please follow this link: '. _bitly_url('https://vip.safewrd.app/finishline?user_id='.$user->id);
-
+                    $message = 'Looks like we are all good! You already have a named safety group "' . $kliq_group->name . '" and a safeword "' . $kliq_group->safeword . '". Click here '. $url .' to install and use your one time pin code '. $pin .' then come back here and COPY/SHARE the link only, with ONLY your '. $friend_count .' friends directly via SMS, DM or Private Message.';
                     @contexts = ();
                 }
             }
@@ -488,23 +485,6 @@ sub _resolve_handle {
         var error => "Unable to resolve handle for " . $params->{'source'};
         request->path_info('/error');
     }
-}
-
-sub _bitly_url {
-    my $long_url = shift;
-
-    my $client = REST::Client->new();
-    $client->addHeader('Content-Type', 'application/json');
-    $client->addHeader('charset', 'UTF-8');
-    $client->addHeader('Accept', 'application/json');
-    $client->addHeader('Authorization', 'ed1607c7fece772b847269f6ea410450d03ef5d7');
-  
-    my $req = to_json({ 'long_url' => $long_url });    _debug( "Bitly Post: " . $req);
-    my $endpoint_url = URI->new('https://api-ssl.bitly.com/v4/bitlinks');
-    $client->POST($endpoint_url->canonical, $req);
-
-    my $response = from_json($client->responseContent());
-    return $response->{'link'};
 }
 
 sub _resolve_url {

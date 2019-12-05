@@ -13,6 +13,7 @@ set session => 'Kliq';
 load_app 'Kliq'; #, prefix => '/api';
 load_app 'Kliq::Routes::Auth';
 load_app 'ChatbotAPI';
+load_app 'Safewrd::API::Ambassador'; #here we have functionality pertaining to Ambassador/Patron signup & flow
 
 ## reset asset_basepath for local testing
 if($^O =~ /Win32/) {
