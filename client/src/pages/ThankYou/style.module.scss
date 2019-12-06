@@ -1,0 +1,145 @@
+@import "../../assets/scss/base.scss";
+
+.home {
+  .content {
+    padding-top: 162px;
+    text-align: center;
+
+    @include phone {
+      padding-top: 55px;
+    }
+
+    h4 {
+      font-size: 18px;
+      font-weight: 100;
+      margin-bottom: 0;
+      color: white;
+      opacity: .8;
+      font-style: italic;
+    }
+
+    p {
+      margin-top: 0;
+      font-size: 24px;
+      color: white;
+      text-shadow: 1px 1px 1px rgba(0,0,0,.25);
+    }
+
+  }
+  .footer {
+    .visited {
+      width: 406px;
+      padding: 20px 0px;
+      background-color: white;
+      margin-bottom: 12px;
+      margin-left: 12px;
+
+      @include tablet {
+        width: 50%;
+        margin-top: 20px;
+        margin: 20px auto 12px;
+      }
+      @include phone {
+        width: 90%;
+        margin: 20px auto;
+      }
+
+      .rating {
+        display: flex;
+        align-items: center;
+        padding-left: 20px;
+
+        .circleMark {
+          width: 60px;
+          height: 60px;
+          background-color: $blue-lightest;
+          border-radius: 50%;
+          padding: 8px;
+
+          @include phone {
+            width: 40px;
+            height: 40px;
+            padding: 4px;
+          }
+
+          span {
+            width: 42px;
+            height: 42px;
+            background-color: $blue-lighter;
+            border-radius: 50%;
+            display: inline-block;
+
+            @include phone {
+              width: 32px;
+              height: 32px;
+            }
+          }
+        }
+        .desc {
+          margin-left: 15px;
+
+          .title {
+            padding-left: 6px;
+
+            span {
+              color: $black-lighter;
+              font-size: 16px;
+
+              @include phone {
+                font-size: 12px;
+              }
+
+              strong {
+                color: $blue-lighter-secondary;
+              }
+            }
+          }
+          .verified {
+            display: flex;
+            align-items: center;
+
+            .verifiedImage {
+              width: 16px;
+              height: 16px;
+              display: inline-block;
+              position: relative;
+              background-color: $blue-lighter-third;
+              border-radius: 50%;
+
+              img {
+                width: 9px;
+                height: 8px;
+                position: absolute;
+                left: 50%;
+                right: 50%;
+                transform: translate(-50%, 58%);
+              }
+            }
+            .verifiedLabel {
+              margin-left: 6px;
+              color: $grey-primary;
+              font-size: 15px;
+
+              @include phone {
+                font-size: 12px;
+              }
+            }
+          }
+        }
+      }
+    }
+    .copyright {
+      text-align: center;
+      p {
+        color: white;
+
+        @include tablet {
+          padding: 0px 34px;
+        }
+        @include phone {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}

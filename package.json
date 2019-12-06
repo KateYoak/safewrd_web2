@@ -1,0 +1,31 @@
+{
+  "name": "safewrd_web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "formidable": "^1.2.1",
+    "formstack-web-api-node": "^0.1.0",
+    "multiparty": "^4.2.1",
+    "now": "^16.5.2",
+    "urlencoded-body-parser": "^3.0.0"
+  },
+  "devDependencies": {
+    "@now/node": "^1.1.2"
+  },
+  "scripts": {
+    "start": "now dev --listen 5000",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TRANZMT-IT/safewrd_web.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TRANZMT-IT/safewrd_web/issues"
+  },
+  "homepage": "https://github.com/TRANZMT-IT/safewrd_web#readme"
+}
